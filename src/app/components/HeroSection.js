@@ -54,7 +54,7 @@ function HiringFormModal({ isOpen, onClose }) {
             {/* Embedded Google Form */}
             <div className="flex-1 w-full bg-white">
               <iframe
-                src="https://forms.gle/wKAi8K1wuDn6XcDp9"
+                src="https://docs.google.com/forms/d/e/1FAIpQLSd6LJ8hoLYkxMVxVoZJenWelXsW52oz5lmLhOVwRJE3kU8jCQ/viewform?embedded=true"
                 width="100%"
                 height="100%"
                 frameBorder="0"
