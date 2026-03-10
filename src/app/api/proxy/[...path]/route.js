@@ -8,14 +8,27 @@ async function handler(req, context) {
   const cleanSegments = segments.replace(/\/+$/, "");
   const url = `${UPSTREAM}/api/${cleanSegments}`;
 
+  // Build headers - forward important headers to make the request look legitimate
   const headers = {
     "Content-Type": "application/json",
+    "Accept": "application/json",
+    // Use a proper User-Agent to avoid being blocked
+    "User-Agent": "Mozilla/5.0 (compatible; SNS-Proxy/1.0)",
+    // Set origin to the upstream domain since we're proxying
+    "Origin": "https://api.slicenshare.com",
+    "Referer": "https://slicenshare.com/",
   };
 
   // Forward the Authorization header if present
   const authHeader = req.headers.get("authorization");
   if (authHeader) {
     headers["Authorization"] = authHeader;
+  }
+
+  // Forward X-Forwarded-For for proper IP tracking
+  const clientIP = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip");
+  if (clientIP) {
+    headers["X-Forwarded-For"] = clientIP;
   }
 
   const fetchOptions = {
@@ -43,6 +56,23 @@ async function handler(req, context) {
 
     console.log(`[proxy] Response: ${upstream.status} - ${responseBody.substring(0, 200)}`);
 
+    // Check if we got HTML instead of JSON (indicates an error page)
+    const contentType = upstream.headers.get("content-type") || "";
+    if (upstream.status >= 400 && contentType.includes("text/html")) {
+      // Return a proper JSON error instead of HTML
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          message: `Upstream server returned ${upstream.status} error`,
+          status: upstream.status
+        }),
+        { 
+          status: upstream.status, 
+          headers: { "Content-Type": "application/json" } 
+        }
+      );
+    }
+
     return new Response(responseBody, {
       status: upstream.status,
       headers: {
@@ -52,7 +82,7 @@ async function handler(req, context) {
   } catch (err) {
     console.error(`[proxy] Upstream error:`, err.message);
     return new Response(
-      JSON.stringify({ message: "Proxy error: " + err.message }),
+      JSON.stringify({ success: false, message: "Proxy error: " + err.message }),
       { status: 502, headers: { "Content-Type": "application/json" } }
     );
   }
