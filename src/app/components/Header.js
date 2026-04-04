@@ -43,7 +43,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
-            <img src="/Logo/Logo.png" alt="Slice N Share" className="h-7 sm:h-8 md:h-10" />
+            <img src="/Logo/Logo.png" alt="Slice N Share" className="h-7 sm:h-8 md:h-14" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -51,8 +51,8 @@ export default function Header() {
             <Link href="/" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
               Home
             </Link>
-            <Link href="#tournament" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
-              Tournament
+            <Link href="#e-sports" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
+              E-Sports
             </Link>
             <Link href="#events" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
               Events
@@ -60,13 +60,16 @@ export default function Header() {
             <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
               News
             </Link>
+            <Link href="#career" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
+              Career
+            </Link>
             <Link href="#contact" className="text-white text-[16px] font-medium hover:text-purple-400 transition">
               Contact Us
             </Link>
           </nav>
 
           {/* Auth Buttons */}
-          <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
+          {/* <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
             {isAuthenticated && user ? (
               <button
                 onClick={() => setProfileSettingsOpen(true)}
@@ -87,7 +90,7 @@ export default function Header() {
                 Login
               </button>
             )}
-          </div>
+          </div> */}
 
           <button
             className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition"
@@ -112,8 +115,8 @@ export default function Header() {
               <Link href="#home" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
                 Home
               </Link>
-              <Link href="#tournament" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
-                Tournament
+              <Link href="#e-sports" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
+                E-Sports
               </Link>
               <Link href="#events" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
                 Events
@@ -121,12 +124,15 @@ export default function Header() {
               <Link href="#news" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
                 News
               </Link>
+              <Link href="#career" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
+                Career
+              </Link>
               <Link href="#contact" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition" onClick={handleLinkClick}>
                 Contact Us
               </Link>
 
               {/* Mobile Auth Buttons */}
-              {!isAuthenticated && (
+              {/* {!isAuthenticated && (
                 <div className="flex flex-col gap-3 mt-4">
                   <button
                     onClick={() => { handleLoginClick(); setMobileMenuOpen(false) }}
@@ -135,7 +141,7 @@ export default function Header() {
                     Login
                   </button>
                 </div>
-              )}
+              )} */}
 
               {isAuthenticated && user && (
                 <button

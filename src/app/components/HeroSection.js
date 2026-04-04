@@ -115,7 +115,7 @@ export default function HeroSection() {
             className="mb-1"
           >
             <div className="flex items-center justify-center space-x-2 mb-2">
-              <img src="/Logo/SNS_Logo.svg" alt="SNS Logo" className="hero-logo" />
+              {/* <img src="/Logo/SNS_Logo.svg" alt="SNS Logo" className="hero-logo" /> */}
             </div>
           </motion.div>
 
@@ -133,7 +133,7 @@ export default function HeroSection() {
           </motion.h1>
 
           {/* Buttons */}
-          <div className="flex items-center justify-center gap-4 mt-20 bg-black/30 px-6 py-4">
+          {/* <div className="flex items-center justify-center gap-4 mt-20 bg-black/30 px-6 py-4">
             <button
               onClick={() => setHiringModalOpen(true)}
               className="px-8 py-3 rounded-full text-white transition flex items-center justify-center gap-1 md:gap-2 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30"
@@ -144,7 +144,7 @@ export default function HeroSection() {
               <img src="/Logo/SNS_Logo.svg" alt="SNS Logo" className="w-18 md:w-28" />{" "}
               <p className="text-[16px] md:text-[24px]">Hiring</p>
             </button>
-          </div>
+          </div> */}
         </div>
       </section>
 

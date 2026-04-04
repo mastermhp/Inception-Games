@@ -12,7 +12,7 @@ export default function TrustedBrands() {
   return (
     <section className="py-16 overflow-hidden bg-gradient-to-b from-[#0a0a14] to-[#1a0a2e]">
       <div className="container mx-auto px-4 mb-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-white mb-2">SUPPORTED & FUNDED BY </h2>
+        <h2 className="text-4xl md:text-5xl font-bold text-center text-white mb-2">SUPPORTED BY </h2>
         <div className="h-1 w-32 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
       </div>
 

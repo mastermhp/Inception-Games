@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 
 export default function Footer() {
   return (
-    <footer className="py-20 sm:py-32 lg:py-40 bg-[#0D0D0D]">
+    <footer className="py-20 sm:py-32 lg:py-18 bg-[#0D0D0D]">
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 mb-12 sm:mb-16 max-w-6xl mx-auto">
@@ -15,7 +15,7 @@ export default function Footer() {
             className="flex items-center justify-center md:justify-start"
           >
             <div className="flex items-center space-x-1">
-              <img src="/Logo/SNS_Logo.svg" alt="Slice N Share Logo" />
+              <img src="/Logo/Logo.png" alt="Slice N Share Logo" />
             </div>
           </motion.div>
 
@@ -107,18 +107,11 @@ export default function Footer() {
                 Home
               </motion.a>
               <motion.a
-                href="#how-it-works"
+                href="#esports"
                 className="block text-white hover:text-gray-300 transition-colors"
                 whileHover={{ x: 5 }}
               >
-                How It Works
-              </motion.a>
-              <motion.a
-                href="#plans"
-                className="block text-white hover:text-gray-300 transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                Plan
+                E-Sports
               </motion.a>
               <motion.a
                 href="#events"
@@ -126,6 +119,20 @@ export default function Footer() {
                 whileHover={{ x: 5 }}
               >
                 Events
+              </motion.a>
+              <motion.a
+                href="#news"
+                className="block text-white hover:text-gray-300 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                News
+              </motion.a>
+              <motion.a
+                href="#career"
+                className="block text-white hover:text-gray-300 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                Career
               </motion.a>
               <motion.a
                 href="#contact"
@@ -145,7 +152,7 @@ export default function Footer() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-center border-t border-gray-800 pt-8"
         >
-          <p className="text-gray-500 text-sm">Copyright © 2025. All Rights Reserved by Slice N Share.</p>
+          <p className="text-gray-500 text-sm">Copyright © 2026. All Rights Reserved by Inception Games.</p>
         </motion.div>
       </div>
     </footer>

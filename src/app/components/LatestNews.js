@@ -14,6 +14,35 @@ export default function LatestNews() {
   ]
 
   const smallNews = [
+
+    {
+      title: "Mousepad Giveaway tonight guys. Don’t miss the chance. ",
+      image: "/News/mouse-pad.jpg",
+      category: "E-sports",
+      time: "March 25",
+      link: "https://www.facebook.com/share/p/1BVfKRejgi",
+    },
+    {
+      title: "5 Jerseys Giveaway is ON GKEC 🎉",
+      image: "/News/jersey.jpg",
+      category: "E-sports",
+      time: "March 30",
+      link: "https://www.facebook.com/share/p/17f6LEzCVk",
+    },
+    {
+      title: "GPU Winner - AL MOHAIMIN FARABI",
+      image: "/News/gpu-winner.jpg",
+      category: "E-sports",
+      time: "March 16",
+      link: "https://www.facebook.com/share/p/18DmDAhESB",
+    },
+    {
+      title: "Gaming Mouse Winner - ANTOR HASAN",
+      image: "/News/mouse-winner.jpg",
+      category: "E-sports",
+      time: "March 16",
+      link: "https://www.facebook.com/share/p/1XEPx8McxY",
+    },
     {
       title: "Slice N Share at Startup Showcase Event - Connecting with aspiring entrepreneurs and gamers",
       image: "/News/showcase.jpg",
