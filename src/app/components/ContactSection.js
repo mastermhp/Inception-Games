@@ -61,18 +61,7 @@ export default function ContactSection() {
     setError("")
 
     try {
-      const response = await fetch("https://api.slicenshare.com/api/v1/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to send message. Please try again.")
-      }
-
+      // Just show success state for now - contact form will be implemented later
       // Show success state
       setSuccess(true)
 

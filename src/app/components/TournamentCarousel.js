@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import SignupModal from "./AuthModals/SignupModal"
+import UnifiedAuthModal from "./AuthModals/UnifiedAuthModal"
 
 const tournamentData = [
   {
@@ -263,11 +263,11 @@ export default function TournamentCarousel() {
         </div>
       </section>
 
-      <SignupModal
-        isOpen={signupModalOpen}
-        onClose={() => {
-          setSignupModalOpen(false)
-          setSelectedCard(null)
+  <UnifiedAuthModal
+    isOpen={signupModalOpen}
+    onClose={() => {
+      setSignupModalOpen(false)
+      setSelectedCard(null)
         }}
         userType="player"
       />

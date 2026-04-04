@@ -429,51 +429,8 @@ export default function SignupModal({
     setDiscountedPrice(null);
 
     try {
-      const eventType = getEventTypeForPromo();
-      let url = `https://api.slicenshare.com/api/v2/public/events/promo-code/validate?code=${encodeURIComponent(
-        promoCode.trim(),
-      )}`;
-      if (eventType) {
-        url += `&eventType=${encodeURIComponent(eventType)}`;
-      }
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      console.log("[v0] Promo code validation response:", data);
-
-      if (data.success && data.data?.valid) {
-        setPromoCodeData(data.data);
-
-        // Calculate discounted price
-        const basePrice = getBasePrice();
-        let newPrice = basePrice;
-
-        if (data.data.discountType === "percentage") {
-          newPrice = basePrice - (basePrice * data.data.discountValue) / 100;
-        } else if (data.data.discountType === "fixed") {
-          newPrice = Math.max(0, basePrice - data.data.discountValue);
-        } else if (data.data.discountType === "free") {
-          newPrice = 0;
-        }
-
-        setDiscountedPrice(Math.round(newPrice));
-        showNotification(
-          "success",
-          `Promo code applied! You get ${data.data.discountType === "percentage"
-            ? data.data.discountValue + "%"
-            : data.data.discountType === "free"
-              ? "100%"
-              : "৳" + data.data.discountValue
-          } off!`,
-        );
-      } else {
-        setPromoCodeError(
-          data.data?.error || data.message || "Invalid promo code",
-        );
-        setPromoCodeData(null);
-        setDiscountedPrice(null);
-      }
+      // Promo code validation will be implemented with new API later
+      setPromoCodeError("Promo code validation is temporarily disabled");
     } catch (error) {
       console.error("[v0] Promo code validation error:", error);
       setPromoCodeError("Failed to validate promo code. Please try again.");
@@ -535,12 +492,13 @@ export default function SignupModal({
 
         console.log("[v0] Newsletter subscription payload:", payload);
 
+        const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev";
         const res = await fetch(
-          "https://api.slicenshare.com/api/v2/public/newsletter/subscribe",
+          `${baseURL}/auth/register/send-otp`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ email: payload.email, phone: payload.phone }),
           },
         );
 
@@ -605,14 +563,15 @@ export default function SignupModal({
 
         console.log("[v0] Event signup payload:", payload);
 
-        const res = await fetch(
-          "https://api.slicenshare.com/api/v2/public/events/signup",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          },
-        );
+        const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev";
+      const res = await fetch(
+        `${baseURL}/auth/register/send-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: payload.email, phone: payload.phone }),
+        },
+      );
 
         const responseText = await res.text();
         let responseData;
@@ -663,12 +622,13 @@ export default function SignupModal({
 
         console.log("[v0] Default newsletter payload:", payload);
 
+        const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev";
         const res = await fetch(
-          "https://api.slicenshare.com/api/v2/public/newsletter/subscribe",
+          `${baseURL}/auth/register/send-otp`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ email: payload.email, phone: payload.phone }),
           },
         );
 

@@ -1,4 +1,5 @@
 "use client";
+// import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import {
   API,
@@ -9,12 +10,17 @@ import {
   setStoredUser,
   authFetch,
 } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 
 export { AuthContext };
 
 export function AuthProvider({ children }) {
+
+      const router = useRouter();
+
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,12 +41,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Fetch user profile from API (GET /api/v2/auth/me)
+   * Fetch user profile from API (GET /api/v1/auth/profile/:userId)
    */
   const fetchProfile = useCallback(async () => {
     try {
-      console.log("[v0] Fetching profile from:", API.PROFILE);
-      const res = await authFetch(API.PROFILE);
+      const storedUser = getStoredUser();
+      if (!storedUser?.id) {
+        console.log("[v0] No stored user ID for profile fetch");
+        return;
+      }
+      const url = API.PROFILE_GET.replace(":userId", storedUser.id);
+      console.log("[v0] Fetching profile from:", url);
+      const res = await authFetch(url);
       const data = await res.json();
       console.log("[v0] Profile API response:", JSON.stringify(data, null, 2));
 
@@ -74,12 +86,12 @@ export function AuthProvider({ children }) {
 
   /**
    * Email/OTP Login: Step 1 - Send OTP
-   * POST /api/v1/auth/users/login  body: { email }
+   * POST /auth/login/send-otp  body: { email }
    */
   const loginSendOTP = useCallback(async (email) => {
     setError(null);
     console.log("[v0] Login - sending OTP to:", email);
-    const res = await fetch(API.LOGIN, {
+    const res = await fetch(API.LOGIN_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -96,12 +108,12 @@ export function AuthProvider({ children }) {
 
   /**
    * Email/OTP Login: Step 2 - Verify OTP
-   * POST /api/v1/auth/users/login/verify  body: { email, otp }
+   * POST /auth/login/verify-otp  body: { email, otp }
    */
   const loginVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
     console.log("[v0] Login - verifying OTP for:", email);
-    const res = await fetch(API.LOGIN_VERIFY, {
+    const res = await fetch(API.LOGIN_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: String(otp).trim() }),
@@ -114,19 +126,21 @@ export function AuthProvider({ children }) {
       throw new Error(msg);
     }
 
-    // Extract tokens - handle nested response: data.data.tokens or data.tokens or top-level
-    const nestedData = data.data || data;
-    const tokens = nestedData.tokens || data.tokens || { accessToken: data.accessToken, refreshToken: data.refreshToken };
-    console.log("[v0] Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...", "refreshToken:", tokens.refreshToken?.substring(0, 20) + "...");
+    // Extract tokens
+    const tokens = {
+      accessToken: data.accessToken || data.token,
+      refreshToken: data.refreshToken || ""
+    };
+    console.log("[v0] Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
     setTokens(tokens);
 
     const userObj = {
-      id: nestedData.id || nestedData._id || data.user?.id || data.id,
-      email: nestedData.email || data.user?.email || email,
-      fullName: nestedData.fullName || nestedData.name || data.user?.fullName || "",
-      phone: nestedData.phone || data.user?.phone || "",
-      avatar: nestedData.avatar || data.user?.avatar || "",
-      authMethod: nestedData.authMethod || "email",
+      id: data.userId || data.user?.id || data.id,
+      email: data.email || email,
+      fullName: data.fullName || data.full_name || "",
+      phone: data.phone || "",
+      avatar: data.avatar_url || "",
+      authMethod: "email",
     };
     console.log("[v0] Login user object:", userObj);
     setUser(userObj);
@@ -135,268 +149,174 @@ export function AuthProvider({ children }) {
     // Fetch full profile in background
     fetchProfile().catch(() => {});
 
+    // Redirect to profile page after login
+    setTimeout(() => {
+      router.push("/profile");
+    }, 500);
+
     return { user: userObj, tokens };
   }, [fetchProfile]);
 
   /**
-   * Email/OTP Signup: Step 1 - Send OTP
-   * POST /api/v1/auth/users/signup  body: { email, phone }
+   * Registration Flow Step 1 - Send OTP
+   * POST /auth/register/send-otp  body: { email, phone? }
    */
-  const signupSendOTP = useCallback(async (email, phone) => {
+  const registerSendOTP = useCallback(async (email, phone) => {
     setError(null);
     const body = { email };
     if (phone) body.phone = phone;
-    console.log("[v0] Signup send OTP:", JSON.stringify(body));
-    const res = await fetch(API.SIGNUP, {
+    console.log("[v0] Register send OTP:", JSON.stringify(body));
+    const res = await fetch(API.REGISTER_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    console.log("[v0] Signup send response:", res.status, JSON.stringify(data));
+    console.log("[v0] Register send OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
-      const msg = data.error || data.message || (data.errors?.[0]?.msg) || "Failed to send OTP";
+      const msg = data.error || data.message || "Failed to send OTP";
       setError(msg);
       throw new Error(msg);
     }
     return data;
   }, []);
 
-  // Helper: process successful signup verify response
-  const handleSignupVerifySuccess = useCallback((data, email) => {
-    const nestedData = data.data || data;
-    const tokens = nestedData.tokens || data.tokens || { accessToken: data.accessToken, refreshToken: data.refreshToken };
-    setTokens(tokens);
-    const userObj = {
-      id: nestedData.id || nestedData._id || data.user?.id || data.id,
-      email: nestedData.email || data.user?.email || email,
-      fullName: nestedData.fullName || nestedData.name || data.user?.fullName || "",
-      phone: nestedData.phone || data.user?.phone || "",
-      avatar: nestedData.avatar || data.user?.avatar || "",
-      authMethod: nestedData.authMethod || "email",
-    };
-    setUser(userObj);
-    setStoredUser(userObj);
-    fetchProfile().catch(() => {});
-    return { user: userObj, tokens };
-  }, [fetchProfile]);
-
   /**
-   * Email/OTP Signup: Step 2 - Verify OTP
-   * POST /v1/auth/users/signup/verify
-   * API accepts { email, otp } OR { phone, otp }
-   * We try { phone, otp } first (if phone was provided during signup), then { email, otp }
+   * Registration Flow Step 2 - Verify OTP
+   * POST /auth/register/verify-otp  body: { email, otp }
    */
-  const signupVerifyOTP = useCallback(async (email, otp, phone) => {
+  const registerVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
     const otpStr = String(otp).trim();
-
-    // Try phone-based verify first if phone was provided during signup,
-    // since the backend may key OTP by phone when both email+phone were sent
-    if (phone) {
-      console.log("[v0] Signup verify trying phone:", phone, "otp:", otpStr);
-      const phoneRes = await fetch(API.SIGNUP_VERIFY, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp: otpStr }),
-      });
-      const phoneText = await phoneRes.text();
-      console.log("[v0] Signup verify phone response:", phoneRes.status, phoneText);
-      if (phoneRes.ok) {
-        const data = JSON.parse(phoneText);
-        return handleSignupVerifySuccess(data, email);
-      }
-    }
-
-    // Try email-based verify
-    console.log("[v0] Signup verify trying email:", email, "otp:", otpStr);
-    const res = await fetch(API.SIGNUP_VERIFY, {
+    console.log("[v0] Register verify OTP for:", email);
+    const res = await fetch(API.REGISTER_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: otpStr }),
     });
     const data = await res.json();
-    console.log("[v0] Signup verify email response:", res.status, JSON.stringify(data));
-
+    console.log("[v0] Register verify OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
-      // Last try: numeric OTP with email
-      console.log("[v0] Trying numeric OTP with email...");
-      const numRes = await fetch(API.SIGNUP_VERIFY, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: Number(otpStr) }),
-      });
-      if (numRes.ok) {
-        const numData = await numRes.json();
-        console.log("[v0] Signup verify SUCCESS with numeric otp:", JSON.stringify(numData));
-        return handleSignupVerifySuccess(numData, email);
-      }
-      const msg = data.error || data.message || (data.errors?.[0]?.msg) || "Invalid OTP";
+      const msg = data.error || data.message || "Invalid OTP";
       setError(msg);
       throw new Error(msg);
     }
-
-    return handleSignupVerifySuccess(data, email);
-  }, [fetchProfile, handleSignupVerifySuccess]);
-
-  // ============================================
-  // GOOGLE / FIREBASE AUTH
-  // ============================================
+    // Store userId for next steps
+    if (data.userId) {
+      sessionStorage.setItem("temp_userId", data.userId);
+    }
+    return data;
+  }, []);
 
   /**
-   * Google Sign-In via Firebase
-   * 1. signInWithPopup(Firebase) -> get idToken
-   * 2. POST /api/v1/auth/firebase { idToken } -> get our tokens + user
+   * Registration Flow Step 3 - Save Personal Info
+   * POST /auth/register/personal-info  body: { email, full_name, username }
    */
-  const loginWithGoogle = useCallback(async () => {
+  const registerPersonalInfo = useCallback(async (email, fullName, username) => {
     setError(null);
-    console.log("[v0] Starting Google sign-in via Firebase...");
-
-    const { auth } = await import("@/lib/firebase");
-    const { signInWithPopup, GoogleAuthProvider } = await import("firebase/auth");
-
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
-    console.log("[v0] Firebase ID token obtained, exchanging with API...");
-    console.log("[v0] Firebase user email:", result.user.email, "displayName:", result.user.displayName);
-
-    // Exchange Firebase token for our API tokens
-    const res = await fetch(API.FIREBASE_AUTH, {
+    console.log("[v0] Register personal info for:", email);
+    const res = await fetch(API.REGISTER_PERSONAL_INFO, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify({ email, full_name: fullName, username }),
     });
-
     const data = await res.json();
-    console.log("[v0] Firebase auth API response:", JSON.stringify(data, null, 2));
-
+    console.log("[v0] Register personal info response:", res.status, JSON.stringify(data));
     if (!res.ok) {
-      const msg = data.message || "Google sign-in failed";
+      const msg = data.error || data.message || "Failed to save personal info";
+      setError(msg);
+      throw new Error(msg);
+    }
+    return data;
+  }, []);
+
+  /**
+   * Registration Flow Step 4 - Save Gaming Profile
+   * POST /auth/register/gaming-profile  body: { email, primary_game, game_role, rank, continent, country }
+   */
+  const registerGamingProfile = useCallback(async (email, gameData) => {
+    setError(null);
+    console.log("[v0] Register gaming profile for:", email);
+    const res = await fetch(API.REGISTER_GAMING_PROFILE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, ...gameData }),
+    });
+    const data = await res.json();
+    console.log("[v0] Register gaming profile response:", res.status, JSON.stringify(data));
+    if (!res.ok) {
+      const msg = data.error || data.message || "Failed to save gaming profile";
+      setError(msg);
+      throw new Error(msg);
+    }
+    return data;
+  }, []);
+
+  /**
+   * Registration Flow Step 5 - Upload Profile Images
+   * POST /auth/register/profile-images  body: { email, avatar_url?, banner_url? }
+   */
+  const registerProfileImages = useCallback(async (email, avatarUrl, bannerUrl) => {
+    setError(null);
+    console.log("[v0] Register profile images for:", email);
+    const body = { email };
+    if (avatarUrl) body.avatar_url = avatarUrl;
+    if (bannerUrl) body.banner_url = bannerUrl;
+    const res = await fetch(API.REGISTER_PROFILE_IMAGES, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    console.log("[v0] Register profile images response:", res.status, JSON.stringify(data));
+    if (!res.ok) {
+      const msg = data.error || data.message || "Failed to upload images";
       setError(msg);
       throw new Error(msg);
     }
 
-    // Store tokens
-    const tokens = {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-    };
-    console.log("[v0] Google auth tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
-    setTokens(tokens);
+    // After successful registration, store tokens and user
+    if (data.accessToken) {
+      const tokens = {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken || ""
+      };
+      setTokens(tokens);
+    }
 
-    // Build user object
     const userObj = {
-      id: data.user?.id || data.user?._id,
-      email: data.user?.email || result.user.email,
-      fullName: data.user?.name || result.user.displayName || "",
-      phone: data.user?.phone || "",
-      avatar: data.user?.avatar || result.user.photoURL || "",
-      firebaseUid: data.user?.firebaseUid,
-      authMethod: "firebase",
-      isNewUser: data.isNewUser,
-      provider: data.provider,
-      linkedProviders: data.linkedProviders,
+      id: data.userId || data.user?.id,
+      email: email,
+      fullName: data.full_name || "",
+      phone: data.phone || "",
+      avatar: avatarUrl || "",
+      authMethod: "email",
     };
-    console.log("[v0] Google auth user object:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
+    sessionStorage.removeItem("temp_userId");
 
-    return { user: userObj, tokens, isNewUser: data.isNewUser };
+    // Redirect to profile page after registration completion
+    setTimeout(() => {
+      router.push("/profile");
+    }, 500);
+
+    return data;
   }, []);
 
-  // ============================================
-  // LOGOUT
-  // ============================================
+  // Backwards compatibility aliases for signup
+  const signupSendOTP = registerSendOTP;
+  const signupVerifyOTP = registerVerifyOTP;
 
   /**
-   * Logout from current device
-   * - Firebase users: POST /api/v1/auth/logout { refreshToken }
-   * - Email users: POST /api/v1/auth/users/logout (Bearer token)
+   * Logout - clear tokens and user session
    */
   const logout = useCallback(async () => {
-    const tokens = getTokens();
-    const storedUser = getStoredUser();
-    console.log("[v0] Logging out - authMethod:", storedUser?.authMethod);
-
-    if (tokens?.refreshToken) {
-      try {
-        if (storedUser?.authMethod === "firebase") {
-          console.log("[v0] Logging out via Firebase endpoint");
-          await fetch(API.FIREBASE_LOGOUT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refreshToken: tokens.refreshToken }),
-          });
-        } else {
-          console.log("[v0] Logging out via email endpoint");
-          await fetch(API.LOGOUT, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${tokens.accessToken}`,
-            },
-          });
-        }
-        console.log("[v0] Logout API call successful");
-      } catch (err) {
-        console.error("[v0] Logout API error (continuing with local logout):", err.message);
-      }
-    }
-
-    // Sign out from Firebase if applicable
-    try {
-      const { auth } = await import("@/lib/firebase");
-      const { signOut } = await import("firebase/auth");
-      await signOut(auth);
-      console.log("[v0] Firebase sign-out complete");
-    } catch {
-      // ignore
-    }
-
+    console.log("[v0] Logging out...");
     clearTokens();
     setUser(null);
     setError(null);
-    console.log("[v0] Local session cleared");
-  }, []);
-
-  /**
-   * Logout from all devices
-   * POST /api/v1/auth/users/logout-all (Bearer token)
-   */
-  const logoutAll = useCallback(async () => {
-    const tokens = getTokens();
-    console.log("[v0] Logging out from all devices...");
-
-    if (tokens?.accessToken) {
-      try {
-        const res = await fetch(API.LOGOUT_ALL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${tokens.accessToken}`,
-          },
-        });
-        const data = await res.json();
-        console.log("[v0] Logout all response:", data);
-      } catch (err) {
-        console.error("[v0] Logout all error:", err.message);
-      }
-    }
-
-    // Sign out from Firebase
-    try {
-      const { auth } = await import("@/lib/firebase");
-      const { signOut } = await import("firebase/auth");
-      await signOut(auth);
-    } catch {
-      // ignore
-    }
-
-    clearTokens();
-    setUser(null);
-    setError(null);
-    console.log("[v0] All device logout complete, local session cleared");
+    console.log("[v0] Session cleared");
   }, []);
 
   // ============================================
@@ -405,12 +325,13 @@ export function AuthProvider({ children }) {
 
   /**
    * Update user profile
-   * PUT /api/v2/auth/me  body: { fullName?, phone? }
+   * PUT /auth/profile/:userId  body: { field updates }
    */
-  const updateProfile = useCallback(async (updates) => {
+  const updateProfile = useCallback(async (userId, updates) => {
     setError(null);
-    console.log("[v0] Updating profile with:", updates);
-    const res = await authFetch(API.PROFILE, {
+    console.log("[v0] Updating profile for:", userId);
+    const url = API.PROFILE_UPDATE.replace(":userId", userId);
+    const res = await authFetch(url, {
       method: "PUT",
       body: JSON.stringify(updates),
     });
@@ -421,10 +342,28 @@ export function AuthProvider({ children }) {
       setError(msg);
       throw new Error(msg);
     }
-    // Refresh the profile data
-    await fetchProfile();
     return data;
-  }, [fetchProfile]);
+  }, []);
+
+  /**
+   * Get user profile
+   * GET /auth/profile/:identifier
+   */
+  const getProfile = useCallback(async (identifier) => {
+    try {
+      const url = API.PROFILE_GET.replace(":identifier", identifier);
+      const res = await authFetch(url);
+      const data = await res.json();
+      console.log("[v0] Get profile response:", JSON.stringify(data, null, 2));
+      if (res.ok) {
+        return data;
+      }
+      return null;
+    } catch (err) {
+      console.error("[v0] Get profile error:", err);
+      return null;
+    }
+  }, []);
 
   const value = {
     // State
@@ -433,29 +372,32 @@ export function AuthProvider({ children }) {
     error,
     isAuthenticated: !!user,
 
-    // Email/OTP methods (matching API naming)
+    // Registration Flow (5 Steps)
+    registerSendOTP,
+    registerVerifyOTP,
+    registerPersonalInfo,
+    registerGamingProfile,
+    registerProfileImages,
+
+    // Login Flow
     loginSendOTP,
     loginVerifyOTP,
+
+    // Backwards compatibility aliases
     signupSendOTP,
     signupVerifyOTP,
-
-    // Aliases used by AuthModal
     loginWithEmail: loginSendOTP,
     verifyLoginOTP: loginVerifyOTP,
     signupWithEmail: signupSendOTP,
     verifySignupOTP: signupVerifyOTP,
 
-    // Google/Firebase
-    loginWithGoogle,
-    signInWithGoogle: loginWithGoogle, // alias
-
     // Logout
     logout,
-    logoutAll,
 
     // Profile
     fetchProfile,
     updateProfile,
+    getProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

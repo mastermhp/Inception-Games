@@ -1,31 +1,30 @@
-// All calls go through /api/proxy/[...path] which forwards to https://api.slicenshare.com/api/*
-const P = "/api/proxy";
+// API base URL with /api/v1 path as per API docs
+const BASE_URL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev/api/v1";
+
+console.log("[v0] API BASE_URL initialized to:", BASE_URL);
 
 export const API = {
-  // v1 Auth (email/OTP)
-  SIGNUP:         `${P}/v1/auth/users/signup`,
-  SIGNUP_VERIFY:  `${P}/v1/auth/users/signup/verify`,
-  LOGIN:          `${P}/v1/auth/users/login`,
-  LOGIN_VERIFY:   `${P}/v1/auth/users/login/verify`,
-  SET_PASSWORD:   `${P}/v1/auth/users/set-password`,
-  REFRESH_TOKEN:  `${P}/v1/auth/users/refresh-token`,
-  LOGOUT:         `${P}/v1/auth/users/logout`,
-  LOGOUT_ALL:     `${P}/v1/auth/users/logout-all`,
+  // Registration Flow (5 Steps)
+  REGISTER_SEND_OTP:     `${BASE_URL}/auth/register/send-otp`,
+  REGISTER_VERIFY_OTP:   `${BASE_URL}/auth/register/verify-otp`,
+  REGISTER_PERSONAL_INFO: `${BASE_URL}/auth/register/personal-info`,
+  REGISTER_GAMING_PROFILE: `${BASE_URL}/auth/register/gaming-profile`,
+  REGISTER_PROFILE_IMAGES: `${BASE_URL}/auth/register/profile-images`,
 
-  // v1 Firebase (Google)
-  FIREBASE_AUTH:    `${P}/v1/auth/firebase`,
-  FIREBASE_REFRESH: `${P}/v1/auth/refresh`,
-  FIREBASE_LOGOUT:  `${P}/v1/auth/logout`,
+  // Login Flow
+  LOGIN_SEND_OTP:        `${BASE_URL}/auth/login/send-otp`,
+  LOGIN_VERIFY_OTP:      `${BASE_URL}/auth/login/verify-otp`,
 
-  // v2 Profile
-  PROFILE: `${P}/v2/auth/me`,
+  // Utility
+  RESEND_OTP:            `${BASE_URL}/auth/resend-otp`,
 
-  // Events
-  EVENT_INTERESTED: `${P}/v1/events/event-interested`,
+  // Profile - use userId per API docs
+  PROFILE_GET:           `${BASE_URL}/auth/profile/:userId`,
+  PROFILE_UPDATE:        `${BASE_URL}/auth/profile/:userId`,
 };
 
 /**
- * Make an authenticated API request with automatic token refresh on 401
+ * Make an authenticated API request with authorization header
  */
 export async function authFetch(url, options = {}) {
   const tokens = getTokens();
@@ -39,23 +38,7 @@ export async function authFetch(url, options = {}) {
     ...options.headers,
   };
 
-  let res = await fetch(url, { ...options, headers });
-
-  // If 401, try refreshing the token
-  if (res.status === 401) {
-    console.log("[v0] Access token expired, attempting refresh...");
-    const refreshed = await refreshAccessToken(tokens);
-    if (refreshed) {
-      console.log("[v0] Token refreshed successfully");
-      headers.Authorization = `Bearer ${refreshed.accessToken}`;
-      res = await fetch(url, { ...options, headers });
-    } else {
-      console.log("[v0] Token refresh failed, clearing session");
-      clearTokens();
-      throw new Error("Session expired. Please login again.");
-    }
-  }
-
+  const res = await fetch(url, { ...options, headers });
   return res;
 }
 
@@ -126,40 +109,4 @@ export function setStoredUser(user) {
   }
 }
 
-/**
- * Refresh the access token using the refresh token
- * Uses different endpoints for email vs firebase auth methods
- */
-async function refreshAccessToken(tokens) {
-  try {
-    const authMethod = getStoredUser()?.authMethod;
-    const url =
-      authMethod === "firebase" ? API.FIREBASE_REFRESH : API.REFRESH_TOKEN;
 
-    console.log(`[v0] Refreshing token via ${authMethod === "firebase" ? "Firebase" : "Email"} endpoint: ${url}`);
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: tokens.refreshToken }),
-    });
-
-    if (!res.ok) {
-      console.log("[v0] Token refresh response not OK:", res.status);
-      return null;
-    }
-
-    const data = await res.json();
-    console.log("[v0] Token refresh response data:", { hasAccessToken: !!data.accessToken, hasRefreshToken: !!data.refreshToken });
-    
-    const newTokens = {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-    };
-    setTokens(newTokens);
-    return newTokens;
-  } catch (err) {
-    console.error("[v0] Token refresh error:", err);
-    return null;
-  }
-}

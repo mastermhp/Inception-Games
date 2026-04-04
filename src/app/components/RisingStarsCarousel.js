@@ -126,7 +126,7 @@ export default function RisingStarsCarousel() {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 8000)
 
-        const response = await fetch("https://api.slicenshare.com/api/v1/public/streamers/rising-stars", {
+        const response = await fetch("https://perturbatious-brainlike-maliyah.ngrok-free.dev/public/streamers/rising-stars", {
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",

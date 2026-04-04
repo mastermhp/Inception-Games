@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { Menu, X, User } from 'lucide-react'
 import Link from 'next/link'
-import LoginModal from './AuthModals/LoginModal'
+import UnifiedAuthModal from './AuthModals/UnifiedAuthModal'
 import ProfileSettings from './ProfileSettings'
 import { useAuth } from '@/app/context/AuthContext'
 
@@ -162,9 +162,10 @@ export default function Header() {
       </AnimatePresence>
 
       {/* Auth Modals */}
-      <LoginModal
+      <UnifiedAuthModal
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
+        initialMode="login"
       />
       <ProfileSettings isOpen={profileSettingsOpen} onClose={() => setProfileSettingsOpen(false)} />
     </>

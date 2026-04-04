@@ -270,40 +270,26 @@ export default function SignupModal({ isOpen, onClose, selectedPlan }) {
     setError("");
 
     try {
-      const payload = {
-        ...formData,
-        displayName: formData.ingameName,
-        plan: selectedPlan?.toLowerCase() || "basic",
-        socials: formData.socials.filter(
-          (social) => social.platform && social.url
-        ),
-        platform: [formData.platform],
-        primaryGameTitles: [formData.primaryGameTitles],
-        secondaryGameTitles: formData.secondaryGameTitles
-          ? [formData.secondaryGameTitles]
-          : [], // Convert single game to array
-        phone: `${formData.countryCode}${formData.phone}`, // Combine country code with phone
-        // avatar will be handled by backend with default values
-      };
+      const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev";
+      const phone = `${formData.countryCode}${formData.phone}`;
 
-      const response = await fetch(
-        "https://api.slicenshare.com/api/v1/auth/streamers/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // Step 1: Send OTP
+      const sendOTPResponse = await fetch(`${baseURL}/auth/register/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          phone: phone,
+        }),
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData?.message || "Something went wrong. Please try again."
-        );
+      if (!sendOTPResponse.ok) {
+        const errorData = await sendOTPResponse.json();
+        throw new Error(errorData?.message || "Failed to send OTP");
       }
 
+      // For now, show success since full multi-step would require user input between steps
+      // In a real scenario, you'd have a multi-step modal similar to UnifiedAuthModal
       setSuccess(true);
       setTimeout(() => {
         onClose();

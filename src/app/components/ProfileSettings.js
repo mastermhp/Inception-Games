@@ -7,7 +7,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function ProfileSettings({ isOpen, onClose }) {
-  const { user, updateProfile, logout, logoutAll, fetchProfile, error } = useAuth();
+  const { user, updateProfile, logout, fetchProfile, error } = useAuth();
   const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -95,15 +95,15 @@ export default function ProfileSettings({ isOpen, onClose }) {
   };
 
   const handleLogoutAll = async () => {
-    if (confirm('This will logout from all devices. Are you sure?')) {
+    if (confirm('This will logout. Are you sure?')) {
       try {
-        await logoutAll();
-        console.log('[v0] ProfileSettings - logged out from all devices');
+        await logout();
+        console.log('[v0] ProfileSettings - logged out');
         handleClose();
         router.push('/');
       } catch (err) {
-        console.error('[v0] ProfileSettings - logout all error:', err);
-        setLocalError('Logout all devices failed');
+        console.error('[v0] ProfileSettings - logout error:', err);
+        setLocalError('Logout failed');
       }
     }
   };

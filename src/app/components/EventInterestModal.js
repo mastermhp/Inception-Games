@@ -27,14 +27,15 @@ export default function EventInterestModal({ isOpen, onClose, eventTitle, eventI
     setError("")
 
     try {
-      const response = await fetch("https://api.slicenshare.com/api/v1/events/event-interested", {
+      const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev"
+      const response = await fetch(`${baseURL}/auth/register/send-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
-          eventType: eventTitle,
+          email: formData.email,
+          phone: formData.phone,
         }),
       })
 

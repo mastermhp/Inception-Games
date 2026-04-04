@@ -5,20 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, LogOut, User, Settings, Wallet, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/app/context/AuthContext'
-import LoginModal from './AuthModals/LoginModal'
-import SignupModal from './AuthModals/SignupModal'
-import RoleSelectModal from './AuthModals/RoleSelectModal'
+import UnifiedAuthModal from './AuthModals/UnifiedAuthModal'
 
 export default function AuthToggleButton() {
   const { user, logout, isAuthenticated } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [authMode, setAuthMode] = useState(null) // null, 'login', 'signup', 'role'
-  const [selectedRole, setSelectedRole] = useState('player')
-
-  const handleSelectRole = (role) => {
-    setSelectedRole(role)
-    setAuthMode('signup')
-  }
+  const [authMode, setAuthMode] = useState(null) // null, 'login', 'signup'
 
   const closeAllModals = () => {
     setAuthMode(null)
@@ -39,7 +31,7 @@ export default function AuthToggleButton() {
             Sign In
           </motion.button>
           <motion.button
-            onClick={() => setAuthMode('role')}
+            onClick={() => setAuthMode('signup')}
             className="px-5 py-2 rounded-full font-bold text-white bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 transition duration-300 flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -60,7 +52,7 @@ export default function AuthToggleButton() {
             <LogIn size={20} />
           </motion.button>
           <motion.button
-            onClick={() => setAuthMode('role')}
+            onClick={() => setAuthMode('signup')}
             className="px-3 py-2 rounded-lg font-bold text-white bg-gradient-to-r from-purple-600 to-purple-500 text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -69,12 +61,11 @@ export default function AuthToggleButton() {
           </motion.button>
         </div>
 
-        {/* Auth Modals */}
-        <AnimatePresence>
-          {authMode === 'login' && <LoginModal isOpen={true} onClose={closeAllModals} />}
-          {authMode === 'signup' && <SignupModal isOpen={true} onClose={closeAllModals} userType={selectedRole} />}
-          {authMode === 'role' && <RoleSelectModal isOpen={true} onClose={closeAllModals} onSelectRole={handleSelectRole} />}
-        </AnimatePresence>
+  {/* Auth Modals */}
+  <AnimatePresence>
+    {authMode === 'login' && <UnifiedAuthModal isOpen={true} onClose={closeAllModals} initialMode="login" />}
+    {authMode === 'signup' && <UnifiedAuthModal isOpen={true} onClose={closeAllModals} initialMode="signup" />}
+  </AnimatePresence>
       </>
     )
   }
