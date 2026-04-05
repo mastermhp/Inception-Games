@@ -16,10 +16,28 @@ import FeaturedCarousel from '../components/ProfileComponents/FeaturedCarousel'
 import EditProfileModal from '../components/ProfileComponents/EditProfileModal'
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, loading } = useAuth()
+  const { user, isAuthenticated, loading, fetchProfile } = useAuth()
   const router = useRouter()
   const [gamingProfile, setGamingProfile] = useState(null)
   const [editProfileOpen, setEditProfileOpen] = useState(false)
+  const [profileLoading, setProfileLoading] = useState(true)
+
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    if (!loading && isAuthenticated && user?.id) {
+      console.log("[v0] Profile page - fetching user profile for user ID:", user.id)
+      setProfileLoading(true)
+      fetchProfile()
+        .then(() => {
+          console.log("[v0] Profile page - profile fetch completed")
+          setProfileLoading(false)
+        })
+        .catch((err) => {
+          console.error("[v0] Profile page - profile fetch error:", err.message)
+          setProfileLoading(false)
+        })
+    }
+  }, [isAuthenticated, loading, user?.id, fetchProfile])
 
   // Load gaming profile from sessionStorage whenever user changes
   useEffect(() => {
@@ -43,7 +61,7 @@ export default function ProfilePage() {
     }
   }, [isAuthenticated, loading, router])
 
-  if (!user) {
+  if (!user || profileLoading) {
     return (
       <div className="min-h-screen bg-[#060608] flex items-center justify-center">
         <motion.div
@@ -71,7 +89,7 @@ export default function ProfilePage() {
     bio: gamingProfile?.bio || '',
     game: gameName,
     role: gamingProfile?.role || '',
-    region: gamingProfile?.region || '',
+    region: gamingProfile?.region || '',   
     rank: gamingProfile?.rank || '',
     discord: gamingProfile?.discord || '',
     games: gameName ? [gameName] : [],

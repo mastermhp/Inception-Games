@@ -29,12 +29,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = getStoredUser();
     const tokens = getTokens();
-    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
+    console.log("AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
     if (storedUser && tokens?.accessToken) {
       setUser(storedUser);
       // Fetch fresh profile in background
       fetchProfile().catch((err) => {
-        console.log("[v0] Background profile fetch failed, keeping stored user:", err.message);
+        console.log("Background profile fetch failed, keeping stored user:", err.message);
       });
     }
     setLoading(false);
@@ -47,14 +47,14 @@ export function AuthProvider({ children }) {
     try {
       const storedUser = getStoredUser();
       if (!storedUser?.id) {
-        console.log("[v0] No stored user ID for profile fetch");
+        console.log("No stored user ID for profile fetch");
         return;
       }
       const url = API.PROFILE_GET.replace(":userId", storedUser.id);
-      console.log("[v0] Fetching profile from:", url);
+      console.log("Fetching profile from:", url);
       const res = await authFetch(url);
       const data = await res.json();
-      console.log("[v0] Profile API response:", JSON.stringify(data, null, 2));
+      console.log("Profile API response:", JSON.stringify(data, null, 2));
 
       if (res.ok) {
         const userData = data.data || data;
@@ -67,15 +67,15 @@ export function AuthProvider({ children }) {
           authMethod: userData.authMethod || getStoredUser()?.authMethod || "email",
           firebaseUid: userData.firebaseUid || getStoredUser()?.firebaseUid || null,
         };
-        console.log("[v0] Profile parsed user object:", userObj);
+        console.log("Profile parsed user object:", userObj);
         setUser(userObj);
         setStoredUser(userObj);
         return userObj;
       } else {
-        console.log("[v0] Profile fetch failed with status:", res.status, data);
+        console.log("Profile fetch failed with status:", res.status, data);
       }
     } catch (err) {
-      console.error("[v0] Profile fetch error:", err.message);
+      console.error("Profile fetch error:", err.message);
     }
     return null;
   }, []);
@@ -90,14 +90,14 @@ export function AuthProvider({ children }) {
    */
   const loginSendOTP = useCallback(async (email) => {
     setError(null);
-    console.log("[v0] Login - sending OTP to:", email);
+    console.log("Login - sending OTP to:", email);
     const res = await fetch(API.LOGIN_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
     const data = await res.json();
-    console.log("[v0] Login send OTP response:", JSON.stringify(data, null, 2));
+    console.log("Login send OTP response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to send OTP";
       setError(msg);
@@ -112,14 +112,14 @@ export function AuthProvider({ children }) {
    */
   const loginVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
-    console.log("[v0] Login - verifying OTP for:", email);
+    console.log("Login - verifying OTP for:", email);
     const res = await fetch(API.LOGIN_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: String(otp).trim() }),
     });
     const data = await res.json();
-    console.log("[v0] Login verify OTP response:", JSON.stringify(data, null, 2));
+    console.log("Login verify OTP response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.error || data.message || "Invalid OTP";
       setError(msg);
@@ -131,7 +131,7 @@ export function AuthProvider({ children }) {
       accessToken: data.accessToken || data.token,
       refreshToken: data.refreshToken || ""
     };
-    console.log("[v0] Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
+    console.log("Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
     setTokens(tokens);
 
     const userObj = {
@@ -142,7 +142,7 @@ export function AuthProvider({ children }) {
       avatar: data.avatar_url || "",
       authMethod: "email",
     };
-    console.log("[v0] Login user object:", userObj);
+    console.log("Login user object:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
 
@@ -165,14 +165,14 @@ export function AuthProvider({ children }) {
     setError(null);
     const body = { email };
     if (phone) body.phone = phone;
-    console.log("[v0] Register send OTP:", JSON.stringify(body));
+    console.log("Register send OTP:", JSON.stringify(body));
     const res = await fetch(API.REGISTER_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    console.log("[v0] Register send OTP response:", res.status, JSON.stringify(data));
+    console.log("Register send OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to send OTP";
       setError(msg);
@@ -188,14 +188,14 @@ export function AuthProvider({ children }) {
   const registerVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
     const otpStr = String(otp).trim();
-    console.log("[v0] Register verify OTP for:", email);
+    console.log("Register verify OTP for:", email);
     const res = await fetch(API.REGISTER_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: otpStr }),
     });
     const data = await res.json();
-    console.log("[v0] Register verify OTP response:", res.status, JSON.stringify(data));
+    console.log("Register verify OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Invalid OTP";
       setError(msg);
@@ -214,14 +214,14 @@ export function AuthProvider({ children }) {
    */
   const registerPersonalInfo = useCallback(async (email, fullName, username) => {
     setError(null);
-    console.log("[v0] Register personal info for:", email);
+    console.log("Register personal info for:", email);
     const res = await fetch(API.REGISTER_PERSONAL_INFO, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, full_name: fullName, username }),
     });
     const data = await res.json();
-    console.log("[v0] Register personal info response:", res.status, JSON.stringify(data));
+    console.log("Register personal info response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to save personal info";
       setError(msg);
@@ -236,14 +236,14 @@ export function AuthProvider({ children }) {
    */
   const registerGamingProfile = useCallback(async (email, gameData) => {
     setError(null);
-    console.log("[v0] Register gaming profile for:", email);
+    console.log("Register gaming profile for:", email);
     const res = await fetch(API.REGISTER_GAMING_PROFILE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, ...gameData }),
     });
     const data = await res.json();
-    console.log("[v0] Register gaming profile response:", res.status, JSON.stringify(data));
+    console.log("Register gaming profile response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to save gaming profile";
       setError(msg);
@@ -258,7 +258,7 @@ export function AuthProvider({ children }) {
    */
   const registerProfileImages = useCallback(async (email, avatarUrl, bannerUrl) => {
     setError(null);
-    console.log("[v0] Register profile images for:", email);
+    console.log("Register profile images for:", email);
     const body = { email };
     if (avatarUrl) body.avatar_url = avatarUrl;
     if (bannerUrl) body.banner_url = bannerUrl;
@@ -268,7 +268,7 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    console.log("[v0] Register profile images response:", res.status, JSON.stringify(data));
+    console.log("Register profile images response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to upload images";
       setError(msg);
@@ -312,11 +312,11 @@ export function AuthProvider({ children }) {
    * Logout - clear tokens and user session
    */
   const logout = useCallback(async () => {
-    console.log("[v0] Logging out...");
+    console.log("Logging out...");
     clearTokens();
     setUser(null);
     setError(null);
-    console.log("[v0] Session cleared");
+    console.log("Session cleared");
   }, []);
 
   // ============================================
@@ -329,14 +329,14 @@ export function AuthProvider({ children }) {
    */
   const updateProfile = useCallback(async (userId, updates) => {
     setError(null);
-    console.log("[v0] Updating profile for:", userId);
+    console.log("Updating profile for:", userId);
     const url = API.PROFILE_UPDATE.replace(":userId", userId);
     const res = await authFetch(url, {
       method: "PUT",
       body: JSON.stringify(updates),
     });
     const data = await res.json();
-    console.log("[v0] Update profile response:", JSON.stringify(data, null, 2));
+    console.log("Update profile response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.message || "Failed to update profile";
       setError(msg);
@@ -354,13 +354,13 @@ export function AuthProvider({ children }) {
       const url = API.PROFILE_GET.replace(":identifier", identifier);
       const res = await authFetch(url);
       const data = await res.json();
-      console.log("[v0] Get profile response:", JSON.stringify(data, null, 2));
+      console.log("Get profile response:", JSON.stringify(data, null, 2));
       if (res.ok) {
         return data;
       }
       return null;
     } catch (err) {
-      console.error("[v0] Get profile error:", err);
+      console.error("Get profile error:", err);
       return null;
     }
   }, []);

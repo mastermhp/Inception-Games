@@ -1,5 +1,5 @@
 // API base URL with /api/v1 path as per API docs
-const BASE_URL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev/api/v1";
+const BASE_URL = "https://inception-games.an.r.appspot.com/api/v1";
 
 console.log("[v0] API BASE_URL initialized to:", BASE_URL);
 

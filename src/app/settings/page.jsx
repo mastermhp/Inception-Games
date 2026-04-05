@@ -40,7 +40,7 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     if (confirm('Are you sure you want to logout?')) {
-      console.log('[v0] Settings - logging out...')
+      console.log('Settings - logging out...')
       await logout()
       router.push('/')
     }
@@ -48,7 +48,7 @@ export default function SettingsPage() {
 
   const handleLogoutAll = async () => {
     if (confirm('This will logout from all devices. Are you sure?')) {
-      console.log('[v0] Settings - logging out from all devices...')
+      console.log('Settings - logging out from all devices...')
       await logoutAll()
       router.push('/')
     }
@@ -233,13 +233,13 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
     setLocalError('')
     setMessage('')
     try {
-      console.log('[v0] Settings ProfileTab - saving:', { fullName, phone })
+      console.log('Settings ProfileTab - saving:', { fullName, phone })
       await updateProfile({ fullName, phone: phone || undefined })
-      console.log('[v0] Settings ProfileTab - saved successfully')
+      console.log('Settings ProfileTab - saved successfully')
       setMessage('Profile updated successfully!')
       setTimeout(() => setMessage(''), 3000)
     } catch (err) {
-      console.error('[v0] Settings ProfileTab - save error:', err)
+      console.error('Settings ProfileTab - save error:', err)
       setLocalError(err.message || 'Failed to save')
     } finally {
       setSaving(false)
@@ -250,7 +250,7 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
     setRefreshing(true)
     try {
       const fresh = await fetchProfile()
-      console.log('[v0] Settings ProfileTab - refreshed:', fresh)
+      console.log('Settings ProfileTab - refreshed:', fresh)
       if (fresh) {
         setFullName(fresh.fullName || '')
         setPhone(fresh.phone || '')
@@ -258,7 +258,7 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
         setTimeout(() => setMessage(''), 3000)
       }
     } catch (err) {
-      console.error('[v0] Settings ProfileTab - refresh error:', err)
+      console.error('Settings ProfileTab - refresh error:', err)
     } finally {
       setRefreshing(false)
     }

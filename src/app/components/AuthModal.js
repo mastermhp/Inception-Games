@@ -61,17 +61,17 @@ export default function AuthModal({ isOpen, onClose }) {
       if (activeTab === TABS.LOGIN) {
         const response = await loginSendOTP(email);
         setMessage(response.message || 'OTP sent to your email! Check your inbox.');
-        console.log('[v0] AuthModal Login send OTP response:', response);
+        console.log('AuthModal Login send OTP response:', response);
       } else {
         const response = await signupSendOTP(email, phone || undefined);
         setMessage(response.message || 'OTP sent to your email! Check your inbox.');
-        console.log('[v0] AuthModal Signup send OTP response:', response);
+        console.log('AuthModal Signup send OTP response:', response);
       }
       setStep('otp');
     } catch (err) {
       const errorMsg = err.message || 'Failed to send OTP';
       setLocalError(errorMsg);
-      console.error('[v0] AuthModal Send OTP error:', err);
+      console.error('AuthModal Send OTP error:', err);
     } finally {
       setLoading(false);
     }
@@ -96,18 +96,18 @@ export default function AuthModal({ isOpen, onClose }) {
     try {
       if (activeTab === TABS.LOGIN) {
         const response = await loginVerifyOTP(email, otp);
-        console.log('[v0] AuthModal Login verify response:', response);
+        console.log('AuthModal Login verify response:', response);
         setMessage('Login successful!');
       } else {
         const response = await signupVerifyOTP(email, otp.trim());
-        console.log('[v0] AuthModal Signup verify response:', response);
+        console.log('AuthModal Signup verify response:', response);
         setMessage('Account created successfully!');
       }
       setTimeout(() => handleClose(), 1200);
     } catch (err) {
       const errorMsg = err.message || 'Invalid OTP';
       setLocalError(errorMsg);
-      console.error('[v0] AuthModal Verify OTP error:', err);
+      console.error('AuthModal Verify OTP error:', err);
     } finally {
       setLoading(false);
     }
@@ -119,11 +119,11 @@ export default function AuthModal({ isOpen, onClose }) {
     setGoogleLoading(true);
     try {
       const response = await loginWithGoogle();
-      console.log('[v0] AuthModal Google login response:', response);
+      console.log('AuthModal Google login response:', response);
       setMessage(response.isNewUser ? 'Account created with Google!' : 'Signed in with Google!');
       setTimeout(() => handleClose(), 1200);
     } catch (err) {
-      console.error('[v0] AuthModal Google login error:', err);
+      console.error('AuthModal Google login error:', err);
       if (err.code === 'auth/popup-closed-by-user') {
         setLocalError('Sign-in popup was closed');
       } else if (err.code === 'auth/popup-blocked') {

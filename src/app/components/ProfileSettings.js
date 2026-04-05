@@ -37,7 +37,7 @@ export default function ProfileSettings({ isOpen, onClose }) {
     setLocalError('');
     try {
       const freshUser = await fetchProfile();
-      console.log('[v0] ProfileSettings - refreshed profile:', freshUser);
+      console.log('ProfileSettings - refreshed profile:', freshUser);
       if (freshUser) {
         setFullName(freshUser.fullName || '');
         setPhone(freshUser.phone || '');
@@ -46,7 +46,7 @@ export default function ProfileSettings({ isOpen, onClose }) {
         setLocalError('Could not refresh profile');
       }
     } catch (err) {
-      console.error('[v0] ProfileSettings - refresh error:', err);
+      console.error('ProfileSettings - refresh error:', err);
       setLocalError(err.message || 'Failed to refresh profile');
     } finally {
       setRefreshing(false);
@@ -66,15 +66,15 @@ export default function ProfileSettings({ isOpen, onClose }) {
 
     setLoading(true);
     try {
-      console.log('[v0] ProfileSettings - updating profile with:', { fullName, phone });
+      console.log('ProfileSettings - updating profile with:', { fullName, phone });
       const response = await updateProfile({ fullName, phone: phone || undefined });
-      console.log('[v0] ProfileSettings - update response:', response);
+      console.log('ProfileSettings - update response:', response);
       setMessage('Profile updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       const errorMsg = err.message || 'Failed to update profile';
       setLocalError(errorMsg);
-      console.error('[v0] ProfileSettings - update error:', err);
+      console.error('ProfileSettings - update error:', err);
     } finally {
       setLoading(false);
     }
@@ -84,11 +84,11 @@ export default function ProfileSettings({ isOpen, onClose }) {
     if (confirm('Are you sure you want to logout?')) {
       try {
         await logout();
-        console.log('[v0] ProfileSettings - logged out');
+        console.log('ProfileSettings - logged out');
         handleClose();
         router.push('/');
       } catch (err) {
-        console.error('[v0] ProfileSettings - logout error:', err);
+        console.error('ProfileSettings - logout error:', err);
         setLocalError('Logout failed');
       }
     }
@@ -98,11 +98,11 @@ export default function ProfileSettings({ isOpen, onClose }) {
     if (confirm('This will logout. Are you sure?')) {
       try {
         await logout();
-        console.log('[v0] ProfileSettings - logged out');
+        console.log('ProfileSettings - logged out');
         handleClose();
         router.push('/');
       } catch (err) {
-        console.error('[v0] ProfileSettings - logout error:', err);
+        console.error('ProfileSettings - logout error:', err);
         setLocalError('Logout failed');
       }
     }

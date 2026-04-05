@@ -1,77 +1,10 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { X } from "lucide-react";
-
-const districts = [
-  "Bagerhat",
-  "Bandarban",
-  "Barguna",
-  "Barisal",
-  "Bhola",
-  "Bogra",
-  "Brahmanbaria",
-  "Chandpur",
-  "Chittagong",
-  "Chuadanga",
-  "Comilla",
-  "Cox's Bazar",
-  "Dhaka",
-  "Dinajpur",
-  "Faridpur",
-  "Feni",
-  "Gaibandha",
-  "Gazipur",
-  "Gopalganj",
-  "Habiganj",
-  "Jamalpur",
-  "Jessore",
-  "Jhalokati",
-  "Jhenaidah",
-  "Joypurhat",
-  "Khagrachhari",
-  "Khulna",
-  "Kishoreganj",
-  "Kurigram",
-  "Kushtia",
-  "Lakshmipur",
-  "Lalmonirhat",
-  "Madaripur",
-  "Magura",
-  "Manikganj",
-  "Meherpur",
-  "Moulvibazar",
-  "Munshiganj",
-  "Mymensingh",
-  "Naogaon",
-  "Narail",
-  "Narayanganj",
-  "Narsingdi",
-  "Natore",
-  "Nawabganj",
-  "Netrakona",
-  "Nilphamari",
-  "Noakhali",
-  "Pabna",
-  "Panchagarh",
-  "Patuakhali",
-  "Pirojpur",
-  "Rajbari",
-  "Rajshahi",
-  "Rangamati",
-  "Rangpur",
-  "Satkhira",
-  "Shariatpur",
-  "Sherpur",
-  "Sirajganj",
-  "Sunamganj",
-  "Sylhet",
-  "Tangail",
-  "Thakurgaon",
-  "Jashore",
-];
-
-const platforms = ["PC", "Mobile", "Console"];
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { X, Camera, ImageIcon, User, AtSign, Phone, MessageCircle, FileText, Gamepad2, Globe, Award, MapPin, ChevronRight, Loader2, Check, Mail } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { REGION_DATA, CONTINENTS } from "@/lib/regionData";
 
 const gamesList = [
   "PUBG",
@@ -88,726 +21,544 @@ const gamesList = [
   "Free Fire",
 ];
 
-const socialPlatforms = [
-  "YouTube",
-  "Twitch",
-  "Facebook",
-  "Instagram",
-  "TikTok",
-  "Discord",
-];
+const ROLES = {
+  Valorant: ["Duelist", "Controller", "Initiator", "Sentinel"],
+  "League of Legends": ["Top", "Jungle", "Mid", "ADC", "Support"],
+  "CS:GO": ["Rifler", "AWPer", "Support", "Entry", "IGL"],
+  "Dota 2": ["Carry", "Mid", "Off-lane", "Support", "Hard Support"],
+  Fortnite: ["Solo", "Team", "Creative"],
+  "Apex Legends": ["Assault", "Tracker", "Support", "Recon"],
+  PUBG: ["Assaulter", "Sniper", "Support", "IGL", "Scout"],
+  "Free Fire": ["Rusher", "Sniper", "Support", "Leader"],
+  "Call of Duty": ["Slayer", "Objective", "Support", "Anchor", "Flex"],
+  Overwatch: ["Tank", "Damage", "Support"],
+  "Rocket League": ["Goalkeeper", "Forward", "Mid", "Flex"],
+  FIFA: ["Striker", "Midfielder", "Defender", "Goalkeeper"],
+};
 
-const sponsorshipOptions = [
-  { value: "no", label: "No" },
-  { value: "yes", label: "Yes" },
-  { value: "ending_soon", label: "Yes but ending soon" },
-];
+const RANKS = {
+  Valorant: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"],
+  "League of Legends": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"],
+  "CS:GO": ["Silver 1", "Silver 2", "SEM", "Gold Nova", "GN2", "GN3", "MG", "DMG", "LE", "LEM", "SMFC", "Global"],
+  "Dota 2": ["Herald", "Guardian", "Crusader", "Archon", "Legend", "Ancient", "Divine", "Immortal"],
+  Fortnite: ["Open", "Contender", "Champion"],
+  "Apex Legends": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Apex Predator"],
+  PUBG: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Conqueror"],
+  "Free Fire": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
+  "Call of Duty": ["Rookie", "Veteran", "Elite", "Pro", "Master", "Grandmaster", "Legendary"],
+  Overwatch: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Top 500"],
+  "Rocket League": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Champion", "Grand Champion", "Supersonic Legend"],
+  FIFA: ["Division 10", "Division 9", "Division 8", "Division 7", "Division 6", "Division 5", "Division 4", "Division 3", "Division 2", "Division 1"],
+};
 
 const countryCodes = [
-  { code: "+880", country: "Bangladesh", flag: "🇧🇩" },
-  { code: "+1", country: "USA / Canada / NANP territories", flag: "🇺🇸/🇨🇦" },
-  { code: "+7", country: "Russia / Kazakhstan", flag: "🇷🇺/🇰🇿" },
-  { code: "+20", country: "Egypt", flag: "🇪🇬" },
-  { code: "+30", country: "Greece", flag: "🇬🇷" },
-  { code: "+31", country: "Netherlands", flag: "🇳🇱" },
-  { code: "+32", country: "Belgium", flag: "🇧🇪" },
-  { code: "+33", country: "France", flag: "🇫🇷" },
-  { code: "+34", country: "Spain", flag: "🇪🇸" },
-  { code: "+36", country: "Hungary", flag: "🇭🇺" },
-  { code: "+39", country: "Italy / Vatican City", flag: "🇮🇹/🇻🇦" },
-  { code: "+40", country: "Romania", flag: "🇷🇴" },
-  { code: "+41", country: "Switzerland", flag: "🇨🇭" },
-  { code: "+43", country: "Austria", flag: "🇦🇹" },
-  { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
-  { code: "+45", country: "Denmark", flag: "🇩🇰" },
-  { code: "+46", country: "Sweden", flag: "🇸🇪" },
-  { code: "+47", country: "Norway", flag: "🇳🇴" },
-  { code: "+48", country: "Poland", flag: "🇵🇱" },
-  { code: "+49", country: "Germany", flag: "🇩🇪" },
-  { code: "+51", country: "Peru", flag: "🇵🇪" },
-  { code: "+52", country: "Mexico", flag: "🇲🇽" },
-  { code: "+54", country: "Argentina", flag: "🇦🇷" },
-  { code: "+55", country: "Brazil", flag: "🇧🇷" },
-  { code: "+56", country: "Chile", flag: "🇨🇱" },
-  { code: "+57", country: "Colombia", flag: "🇨🇴" },
-  { code: "+58", country: "Venezuela", flag: "🇻🇪" },
-  { code: "+60", country: "Malaysia", flag: "🇲🇾" },
-  { code: "+61", country: "Australia", flag: "🇦🇺" },
-  { code: "+62", country: "Indonesia", flag: "🇮🇩" },
-  { code: "+63", country: "Philippines", flag: "🇵🇭" },
-  { code: "+64", country: "New Zealand", flag: "🇳🇿" },
-  { code: "+65", country: "Singapore", flag: "🇸🇬" },
-  { code: "+66", country: "Thailand", flag: "🇹🇭" },
-  { code: "+81", country: "Japan", flag: "🇯🇵" },
-  { code: "+82", country: "South Korea", flag: "🇰🇷" },
-  { code: "+84", country: "Vietnam", flag: "🇻🇳" },
-  { code: "+86", country: "China", flag: "🇨🇳" },
-  { code: "+90", country: "Turkey", flag: "🇹🇷" },
-  { code: "+91", country: "India", flag: "🇮🇳" },
-  { code: "+92", country: "Pakistan", flag: "🇵🇰" },
-  { code: "+93", country: "Afghanistan", flag: "🇦🇫" },
-  { code: "+94", country: "Sri Lanka", flag: "🇱🇰" },
-  { code: "+95", country: "Myanmar", flag: "🇲🇲" },
-  { code: "+98", country: "Iran", flag: "🇮🇷" },
-  { code: "+211", country: "South Sudan", flag: "🇸🇸" },
-  { code: "+212", country: "Morocco", flag: "🇲🇦" },
-  { code: "+213", country: "Algeria", flag: "🇩🇿" },
-  { code: "+216", country: "Tunisia", flag: "🇹🇳" },
-  { code: "+218", country: "Libya", flag: "🇱🇾" },
-  // …continued through codes like +380 (Ukraine), +385 (Croatia), +593 (Ecuador), etc.
+  { code: "+880", flag: "🇧🇩" },
+  { code: "+91", flag: "🇮🇳" },
+  { code: "+1", flag: "🇺🇸" },
+  { code: "+44", flag: "🇬🇧" },
+  { code: "+61", flag: "🇦🇺" },
 ];
 
 export default function SignupModal({ isOpen, onClose, selectedPlan }) {
+  const router = useRouter();
+  const { registerPersonalInfo, registerGamingProfile, registerProfileImages } = useAuth();
+  
+  const [step, setStep] = useState(1); // 1: Personal, 2: Gaming, 3: Images
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
-    ingameName: "",
+    username: "",
     email: "",
     countryCode: "+880",
     phone: "",
-    district: "",
-    platform: "",
-    primaryGameTitles: "",
-    secondaryGameTitles: "", // Changed from array to single string
-    isSponsored: "",
-    monthlyIncomeRange: "",
-    socials: [{ platform: "", url: "" }],
+    discord: "",
     bio: "",
+    game: "",
+    role: "",
+    rank: "",
+    continent: "",
+    country: "",
+    city: "",
   });
 
-  const getPlanFeatures = (planName) => {
-    const planFeatures = {
-      BASIC: [
-        "Global Gamer Profile on Slice N Share",
-        "Access to Free Training Resources",
-        "Monthly Gamer Meetups",
-        "Discount on 20 Lifestyle Apps",
-        "Mental Health Support",
-        "Exclusive Networking Opportunities",
-        "Limited Chance to Be Scouted by Sponsors",
-        "Limited Community Support & Feedback",
-        "Entry in Tournaments with Prize Pools",
-        "Earn from Limited Scrims",
-        "Limited Opportunities for Brand Collaboration",
-        "Noob to Pro Pathway",
-      ],
-      STANDARD: [
-        "Monthly Salary Based on Performance",
-        "Personalized Gamer Profile",
-        "Bootcamp once in 4 months",
-        "Content Creation Support & Guidelines",
-        "Mental Health Support from Specialized Doctors",
-        "Priority Entry in Monthly Tournaments",
-        "Unlimited Scrims Earning Priority",
-        "Priority Access to Sponsorship Deals",
-        "Regular in-person coaching from Pro Players",
-        "Multiple Brand Collaborations",
-        "Support for International Tournaments",
-        "Priority Selection in Slice N Share Esports Teams",
-        "Exclusive Slice N Share Branding",
-        "AI Tools for Gamers",
-        "Device Support on Demand",
-        "Discounts at 100+ Lifestyle Brands",
-      ],
-      ADVANCED: [
-        "Global Gamer Profile on Slice N Share",
-        "Content Creation Support",
-        "Access to Slice N Share HQ for Bootcamps",
-        "Mental Health Support with Doctors (Priority++)",
-        "Device Support on Demand",
-        "Entry in Ranked Monthly Tournaments",
-        "Unlimited Scrim Earning Opportunities",
-        "Unlimited Sponsorship Matchmaking",
-        "1:1 Coaching & Elite Mentorship",
-        "Full Support for International Tournaments",
-        "Priority Recruitment to Slice N Share Esports Team",
-        "Unlimited Specialized Slice N Share Branding",
-        "Unlimited Global Media Features",
-        "Access to AI-Powered Training & Performance Tools",
-        "500+ Discounts on Global & Local Lifestyle Brands",
-      ],
-    };
-    return planFeatures[planName?.toUpperCase()] || [];
-  };
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [bannerImagePreview, setBannerImagePreview] = useState(null);
+  const profileInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setStep(1);
+      setError("");
+      setFormData({
+        fullName: "",
+        username: "",
+        email: "",
+        countryCode: "+880",
+        phone: "",
+        discord: "",
+        bio: "",
+        game: "",
+        role: "",
+        rank: "",
+        continent: "",
+        country: "",
+        city: "",
+      });
+      setProfileImagePreview(null);
+      setBannerImagePreview(null);
+    }
+  }, [isOpen]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
+      ...(name === "game" && { role: "", rank: "" }),
+      ...(name === "continent" && { country: "", city: "" }),
+      ...(name === "country" && { city: "" }),
     }));
   };
 
-  const handleSocialChange = (index, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      socials: prev.socials.map((social, i) =>
-        i === index ? { ...social, [field]: value } : social
-      ),
-    }));
+  const handleImageChange = (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be less than 5MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (type === "profile") setProfileImagePreview(reader.result);
+      else setBannerImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const addSocialField = () => {
-    setFormData((prev) => ({
-      ...prev,
-      socials: [...prev.socials, { platform: "", url: "" }],
-    }));
-  };
-
-  const removeSocialField = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      socials: prev.socials.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev";
-      const phone = `${formData.countryCode}${formData.phone}`;
-
-      // Step 1: Send OTP
-      const sendOTPResponse = await fetch(`${baseURL}/auth/register/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          phone: phone,
-        }),
-      });
-
-      if (!sendOTPResponse.ok) {
-        const errorData = await sendOTPResponse.json();
-        throw new Error(errorData?.message || "Failed to send OTP");
+  const handleNextStep = () => {
+    if (step === 1) {
+      if (!formData.fullName || !formData.username || !formData.email || !formData.phone) {
+        setError("Please fill all required fields");
+        return;
       }
-
-      // For now, show success since full multi-step would require user input between steps
-      // In a real scenario, you'd have a multi-step modal similar to UnifiedAuthModal
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-        setSuccess(false);
-        setFormData({
-          fullName: "",
-          ingameName: "",
-          email: "",
-          countryCode: "+880",
-          phone: "",
-          district: "",
-          platform: "",
-          primaryGameTitles: "",
-          secondaryGameTitles: "",
-          isSponsored: "",
-          monthlyIncomeRange: "",
-          socials: [{ platform: "", url: "" }],
-          bio: "",
-        });
-      }, 4000);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError("");
+      setStep(2);
+    } else if (step === 2) {
+      setError("");
+      setStep(3);
     }
   };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
+    setError("");
+  };
+
+  const handleCompleteRegistration = async () => {
+    setSaving(true);
+    try {
+      console.log("[v0] Starting registration with email:", formData.email);
+      
+      // Step 1: Save personal info
+      console.log("[v0] Saving personal info...");
+      await registerPersonalInfo(formData.email, formData.fullName, formData.username);
+
+      // Step 2: Save gaming profile if selected
+      if (formData.game) {
+        console.log("[v0] Saving gaming profile...");
+        await registerGamingProfile(formData.email, {
+          primary_game: formData.game,
+          game_role: formData.role || undefined,
+          rank: formData.rank || undefined,
+          continent: formData.continent || undefined,
+          country: formData.country || undefined,
+        });
+      }
+
+      // Step 3: Save images and redirect (registerProfileImages handles redirect)
+      if (profileImagePreview || bannerImagePreview) {
+        console.log("[v0] Saving profile images...");
+        await registerProfileImages(formData.email, profileImagePreview, bannerImagePreview);
+      } else {
+        // If no images, manually redirect
+        console.log("[v0] No images, redirecting to profile...");
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+          router.push("/profile");
+        }, 1500);
+      }
+    } catch (err) {
+      console.error("[v0] Registration error:", err);
+      setError(err.message || "Failed to complete registration");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm";
+  const selectClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm appearance-none cursor-pointer";
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
+        <>
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[#0D0D0D] rounded-2xl p-8 max-w-4xl w-full relative"
-            style={{
-              maxHeight: success ? "auto" : "90vh",
-              height: success ? "600px" : "auto",
-              overflow: success ? "hidden" : "auto",
-            }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          <motion.div
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+            initial={{ scale: 0.92, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.92, opacity: 0, y: 30 }}
+            transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 28 }}
             onClick={(e) => e.stopPropagation()}
+            style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(168,85,247,0.3) transparent' }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  Join Slice N Share - {selectedPlan} Plan
-                </h2>
-                <p className="text-gray-400">
-                  Fill out the form to get started
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Success State Overlay */}
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="fixed inset-0 bg-[#0D0D0D] rounded-2xl flex flex-col items-center justify-center z-50 overflow-hidden"
-                style={{
-                  margin: 0,
-                  width: "100%",
-                  height: "100%",
-                  minHeight: "600px",
-                }}
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6"
-                >
-                  <svg
-                    className="w-10 h-10 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <motion.path
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ delay: 0.5, duration: 0.5 }}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-center max-w-md px-6"
-                >
-                  <h3 className="text-2xl font-bold text-white mb-3">
-                    Welcome to Slice N Share!
-                  </h3>
-                  <p className="text-gray-400 text-base mb-6">
-                    Your registration for the{" "}
-                    <span className="text-purple-400 font-semibold">
-                      {selectedPlan} Plan
-                    </span>{" "}
-                    was successful! We&apos;re excited to have you on board.
+            <div className="relative bg-[#111118] rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Join Slice N Share</h2>
+                  <p className="text-gray-500 text-xs mt-1">
+                    {step === 1 && "Complete your profile"}
+                    {step === 2 && "Select your gaming info"}
+                    {step === 3 && "Upload your images"}
                   </p>
-
-                  <div className="bg-[#171717] rounded-lg p-4 mb-6">
-                    <h4 className="text-white font-semibold mb-2">
-                      What&apos;s Next?
-                    </h4>
-                    <ul className="text-gray-300 text-sm space-y-1 text-left">
-                      <li>• Our team will review your application</li>
-                      <li>
-                        • You&apos;ll receive a confirmation email within 24
-                        hours
-                      </li>
-                      <li>• We&apos;ll contact you to set up your profile</li>
-                      <li>• Get ready to level up your gaming journey!</li>
-                    </ul>
-                  </div>
-
-                  {/* Animated progress bar */}
-                  <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
-                    <motion.div
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ delay: 0.6, duration: 4 }}
-                      className="bg-gradient-to-r from-purple-500 to-green-500 h-2 rounded-full"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Modal will close automatically
-                  </p>
-                </motion.div>
-              </motion.div>
-            )}
-
-            {/* Plan Features Display */}
-            {!success && selectedPlan && (
-              <div className="mb-8 bg-[#171717] rounded-lg p-6">
-                <h3 className="text-lg font-bold text-white mb-4">
-                  {selectedPlan} Plan Features
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto">
-                  {getPlanFeatures(selectedPlan).map((feature, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <div className="flex-shrink-0 mt-2">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                      </div>
-                      <span className="text-gray-300 text-sm leading-tight">
-                        {feature}
-                      </span>
-                    </div>
-                  ))}
                 </div>
-              </div>
-            )}
-
-            {!success && (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-500/10 border border-red-500 rounded-lg p-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <svg
-                        className="w-5 h-5 text-red-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <p className="text-red-400 text-sm">{error}</p>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Basic Information */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      In-Game Name (IGN) *
-                    </label>
-                    <input
-                      type="text"
-                      name="ingameName"
-                      value={formData.ingameName}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Phone *
-                    </label>
-                    <div className="flex gap-2">
-                      <select
-                        name="countryCode"
-                        value={formData.countryCode}
-                        onChange={handleInputChange}
-                        className="px-3 py-3 bg-[#171717] rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 min-w-[100px]"
-                        disabled={loading}
-                      >
-                        {countryCodes.map((country) => (
-                          <option key={country.code} value={country.code}>
-                            {country.flag} {country.code}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="1XXXXXXXXX"
-                        className="flex-1 px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                        required
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* District and Monthly Income */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      District *
-                    </label>
-                    <select
-                      name="district"
-                      value={formData.district}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                      required
-                      disabled={loading}
-                    >
-                      <option value="">Select District</option>
-                      {districts.map((district) => (
-                        <option key={district} value={district}>
-                          {district}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Monthly Income Range
-                    </label>
-                    <select
-                      name="monthlyIncomeRange"
-                      value={formData.monthlyIncomeRange}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                      disabled={loading}
-                    >
-                      <option value="">Select Range</option>
-                      <option value="0-3K">0-3K BDT</option>
-                      <option value="3-6K">3-6K BDT</option>
-                      <option value="6-10K">6-10K BDT</option>
-                      <option value="10K+">10K+ BDT</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Gaming Platform - Single Selection */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-3">
-                    Gaming Platform *
-                  </label>
-                  <div className="flex flex-wrap gap-4">
-                    {platforms.map((platform) => (
-                      <label
-                        key={platform}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="platform"
-                          value={platform}
-                          checked={formData.platform === platform}
-                          onChange={handleInputChange}
-                          className="w-4 h-4 text-purple-600 bg-[#171717] border-gray-600 focus:ring-purple-500"
-                          required
-                          disabled={loading}
-                        />
-                        <span className="text-gray-300">{platform}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Primary Game - Single Selection Required */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-3">
-                    Primary Game Title *
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {gamesList.map((game) => (
-                      <label
-                        key={game}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="primaryGameTitles"
-                          value={game}
-                          checked={formData.primaryGameTitles === game}
-                          onChange={handleInputChange}
-                          className="w-4 h-4 text-purple-600 bg-[#171717] border-gray-600 focus:ring-purple-500"
-                          required
-                          disabled={loading}
-                        />
-                        <span className="text-gray-300 text-sm">{game}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Secondary Game - Single Selection Optional */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-3">
-                    Secondary Game Title (Optional)
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {gamesList.map((game) => (
-                      <label
-                        key={game}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="secondaryGameTitles"
-                          value={game}
-                          checked={formData.secondaryGameTitles === game}
-                          onChange={handleInputChange}
-                          className="w-4 h-4 text-purple-600 bg-[#171717] border-gray-600 focus:ring-purple-500"
-                          disabled={loading}
-                        />
-                        <span className="text-gray-300 text-sm">{game}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Social Media */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-3">
-                    Social Media Profiles
-                  </label>
-                  {formData.socials.map((social, index) => (
-                    <div key={index} className="flex gap-3 mb-3">
-                      <select
-                        value={social.platform}
-                        onChange={(e) =>
-                          handleSocialChange(index, "platform", e.target.value)
-                        }
-                        className="px-4 py-3 bg-[#171717] rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                        disabled={loading}
-                      >
-                        <option value="">Select Platform</option>
-                        {socialPlatforms.map((platform) => (
-                          <option key={platform} value={platform}>
-                            {platform}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="url"
-                        value={social.url}
-                        onChange={(e) =>
-                          handleSocialChange(index, "url", e.target.value)
-                        }
-                        placeholder="Profile URL"
-                        className="flex-1 px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                        disabled={loading}
-                      />
-                      {formData.socials.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeSocialField(index)}
-                          className="px-3 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                          disabled={loading}
-                        >
-                          <X size={16} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addSocialField}
-                    className="text-purple-400 hover:text-purple-300 text-sm"
-                    disabled={loading}
-                  >
-                    + Add Another Social Profile
-                  </button>
-                </div>
-
-                {/* Sponsorship - Three Options */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-3">
-                    Do you have any Sponsorship? *
-                  </label>
-                  <div className="flex flex-wrap gap-4">
-                    {sponsorshipOptions.map((option) => (
-                      <label
-                        key={option.value}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="isSponsored"
-                          value={option.value}
-                          checked={formData.isSponsored === option.value}
-                          onChange={handleInputChange}
-                          className="w-4 h-4 text-purple-600 bg-[#171717] border-gray-600 focus:ring-purple-500"
-                          required
-                          disabled={loading}
-                        />
-                        <span className="text-gray-300">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    What kind of supports do you need from us?
-                  </label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    rows={3}
-                    placeholder="Write down your answers"
-                    className="w-full px-4 py-3 bg-[#171717] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none"
-                    disabled={loading}
-                  />
-                </div>
-
-                {/* Submit Button */}
                 <motion.button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-4 px-6 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  whileHover={{ scale: loading ? 1 : 1.02 }}
-                  whileTap={{ scale: loading ? 1 : 0.98 }}
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-white transition p-2 hover:bg-white/5 rounded-lg disabled:opacity-50"
+                  disabled={saving}
                 >
-                  {loading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span>Signing Up...</span>
-                    </div>
-                  ) : (
-                    "Submit & Join Slice N Share"
-                  )}
+                  <X size={20} />
                 </motion.button>
-              </form>
-            )}
+              </div>
+
+              {/* Success State */}
+              {success && (
+                <div className="p-12 text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                  >
+                    <Check size={32} className="text-green-400" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold text-white mb-2">Registration Complete!</h3>
+                  <p className="text-gray-400 text-sm">Redirecting to your profile...</p>
+                </div>
+              )}
+
+              {!success && (
+                <form className="p-6 space-y-5">
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-500/10 border border-red-500/30 rounded-lg p-3"
+                    >
+                      <p className="text-red-400 text-sm">{error}</p>
+                    </motion.div>
+                  )}
+
+                  {/* STEP 1: Personal Information */}
+                  {step === 1 && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                      <div>
+                        <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Personal</h4>
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <input
+                              type="text"
+                              name="fullName"
+                              value={formData.fullName}
+                              onChange={handleInputChange}
+                              placeholder="Full Name *"
+                              className={inputClass}
+                              required
+                            />
+                          </div>
+                          <div className="relative">
+                            <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <input
+                              type="text"
+                              name="username"
+                              value={formData.username}
+                              onChange={handleInputChange}
+                              placeholder="Gamer Tag / Username *"
+                              className={inputClass}
+                              required
+                            />
+                          </div>
+                          <div className="relative">
+                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              placeholder="Email *"
+                              className={inputClass}
+                              required
+                            />
+                          </div>
+                          <div className="relative">
+                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <div className="flex gap-2">
+                              <select
+                                name="countryCode"
+                                value={formData.countryCode}
+                                onChange={handleInputChange}
+                                className="px-3 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:border-purple-500/50"
+                              >
+                                {countryCodes.map((country) => (
+                                  <option key={country.code} value={country.code} className="bg-[#1a1a24]">
+                                    {country.code}
+                                  </option>
+                                ))}
+                              </select>
+                              <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="Phone *"
+                                className="flex-1 pl-4 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="relative">
+                            <MessageCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <input
+                              type="text"
+                              name="discord"
+                              value={formData.discord}
+                              onChange={handleInputChange}
+                              placeholder="Discord username"
+                              className={inputClass}
+                            />
+                          </div>
+                          <div className="relative">
+                            <FileText className="absolute left-3.5 top-3 text-gray-600 w-4 h-4" />
+                            <textarea
+                              name="bio"
+                              value={formData.bio}
+                              onChange={handleInputChange}
+                              placeholder="Bio"
+                              rows={2}
+                              className={`${inputClass} resize-none`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* STEP 2: Gaming Information */}
+                  {step === 2 && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                      <div>
+                        <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Gaming</h4>
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <Gamepad2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <select
+                              name="game"
+                              value={formData.game}
+                              onChange={handleInputChange}
+                              className={selectClass}
+                            >
+                              <option value="" className="bg-[#1a1a24]">Select game</option>
+                              {gamesList.map(g => <option key={g} value={g} className="bg-[#1a1a24]">{g}</option>)}
+                            </select>
+                          </div>
+
+                          {formData.game && ROLES[formData.game] && (
+                            <div>
+                              <p className="text-xs text-gray-500 mb-2">Role</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {ROLES[formData.game].map(r => (
+                                  <button
+                                    key={r}
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, role: r })}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                                      formData.role === r
+                                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                                        : 'bg-white/[0.03] text-gray-500 border border-white/[0.06] hover:text-gray-300'
+                                    }`}
+                                  >
+                                    {r}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {formData.game && RANKS[formData.game] && (
+                            <div className="relative">
+                              <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                              <select
+                                name="rank"
+                                value={formData.rank}
+                                onChange={handleInputChange}
+                                className={selectClass}
+                              >
+                                <option value="" className="bg-[#1a1a24]">Select rank</option>
+                                {RANKS[formData.game].map(rank => <option key={rank} value={rank} className="bg-[#1a1a24]">{rank}</option>)}
+                              </select>
+                            </div>
+                          )}
+
+                          <div className="relative">
+                            <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                            <select
+                              value={formData.continent}
+                              onChange={handleInputChange}
+                              name="continent"
+                              className={selectClass}
+                            >
+                              <option value="" className="bg-[#1a1a24]">Select continent</option>
+                              {CONTINENTS.map(c => <option key={c} value={c} className="bg-[#1a1a24]">{c}</option>)}
+                            </select>
+                          </div>
+
+                          {formData.continent && (
+                            <div className="relative">
+                              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                              <select
+                                value={formData.country}
+                                onChange={handleInputChange}
+                                name="country"
+                                className={selectClass}
+                              >
+                                <option value="" className="bg-[#1a1a24]">Select country</option>
+                                {Object.keys(REGION_DATA[formData.continent] || {}).map(country => (
+                                  <option key={country} value={country} className="bg-[#1a1a24]">{country}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          {formData.country && REGION_DATA[formData.continent]?.[formData.country]?.length > 0 && (
+                            <div className="relative">
+                              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                              <select
+                                value={formData.city}
+                                onChange={handleInputChange}
+                                name="city"
+                                className={selectClass}
+                              >
+                                <option value="" className="bg-[#1a1a24]">Select city</option>
+                                {REGION_DATA[formData.continent][formData.country].map(city => (
+                                  <option key={city} value={city} className="bg-[#1a1a24]">{city}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* STEP 3: Images */}
+                  {step === 3 && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                      <div>
+                        <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Images</h4>
+                        <div className="relative w-full h-28 rounded-xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group mb-3" onClick={() => bannerInputRef.current?.click()}>
+                          {bannerImagePreview ? (
+                            <>
+                              <img src={bannerImagePreview} alt="Banner" className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                <Camera size={20} className="text-white" />
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full gap-1.5 text-gray-600">
+                              <ImageIcon size={22} />
+                              <span className="text-[10px]">Upload banner image</span>
+                            </div>
+                          )}
+                          <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'banner')} />
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group flex-shrink-0" onClick={() => profileInputRef.current?.click()}>
+                            {profileImagePreview ? (
+                              <>
+                                <img src={profileImagePreview} alt="Profile" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                  <Camera size={16} className="text-white" />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center h-full gap-0.5 text-gray-600">
+                                <Camera size={18} />
+                                <span className="text-[9px]">Upload</span>
+                              </div>
+                            )}
+                            <input ref={profileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'profile')} />
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-400">Profile picture</p>
+                            <p className="text-[10px] text-gray-600 mt-0.5">Square, max 5MB</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Navigation */}
+                  <div className="flex gap-3 pt-6 border-t border-white/[0.06]">
+                    {step > 1 && (
+                      <motion.button
+                        type="button"
+                        onClick={handlePreviousStep}
+                        disabled={saving}
+                        className="flex-1 py-3 border border-white/[0.1] hover:border-white/[0.2] text-white font-semibold rounded-xl transition disabled:opacity-50"
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        Back
+                      </motion.button>
+                    )}
+                    <motion.button
+                      type="button"
+                      onClick={step < 3 ? handleNextStep : handleCompleteRegistration}
+                      disabled={saving || (step === 1 && (!formData.fullName || !formData.username))}
+                      className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {saving ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" /> Saving...
+                        </>
+                      ) : step < 3 ? (
+                        <>Next <ChevronRight size={16} /></>
+                      ) : (
+                        <>Complete Registration <Check size={16} /></>
+                      )}
+                    </motion.button>
+                  </div>
+                </form>
+              )}
+            </div>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

@@ -16,10 +16,10 @@ export default function GoogleLoginButton({ onSuccess, onError, className = '' }
     setLoading(true);
     try {
       const response = await loginWithGoogle();
-      console.log('[v0] GoogleLoginButton - sign in response:', response);
+      console.log('GoogleLoginButton - sign in response:', response);
       onSuccess?.({ user: response.user, isNewUser: response.isNewUser });
     } catch (error) {
-      console.error('[v0] GoogleLoginButton - sign in error:', error);
+      console.error('GoogleLoginButton - sign in error:', error);
 
       // Handle specific Firebase errors
       if (error.code === 'auth/popup-closed-by-user') {

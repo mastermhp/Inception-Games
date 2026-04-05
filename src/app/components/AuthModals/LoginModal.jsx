@@ -44,7 +44,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setLoading(true)
     try {
       const response = await loginSendOTP(email)
-      console.log('[v0] LoginModal send OTP response:', response)
+      console.log('LoginModal send OTP response:', response)
       setMessage(response.message || 'OTP sent to your email!')
       setStep('otp')
     } catch (err) {
@@ -67,7 +67,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setLoading(true)
     try {
       const response = await loginVerifyOTP(email, otp)
-      console.log('[v0] LoginModal verify OTP response:', response)
+      console.log('LoginModal verify OTP response:', response)
       setMessage('Login successful!')
       setTimeout(() => {
         handleClose()
@@ -86,14 +86,14 @@ export default function LoginModal({ isOpen, onClose }) {
     setGoogleLoading(true)
     try {
       const response = await loginWithGoogle()
-      console.log('[v0] LoginModal Google login response:', response)
+      console.log('LoginModal Google login response:', response)
       setMessage(response.isNewUser ? 'Account created with Google!' : 'Signed in with Google!')
       setTimeout(() => {
         handleClose()
         router.push('/profile')
       }, 1000)
     } catch (err) {
-      console.error('[v0] LoginModal Google login error:', err)
+      console.error('LoginModal Google login error:', err)
       if (err.code === 'auth/popup-closed-by-user') {
         setLocalError('Sign-in popup was closed')
       } else if (err.code === 'auth/popup-blocked') {

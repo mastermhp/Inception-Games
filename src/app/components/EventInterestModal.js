@@ -27,8 +27,8 @@ export default function EventInterestModal({ isOpen, onClose, eventTitle, eventI
     setError("")
 
     try {
-      const baseURL = "https://perturbatious-brainlike-maliyah.ngrok-free.dev"
-      const response = await fetch(`${baseURL}/auth/register/send-otp`, {
+      const baseURL = "https://inception-games.an.r.appspot.com"
+      const response = await fetch(`${baseURL}/api/v1/auth/register/send-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
