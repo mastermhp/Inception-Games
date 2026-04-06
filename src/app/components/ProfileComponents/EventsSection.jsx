@@ -109,7 +109,8 @@ function getStatusText(status) {
 function EventCard({ event, onClick }) {
   const [expanded, setExpanded] = useState(false)
   const eventType = event.eventType || getEventType(event.title, event.organizer)
-  const gameImage = event.game?.image || getGameImage(event.title, event.game_name)
+  // Use banner_image from API if available, otherwise fall back to game image
+  const gameImage = event.banner_image || event.game?.image || getGameImage(event.title, event.game_name)
   const gameName = event.game?.name || event.game_name || 'Gaming Event'
   
   // Calculate slots percentage if available
@@ -297,35 +298,50 @@ export default function EventsSection({ user }) {
         },
       })
       const data = await res.json()
-      console.log('[v0] Events API response:', data)
       
-      if (res.ok && data.success) {
+      if (res.ok) {
+        // Handle both API response formats
+        const eventsData = data.tournaments || data.data || []
+        
         // Transform API events to our format
-        const transformedEvents = (data.data || []).map(event => ({
-          ...event,
-          eventType: getEventType(event.title, event.organizer),
+        const transformedEvents = eventsData.map((event, index) => {
+          return {
+          id: event.id,
+          title: event.title,
+          eventType: getEventType(event.title, event.hosted_by),
           game: {
-            name: event.game_name || event.title?.split(' ')[0] || 'Gaming',
-            image: getGameImage(event.title, event.game_name),
+            name: event.game || event.title?.split(' ')[0] || 'Gaming',
+            image: getGameImage(event.title, event.game),
           },
-          date: event.start_date,
-          endDate: event.end_date,
-          location: event.venue,
+          game_name: event.game,
+          status: event.status,
+          start_date: event.event_date || event.tournament_start_at,
+          event_date: event.event_date || event.tournament_start_at,
+          end_date: event.tournament_end_at,
+          location: event.region,
+          venue: event.region,
           platform: event.platform || 'All Platforms',
-          teamType: event.team_type || 'Open',
-          prizePool: event.prize_pool || 0,
+          teamType: event.game_mode || 'Open',
+          prizePool: parseFloat(event.prize_pool) || 0,
+          prize_pool: parseFloat(event.prize_pool) || 0,
           currency: event.currency || 'BDT',
-          totalSlots: event.total_slots || 64,
+          totalSlots: event.max_slots || 64,
+          total_slots: event.max_slots || 64,
           filledSlots: event.filled_slots || 0,
-          registrationStart: event.registration_start,
-          registrationEnd: event.registration_end,
-          tournamentStart: event.start_date,
-          tournamentEnd: event.end_date,
-          host: event.organizer || 'Slice N Share',
-        }))
+          filled_slots: event.filled_slots || 0,
+          registrationStart: event.reg_start_at,
+          registration_start: event.reg_start_at,
+          registrationEnd: event.reg_end_at,
+          registration_end: event.reg_end_at,
+          tournamentStart: event.tournament_start_at,
+          tournamentEnd: event.tournament_end_at,
+          host: event.hosted_by || 'Slice N Share',
+          organizer: event.hosted_by || 'Slice N Share',
+          banner_image: event.banner_image,
+        }
+        })
         setEvents(transformedEvents)
       } else {
-        console.log('[v0] Events fetch returned no data or error')
         setEvents([])
       }
     } catch (err) {

@@ -22,10 +22,10 @@ export const API = {
   PROFILE_GET:           `${BASE_URL}/auth/profile/:userId`,
   PROFILE_UPDATE:        `${BASE_URL}/auth/profile/:userId`,
 
-  // Events API
-  EVENTS_GET_ALL:        `${BASE_URL}/events`,
-  EVENTS_GET_BY_ID:      `${BASE_URL}/events/:eventId`,
-  EVENTS_GET_BY_STATUS:  `${BASE_URL}/events?status=:status`,
+  // Events/Tournaments API
+  EVENTS_GET_ALL:        `${BASE_URL}/tournaments`,
+  EVENTS_GET_BY_ID:      `${BASE_URL}/tournaments/:eventId`,
+  EVENTS_GET_BY_STATUS:  `${BASE_URL}/tournaments?status=:status`,
 
   // Event Signups API
   EVENT_SIGNUP:          `${BASE_URL}/events/signup`,

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -12,6 +12,7 @@ import Image from 'next/image'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
 import { API } from '@/lib/api'
+import { AuthContext } from '@/app/context/AuthContext'
 
 // Games data (from NewSignupModal)
 const games = [
@@ -46,6 +47,31 @@ const games = [
   { id: "mk11", name: "Mortal Kombat 11", image: "/games/mk11.png" },
   { id: "brawlstars", name: "Brawl Stars", image: "/games/brawlstars.png" },
 ]
+
+// Helper to get game image from title or game name
+function getGameImage(eventTitle, gameName) {
+  // Try to find a matching game from the games list
+  const searchTerm = (gameName || eventTitle || '').toLowerCase()
+  const matchedGame = games.find(g => 
+    searchTerm.includes(g.name.toLowerCase()) || 
+    g.name.toLowerCase().includes(searchTerm.split(' ')[0])
+  )
+  return matchedGame?.image || '/games/pubg.png' // Default fallback
+}
+
+// Helper to determine event type from title
+function getEventType(title, organizer) {
+  const lowerTitle = (title || '').toLowerCase()
+  const lowerOrg = (organizer || '').toLowerCase()
+  
+  if (lowerTitle.includes('brand') || lowerTitle.includes('deal') || lowerTitle.includes('sponsor')) {
+    return 'Brand Deal'
+  }
+  if (lowerTitle.includes('scrim')) {
+    return 'Scrims'
+  }
+  return 'Tournament'
+}
 
 // Generate sample events (same logic as EventsSection)
 const generateSampleEvents = () => {
@@ -213,6 +239,7 @@ function AnimatedInput({ label, type = 'text', name, value, onChange, required, 
 export default function EventDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useContext(AuthContext) || {}
   const [event, setEvent] = useState(null)
   const [activeTab, setActiveTab] = useState('result')
   const [showSignupForm, setShowSignupForm] = useState(false)
@@ -242,21 +269,62 @@ export default function EventDetailPage() {
     brandDealType: 'solo',
   })
 
+  // Auto-fill form with user data when signup form is shown
+  useEffect(() => {
+    if (showSignupForm && user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.fullName || user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      }))
+    }
+  }, [showSignupForm, user])
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         const url = API.EVENTS_GET_BY_ID.replace(':eventId', params.eventId)
-        console.log("[v0] Fetching event from:", url)
         const response = await fetch(url)
         const data = await response.json()
-        console.log("[v0] Event fetched:", data)
         
-        if (data.success && data.data) {
-          setEvent(data.data)
-        } else if (response.ok && data) {
-          setEvent(data)
+        if (response.ok && data) {
+          // Handle both API response formats
+          const eventData = data.success && data.data ? data.data : data
+          
+          // Transform API data to component format
+          const transformedEvent = {
+            ...eventData,
+            id: eventData.id,
+            title: eventData.title,
+            game: {
+              name: eventData.game || 'Gaming Event',
+              image: getGameImage(eventData.title, eventData.game),
+            },
+            gameName: eventData.game || 'Gaming Event',
+            gameImage: getGameImage(eventData.title, eventData.game),
+            date: eventData.event_date || eventData.date,
+            endDate: eventData.tournament_end_at || eventData.endDate,
+            location: eventData.region || eventData.location,
+            platform: eventData.platform || 'All Platforms',
+            teamType: eventData.game_mode || 'Open',
+            prizePool: parseFloat(eventData.prize_pool) || 0,
+            currency: eventData.currency || 'BDT',
+            totalSlots: eventData.max_slots || 64,
+            filledSlots: eventData.filled_slots || 0,
+            registrationStart: eventData.reg_start_at,
+            registration_start: eventData.reg_start_at,
+            registrationEnd: eventData.reg_end_at,
+            registration_end: eventData.reg_end_at,
+            tournamentStart: eventData.tournament_start_at,
+            tournamentEnd: eventData.tournament_end_at,
+            host: eventData.hosted_by || 'Slice N Share',
+            organizer: eventData.hosted_by || 'Slice N Share',
+            banner_image: eventData.banner_image,
+          }
+          
+          setEvent(transformedEvent)
         } else {
-          console.error("[v0] Failed to fetch event:", data)
           // Fallback to sample events if API fails
           const foundEvent = SAMPLE_EVENTS.find(e => e.id === `event-${params.eventId}`)
           if (foundEvent) {
@@ -264,7 +332,6 @@ export default function EventDetailPage() {
           }
         }
       } catch (error) {
-        console.error("[v0] Error fetching event:", error)
         // Fallback to sample events if API fails
         const foundEvent = SAMPLE_EVENTS.find(e => e.id === `event-${params.eventId}`)
         if (foundEvent) {
@@ -409,7 +476,7 @@ export default function EventDetailPage() {
   }
 
   // Ensure event has required properties
-  const gameImage = event.game?.image || event.gameImage || '/images/default-game.jpg'
+  const gameImage = event.banner_image || event.game?.image || event.gameImage || '/images/default-game.jpg'
   const gameName = event.game?.name || event.gameName || 'Unknown Game'
 
   const tabs = [
@@ -776,7 +843,7 @@ export default function EventDetailPage() {
           Registration Successful!
         </h2>
         <p className="text-gray-400 text-sm leading-relaxed mb-6">
-          You're locked in for Phase 1. Check your email for the next steps to complete your payment.
+          You&apos;re locked in for Phase 1. Check your email for the next steps to complete your payment.
         </p>
 
       
@@ -1074,34 +1141,7 @@ export default function EventDetailPage() {
                                 </>
                               )}
 
-                              {/* Payment Section */}
-                              {price > 0 && (
-                                <div className="space-y-3 pt-3 border-t border-gray-700">
-                                  <p className="text-sm text-gray-400">Send BDT {price} via bKash and enter Transaction ID:</p>
-                                  <div className="flex justify-center">
-                                    <div className="relative w-32 h-32 bg-white rounded-lg p-2">
-                                      {qrImageError ? (
-                                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">QR Code</div>
-                                      ) : (
-                                        <Image
-                                          src="/qr.jpeg"
-                                          alt="Payment QR"
-                                          fill
-                                          className="object-contain rounded"
-                                          onError={() => setQrImageError(true)}
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-                                  <AnimatedInput
-                                    label="Transaction ID (Trx ID)"
-                                    name="transactionId"
-                                    value={formData.transactionId}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                </div>
-                              )}
+
 
                               <motion.button
                                 type="submit"
