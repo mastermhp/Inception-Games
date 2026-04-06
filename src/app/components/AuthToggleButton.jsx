@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogIn, LogOut, User, Settings, Wallet, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/app/context/AuthContext'
+import { useAuth } from '@/hooks/useAuth.js'
 import UnifiedAuthModal from './AuthModals/UnifiedAuthModal'
 
 export default function AuthToggleButton() {

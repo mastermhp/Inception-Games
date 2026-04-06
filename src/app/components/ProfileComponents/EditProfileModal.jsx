@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, AtSign, Gamepad2, Globe, Award, MessageCircle, FileText, Loader, Check, Camera, ImageIcon, Phone, MapPin, ChevronRight } from 'lucide-react'
-import { useAuth } from '@/app/context/AuthContext'
+// import { useAuth } from '@/hooks/useAuth.js'
 import { REGION_DATA, CONTINENTS, parseRegionString } from '@/lib/regionData'
+import { useAuth } from '@/app/context/AuthContext'
 
 const GAMES = ['Valorant', 'League of Legends', 'CS:GO', 'Dota 2', 'Fortnite', 'Apex Legends', 'PUBG Mobile', 'Free Fire', 'MLBB', 'Call of Duty Mobile', 'PUBG PC']
 const ROLES = {
@@ -54,22 +55,23 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
 
   useEffect(() => {
     if (isOpen) {
-      const existingRegion = gamingProfile?.region || user?.region || ''
+      const existingRegion = user?.region || gamingProfile?.region || ''
       const { continent, country, city } = parseRegionString(existingRegion)
-      setSelectedContinent(continent)
-      setSelectedCountry(country)
-      setSelectedCity(city)
+      setSelectedContinent(continent || user?.continent || '')
+      setSelectedCountry(country || user?.country || '')
+      setSelectedCity(city || '')
       setFormData({
-        fullName: user?.fullName || '', phone: user?.phone || '',
-        username: gamingProfile?.username || user?.username || '',
-        bio: gamingProfile?.bio || user?.bio || '',
-        game: gamingProfile?.game || user?.game || '',
-        role: gamingProfile?.role || user?.role || '',
-        rank: gamingProfile?.rank || user?.rank || '',
-        discord: gamingProfile?.discord || user?.discord || '',
+        fullName: user?.fullName || '',
+        phone: user?.phone || '',
+        username: user?.username || '',
+        bio: user?.bio || '',
+        game: user?.primaryGame || '',
+        role: user?.gameRole || '',
+        rank: user?.rank || '',
+        discord: user?.discord || '',
       })
-      setProfileImagePreview(gamingProfile?.profileImagePreview || null)
-      setBannerImagePreview(gamingProfile?.bannerImagePreview || null)
+      setProfileImagePreview(user?.avatar || null)
+      setBannerImagePreview(user?.banner || null)
       setMessage(''); setError('')
     }
   }, [isOpen, user, gamingProfile])
@@ -102,16 +104,27 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     e.preventDefault()
     setError(''); setLoading(true)
     try {
-      if (formData.fullName.trim()) {
-        await updateProfile({ fullName: formData.fullName, phone: formData.phone || undefined })
+      if (!user?.id) {
+        throw new Error('User ID not found')
       }
       const region = getRegionString()
-      const updatedGamingProfile = {
-        username: formData.username, bio: formData.bio, game: formData.game,
-        role: formData.role, region, rank: formData.rank, discord: formData.discord,
-        profileImagePreview, bannerImagePreview,
+      // Send updates with API field names (snake_case)
+      const updates = {
+        full_name: formData.fullName || undefined,
+        phone: formData.phone || undefined,
+        username: formData.username || undefined,
+        bio: formData.bio || undefined,
+        primary_game: formData.game || undefined,
+        game_role: formData.role || undefined,
+        rank: formData.rank || undefined,
+        discord: formData.discord || undefined,
+        region: region || undefined,
+        avatar_url: profileImagePreview || undefined,
+        banner_url: bannerImagePreview || undefined,
       }
-      onProfileUpdate(updatedGamingProfile)
+      // Remove undefined fields
+      Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key])
+      await updateProfile(user.id, updates)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
     } catch (err) { setError(err.message || 'Failed to update profile') }

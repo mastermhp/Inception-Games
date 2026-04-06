@@ -10,6 +10,8 @@ import {
   setStoredUser,
   authFetch,
 } from "@/lib/api";
+
+const getStoredTokens = () => getTokens();
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
@@ -50,32 +52,54 @@ export function AuthProvider({ children }) {
         console.log("No stored user ID for profile fetch");
         return;
       }
+      const tokens = getStoredTokens();
+      if (!tokens?.accessToken) {
+        console.log("[v0] No access token available for profile fetch");
+        return;
+      }
+      
       const url = API.PROFILE_GET.replace(":userId", storedUser.id);
-      console.log("Fetching profile from:", url);
-      const res = await authFetch(url);
+      console.log("[v0] Fetching profile from:", url);
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${tokens.accessToken}`
+        },
+      });
       const data = await res.json();
-      console.log("Profile API response:", JSON.stringify(data, null, 2));
+      console.log("[v0] Profile API response:", JSON.stringify(data, null, 2));
 
       if (res.ok) {
         const userData = data.data || data;
         const userObj = {
           id: userData.id || userData._id,
           email: userData.email,
-          fullName: userData.fullName || userData.name || "",
+          username: userData.username || "",
+          fullName: userData.full_name || userData.fullName || userData.name || "",
           phone: userData.phone || "",
-          avatar: userData.avatar || "",
+          avatar: userData.avatar_url || userData.avatar || "",
+          banner: userData.banner_url || userData.banner || "",
+          discord: userData.discord || "",
+          bio: userData.bio || "",
+          primaryGame: userData.primary_game || "",
+          gameRole: userData.game_role || "",
+          rank: userData.rank || "",
+          continent: userData.continent || "",
+          country: userData.country || "",
+          region: userData.region || "",
           authMethod: userData.authMethod || getStoredUser()?.authMethod || "email",
           firebaseUid: userData.firebaseUid || getStoredUser()?.firebaseUid || null,
         };
-        console.log("Profile parsed user object:", userObj);
+        console.log("[v0] Profile parsed user object:", userObj);
         setUser(userObj);
         setStoredUser(userObj);
         return userObj;
       } else {
-        console.log("Profile fetch failed with status:", res.status, data);
+        console.log("[v0] Profile fetch failed with status:", res.status, data);
       }
     } catch (err) {
-      console.error("Profile fetch error:", err.message);
+      console.error("[v0] Profile fetch error:", err.message);
     }
     return null;
   }, []);
@@ -137,6 +161,7 @@ export function AuthProvider({ children }) {
     const userObj = {
       id: data.userId || data.user?.id || data.id,
       email: data.email || email,
+      username: data.username || "",
       fullName: data.fullName || data.full_name || "",
       phone: data.phone || "",
       avatar: data.avatar_url || "",
@@ -227,6 +252,10 @@ export function AuthProvider({ children }) {
       setError(msg);
       throw new Error(msg);
     }
+    // Store personal info for later use in profile completion
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("sns_registration_info", JSON.stringify({ email, fullName, username }));
+    }
     return data;
   }, []);
 
@@ -284,10 +313,24 @@ export function AuthProvider({ children }) {
       setTokens(tokens);
     }
 
+    // Retrieve personal info from sessionStorage
+    let registrationInfo = { fullName: "", username: "" };
+    if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem("sns_registration_info");
+        if (stored) {
+          registrationInfo = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.log("Could not retrieve registration info");
+      }
+    }
+
     const userObj = {
       id: data.userId || data.user?.id,
       email: email,
-      fullName: data.full_name || "",
+      username: registrationInfo.username || data.username || "",
+      fullName: registrationInfo.fullName || data.full_name || "",
       phone: data.phone || "",
       avatar: avatarUrl || "",
       authMethod: "email",
@@ -295,6 +338,7 @@ export function AuthProvider({ children }) {
     setUser(userObj);
     setStoredUser(userObj);
     sessionStorage.removeItem("temp_userId");
+    sessionStorage.removeItem("sns_registration_info");
 
     // Redirect to profile page after registration completion
     setTimeout(() => {

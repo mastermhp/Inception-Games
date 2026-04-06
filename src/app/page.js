@@ -3,12 +3,10 @@ import Header from "./components/Header"
 import HeroSection from "./components/HeroSection"
 import TournamentCarousel from "./components/TournamentCarousel.js"
 import TrustedBrands from "./components/TrustedBrands"
-import RisingStarsCarousel from "./components/RisingStarsCarousel"
 import UpcomingEvents from "./components/UpcomingEvents"
 import LatestNews from "./components/LatestNews"
 import ContactSection from "./components/ContactSection"
 import Footer from "./components/Footer"
-import ComingSoon from "./components/ComingSoon"
 
 export default function Home() {
   return (
@@ -18,7 +16,6 @@ export default function Home() {
       {/* <ComingSoon/> */}
       <TournamentCarousel />
       <TrustedBrands />
-      {/* <RisingStarsCarousel /> */}
       <UpcomingEvents />
       <LatestNews />
       <ContactSection />

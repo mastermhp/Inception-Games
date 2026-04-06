@@ -4,15 +4,13 @@ import { useState, useEffect } from 'react'
 import { Menu, X, User } from 'lucide-react'
 import Link from 'next/link'
 import UnifiedAuthModal from './AuthModals/UnifiedAuthModal'
-import ProfileSettings from './ProfileSettings'
-import { useAuth } from '@/app/context/AuthContext'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
-  const [profileSettingsOpen, setProfileSettingsOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -144,9 +142,10 @@ export default function Header() {
               )} */}
 
               {isAuthenticated && user && (
-                <button
-                  onClick={() => { setProfileSettingsOpen(true); setMobileMenuOpen(false) }}
+                <Link
+                  href="/profile"
                   className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition"
+                  onClick={handleLinkClick}
                 >
                   {user.avatar ? (
                     <img src={user.avatar} alt="" className="w-5 h-5 rounded-full object-cover" />
@@ -154,7 +153,7 @@ export default function Header() {
                     <User size={18} />
                   )}
                   {user.fullName || user.email}
-                </button>
+                </Link>
               )}
             </nav>
           </motion.div>
@@ -167,7 +166,6 @@ export default function Header() {
         onClose={() => setLoginModalOpen(false)}
         initialMode="login"
       />
-      <ProfileSettings isOpen={profileSettingsOpen} onClose={() => setProfileSettingsOpen(false)} />
     </>
   )
 }

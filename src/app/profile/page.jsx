@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/app/context/AuthContext'
+// import { useAuth } from '@/hooks/useAuth.js'
 import { useRouter } from 'next/navigation'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -14,6 +14,7 @@ import MatchHistory from '../components/ProfileComponents/MatchHistory'
 import Availability from '../components/ProfileComponents/Availability'
 import FeaturedCarousel from '../components/ProfileComponents/FeaturedCarousel'
 import EditProfileModal from '../components/ProfileComponents/EditProfileModal'
+import { useAuth } from '../context/AuthContext'
 
 export default function ProfilePage() {
   const { user, isAuthenticated, loading, fetchProfile } = useAuth()
@@ -56,7 +57,9 @@ export default function ProfilePage() {
   }, [user])
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    // Only redirect if loading is complete and user is not authenticated
+    if (loading === false && !isAuthenticated) {
+      console.log("[v0] Profile page - user not authenticated, redirecting to home")
       router.push('/')
     }
   }, [isAuthenticated, loading, router])
@@ -78,24 +81,30 @@ export default function ProfilePage() {
     )
   }
 
-  // Merge API user data with gaming profile
-  // Sanitize game field -- it may be an object {id, name, image} from subscription flow
-  const rawGame = gamingProfile?.game || ''
-  const gameName = typeof rawGame === 'object' && rawGame !== null ? (rawGame.name || '') : String(rawGame)
-
+  // Use user data from API which includes gaming profile data
+  // The user object already contains primaryGame, gameRole, rank, region, etc. from the API
   const mergedUser = {
     ...user,
-    username: gamingProfile?.username || user.fullName || user.email?.split('@')[0] || 'Player',
-    bio: gamingProfile?.bio || '',
-    game: gameName,
-    role: gamingProfile?.role || '',
-    region: gamingProfile?.region || '',   
-    rank: gamingProfile?.rank || '',
-    discord: gamingProfile?.discord || '',
-    games: gameName ? [gameName] : [],
-    profileImagePreview: gamingProfile?.profileImagePreview || null,
-    bannerImagePreview: gamingProfile?.bannerImagePreview || null,
+    // Use API data first, fallback to gamingProfile sessionStorage if needed
+    username: user?.username || gamingProfile?.username || user?.fullName || user?.email?.split('@')[0] || 'Player',
+    bio: user?.bio || gamingProfile?.bio || '',
+    primaryGame: user?.primaryGame || gamingProfile?.game || '',
+    gameRole: user?.gameRole || gamingProfile?.role || '',
+    region: user?.region || gamingProfile?.region || '',   
+    rank: user?.rank || gamingProfile?.rank || '',
+    discord: user?.discord || gamingProfile?.discord || '',
+    // Legacy fields for compatibility
+    game: user?.primaryGame || gamingProfile?.game || '',
+    role: user?.gameRole || gamingProfile?.role || '',
   }
+  
+  console.log("[v0] Profile page - mergedUser data:", {
+    username: mergedUser.username,
+    primaryGame: mergedUser.primaryGame,
+    gameRole: mergedUser.gameRole,
+    rank: mergedUser.rank,
+    region: mergedUser.region,
+  })
 
   return (
     <div className="min-h-screen bg-[#060608] flex flex-col">

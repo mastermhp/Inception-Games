@@ -1,2543 +1,2543 @@
-"use client";
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { AlertCircle, CheckCircle, X, Loader2, Tag, Copy, Mail, Shield, ArrowRight, User, AtSign, Gamepad2, Globe, Award, MessageCircle, FileText, Camera, ImageIcon, Phone, MapPin, ChevronRight, Check } from "lucide-react";
-import Image from "next/image";
-import ComingSoon from "./ComingSoon";
-import { useAuth } from "@/app/context/AuthContext";
-import { REGION_DATA, CONTINENTS } from "@/lib/regionData";
+// "use client";
+// import { useState, useEffect, useRef } from "react";
+// import { useRouter } from "next/navigation";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { AlertCircle, CheckCircle, X, Loader2, Tag, Copy, Mail, Shield, ArrowRight, User, AtSign, Gamepad2, Globe, Award, MessageCircle, FileText, Camera, ImageIcon, Phone, MapPin, ChevronRight, Check } from "lucide-react";
+// import Image from "next/image";
+// import ComingSoon from "./ComingSoon";
+// import { useAuth } from "@/app/context/AuthContext";
+// import { REGION_DATA, CONTINENTS } from "@/lib/regionData";
 
-const games = [
-  { id: "apex", name: "Apex Legends", image: "/games/apex.png" },
-  {
-    id: "cod-bo7",
-    name: "Call of Duty: Black Ops 7",
-    image: "/games/codm.png",
-  },
-  {
-    id: "cod-warzone",
-    name: "Call of Duty: Warzone",
-    image: "/games/codm.png",
-  },
-  { id: "chess", name: "Chess", image: "/games/chess.png" },
-  { id: "cs2", name: "Counter-Strike 2", image: "/games/csgo.png" },
-  { id: "crossfire", name: "Crossfire", image: "/games/cf.jpeg" },
-  { id: "dota2", name: "Dota 2", image: "/games/dota2.png" },
-  { id: "fc26-pc", name: "FC26 - PC", image: "/games/fifapc.png" },
-  {
-    id: "fc26-consoles",
-    name: "FC26 - Consoles",
-    image: "/games/fcconsole.png",
-  },
-  { id: "fc26-mobile", name: "FC26 - Mobile", image: "/games/fcmobile.png" },
-  {
-    id: "efootball-pc",
-    name: "eFootball - PC",
-    image: "/games/efootballpc.png",
-  },
-  {
-    id: "efootball-consoles",
-    name: "eFootball - Consoles",
-    image: "/games/efootballconsole.png",
-  },
-  {
-    id: "efootball-mobile",
-    name: "eFootball - Mobile",
-    image: "/games/efootballmobile.png",
-  },
-  {
-    id: "fatal-fury",
-    name: "Fatal Fury: City of the Wolves",
-    image: "/games/ff.jpeg",
-  },
-  { id: "freefire", name: "Free Fire", image: "/games/freefire.png" },
-  { id: "hok", name: "Honor of Kings", image: "/games/hk.jpeg" },
-  { id: "lol", name: "League of Legends", image: "/games/lol.png" },
-  { id: "mlbb", name: "Mobile Legends: Bang Bang", image: "/games/mlbb.png" },
-  { id: "overwatch2", name: "Overwatch 2", image: "/games/overwatch.png" },
-  { id: "pubg", name: "PUBG / PUBG: Battlegrounds", image: "/games/pubg.png" },
-  { id: "pubg-mobile", name: "PUBG Mobile", image: "/games/pubg.png" },
-  { id: "r6x", name: "Rainbow Six Siege X", image: "/games/r6.jpeg" },
-  { id: "sf6", name: "Street Fighter 6", image: "/games/sf6.png" },
-  { id: "tft", name: "Teamfight Tactics", image: "/games/tt.jpeg" },
-  { id: "valorant", name: "VALORANT", image: "/games/valorant.png" },
-  {
-    id: "valorant-mobile",
-    name: "VALORANT Mobile",
-    image: "/games/valorant.png",
-  },
-  { id: "coc", name: "Clash of Clans", image: "/games/coc.png" },
-];
+// const games = [
+//   { id: "apex", name: "Apex Legends", image: "/games/apex.png" },
+//   {
+//     id: "cod-bo7",
+//     name: "Call of Duty: Black Ops 7",
+//     image: "/games/codm.png",
+//   },
+//   {
+//     id: "cod-warzone",
+//     name: "Call of Duty: Warzone",
+//     image: "/games/codm.png",
+//   },
+//   { id: "chess", name: "Chess", image: "/games/chess.png" },
+//   { id: "cs2", name: "Counter-Strike 2", image: "/games/csgo.png" },
+//   { id: "crossfire", name: "Crossfire", image: "/games/cf.jpeg" },
+//   { id: "dota2", name: "Dota 2", image: "/games/dota2.png" },
+//   { id: "fc26-pc", name: "FC26 - PC", image: "/games/fifapc.png" },
+//   {
+//     id: "fc26-consoles",
+//     name: "FC26 - Consoles",
+//     image: "/games/fcconsole.png",
+//   },
+//   { id: "fc26-mobile", name: "FC26 - Mobile", image: "/games/fcmobile.png" },
+//   {
+//     id: "efootball-pc",
+//     name: "eFootball - PC",
+//     image: "/games/efootballpc.png",
+//   },
+//   {
+//     id: "efootball-consoles",
+//     name: "eFootball - Consoles",
+//     image: "/games/efootballconsole.png",
+//   },
+//   {
+//     id: "efootball-mobile",
+//     name: "eFootball - Mobile",
+//     image: "/games/efootballmobile.png",
+//   },
+//   {
+//     id: "fatal-fury",
+//     name: "Fatal Fury: City of the Wolves",
+//     image: "/games/ff.jpeg",
+//   },
+//   { id: "freefire", name: "Free Fire", image: "/games/freefire.png" },
+//   { id: "hok", name: "Honor of Kings", image: "/games/hk.jpeg" },
+//   { id: "lol", name: "League of Legends", image: "/games/lol.png" },
+//   { id: "mlbb", name: "Mobile Legends: Bang Bang", image: "/games/mlbb.png" },
+//   { id: "overwatch2", name: "Overwatch 2", image: "/games/overwatch.png" },
+//   { id: "pubg", name: "PUBG / PUBG: Battlegrounds", image: "/games/pubg.png" },
+//   { id: "pubg-mobile", name: "PUBG Mobile", image: "/games/pubg.png" },
+//   { id: "r6x", name: "Rainbow Six Siege X", image: "/games/r6.jpeg" },
+//   { id: "sf6", name: "Street Fighter 6", image: "/games/sf6.png" },
+//   { id: "tft", name: "Teamfight Tactics", image: "/games/tt.jpeg" },
+//   { id: "valorant", name: "VALORANT", image: "/games/valorant.png" },
+//   {
+//     id: "valorant-mobile",
+//     name: "VALORANT Mobile",
+//     image: "/games/valorant.png",
+//   },
+//   { id: "coc", name: "Clash of Clans", image: "/games/coc.png" },
+// ];
 
-const GAME_NAMES = ["Valorant", "League of Legends", "CS:GO", "Dota 2", "Fortnite", "Apex Legends", "PUBG Mobile", "Free Fire", "MLBB", "Call of Duty Mobile", "PUBG PC"];
-const ROLES = {
-  Valorant: ["Duelist", "Controller", "Initiator", "Sentinel"],
-  "League of Legends": ["Top", "Jungle", "Mid", "ADC", "Support"],
-  "CS:GO": ["Rifler", "AWPer", "Support", "Entry", "IGL"],
-  "Dota 2": ["Carry", "Mid", "Off-lane", "Support", "Hard Support"],
-  Fortnite: ["Solo", "Team", "Creative"],
-  "Apex Legends": ["Assault", "Tracker", "Support", "Recon"],
-  "PUBG Mobile": ["Assaulter", "Sniper", "Support", "IGL", "Scout"],
-  "Free Fire": ["Rusher", "Sniper", "Support", "Leader"],
-  "MLBB": ["Tank", "Fighter", "Assassin", "Mage", "Marksman", "Support"],
-  "Call of Duty Mobile": ["Slayer", "Objective", "Support", "Anchor", "Flex"],
-  "PUBG PC": ["Assaulter", "Sniper", "Support", "IGL", "Scout"],
-};
-const RANKS = {
-  Valorant: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"],
-  "League of Legends": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"],
-  "CS:GO": ["Silver 1", "Silver 2", "SEM", "Gold Nova", "GN2", "GN3", "MG", "DMG", "LE", "LEM", "SMFC", "Global"],
-  "Dota 2": ["Herald", "Guardian", "Crusader", "Archon", "Legend", "Ancient", "Divine", "Immortal"],
-  Fortnite: ["Open", "Contender", "Champion"],
-  "Apex Legends": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Apex Predator"],
-  "PUBG Mobile": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Conqueror"],
-  "Free Fire": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
-  "MLBB": ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic", "Mythical Glory"],
-  "Call of Duty Mobile": ["Rookie", "Veteran", "Elite", "Pro", "Master", "Grandmaster", "Legendary"],
-  "PUBG PC": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Conqueror"],
-};
+// const GAME_NAMES = ["Valorant", "League of Legends", "CS:GO", "Dota 2", "Fortnite", "Apex Legends", "PUBG Mobile", "Free Fire", "MLBB", "Call of Duty Mobile", "PUBG PC"];
+// const ROLES = {
+//   Valorant: ["Duelist", "Controller", "Initiator", "Sentinel"],
+//   "League of Legends": ["Top", "Jungle", "Mid", "ADC", "Support"],
+//   "CS:GO": ["Rifler", "AWPer", "Support", "Entry", "IGL"],
+//   "Dota 2": ["Carry", "Mid", "Off-lane", "Support", "Hard Support"],
+//   Fortnite: ["Solo", "Team", "Creative"],
+//   "Apex Legends": ["Assault", "Tracker", "Support", "Recon"],
+//   "PUBG Mobile": ["Assaulter", "Sniper", "Support", "IGL", "Scout"],
+//   "Free Fire": ["Rusher", "Sniper", "Support", "Leader"],
+//   "MLBB": ["Tank", "Fighter", "Assassin", "Mage", "Marksman", "Support"],
+//   "Call of Duty Mobile": ["Slayer", "Objective", "Support", "Anchor", "Flex"],
+//   "PUBG PC": ["Assaulter", "Sniper", "Support", "IGL", "Scout"],
+// };
+// const RANKS = {
+//   Valorant: ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Ascendant", "Immortal", "Radiant"],
+//   "League of Legends": ["Iron", "Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Grandmaster", "Challenger"],
+//   "CS:GO": ["Silver 1", "Silver 2", "SEM", "Gold Nova", "GN2", "GN3", "MG", "DMG", "LE", "LEM", "SMFC", "Global"],
+//   "Dota 2": ["Herald", "Guardian", "Crusader", "Archon", "Legend", "Ancient", "Divine", "Immortal"],
+//   Fortnite: ["Open", "Contender", "Champion"],
+//   "Apex Legends": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Apex Predator"],
+//   "PUBG Mobile": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Crown", "Ace", "Conqueror"],
+//   "Free Fire": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Heroic", "Grandmaster"],
+//   "MLBB": ["Warrior", "Elite", "Master", "Grandmaster", "Epic", "Legend", "Mythic", "Mythical Glory"],
+//   "Call of Duty Mobile": ["Rookie", "Veteran", "Elite", "Pro", "Master", "Grandmaster", "Legendary"],
+//   "PUBG PC": ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Master", "Conqueror"],
+// };
 
-const AnimatedInput = ({
-  label,
-  type = "text",
-  name,
-  value,
-  onChange,
-  required = false,
-  className = "",
-  disabled = false,
-  onPaste,
-}) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const hasValue = value && value.length > 0;
+// const AnimatedInput = ({
+//   label,
+//   type = "text",
+//   name,
+//   value,
+//   onChange,
+//   required = false,
+//   className = "",
+//   disabled = false,
+//   onPaste,
+// }) => {
+//   const [isFocused, setIsFocused] = useState(false);
+//   const hasValue = value && value.length > 0;
 
-  return (
-    <div className="relative">
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onPaste={onPaste}
-        disabled={disabled}
-        className={`w-full bg-gray-800 border border-gray-700 focus:border-purple-500 p-3 pt-6 rounded-lg outline-none transition-all peer ${disabled ? "opacity-50 cursor-not-allowed" : ""
-          } ${className}`}
-        required={required}
-      />
-      <motion.label
-        className={`absolute left-3 text-gray-400 pointer-events-none transition-all duration-200 ${isFocused || hasValue
-            ? "top-1.5 text-xs text-purple-400 font-medium"
-            : "top-3.5 text-base"
-          }`}
-        initial={false}
-        animate={{
-          y: isFocused || hasValue ? 0 : 0,
-          scale: isFocused || hasValue ? 0.85 : 1,
-        }}
-      >
-        {label} {required && <span className="text-pink-500">*</span>}
-      </motion.label>
-    </div>
-  );
-};
+//   return (
+//     <div className="relative">
+//       <input
+//         type={type}
+//         name={name}
+//         value={value}
+//         onChange={onChange}
+//         onFocus={() => setIsFocused(true)}
+//         onBlur={() => setIsFocused(false)}
+//         onPaste={onPaste}
+//         disabled={disabled}
+//         className={`w-full bg-gray-800 border border-gray-700 focus:border-purple-500 p-3 pt-6 rounded-lg outline-none transition-all peer ${disabled ? "opacity-50 cursor-not-allowed" : ""
+//           } ${className}`}
+//         required={required}
+//       />
+//       <motion.label
+//         className={`absolute left-3 text-gray-400 pointer-events-none transition-all duration-200 ${isFocused || hasValue
+//             ? "top-1.5 text-xs text-purple-400 font-medium"
+//             : "top-3.5 text-base"
+//           }`}
+//         initial={false}
+//         animate={{
+//           y: isFocused || hasValue ? 0 : 0,
+//           scale: isFocused || hasValue ? 0.85 : 1,
+//         }}
+//       >
+//         {label} {required && <span className="text-pink-500">*</span>}
+//       </motion.label>
+//     </div>
+//   );
+// };
 
-export default function SignupModal({
-  isOpen,
-  onClose,
-  showPayment = false,
-  eventType = "",
-  price = 0,
-  flowType = "default",
-  showPlanSelection = false,
-  showBrandDealType = false,
-  showScrimsDuration = false,
-  initialPlan = null,
-  initialBrandType = null,
-  initialScrimsDuration = null,
-  subscriptionId = null,
-}) {
-  const [selectedPlan, setSelectedPlan] = useState(initialPlan);
-  const [selectedBrandType, setSelectedBrandType] = useState(initialBrandType);
-  const [selectedScrimsDuration, setSelectedScrimsDuration] = useState(initialScrimsDuration);
-  const [selectedGames, setSelectedGames] = useState([]);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    username: "",
-    discord: "",
-    bio: "",
-    game: "",
-    role: "",
-    rank: "",
-    continent: "",
-    country: "",
-    city: "",
-    University: "",
-    district: "",
-    fbUrl: "",
-    youtubeUrl: "",
-    trnxId: "",
-    trnxIdConfirm: "",
-  });
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
-  const [bannerImagePreview, setBannerImagePreview] = useState(null);
-  const profileInputRef = useRef(null);
-  const bannerInputRef = useRef(null);
+// export default function SignupModal({
+//   isOpen,
+//   onClose,
+//   showPayment = false,
+//   eventType = "",
+//   price = 0,
+//   flowType = "default",
+//   showPlanSelection = false,
+//   showBrandDealType = false,
+//   showScrimsDuration = false,
+//   initialPlan = null,
+//   initialBrandType = null,
+//   initialScrimsDuration = null,
+//   subscriptionId = null,
+// }) {
+//   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
+//   const [selectedBrandType, setSelectedBrandType] = useState(initialBrandType);
+//   const [selectedScrimsDuration, setSelectedScrimsDuration] = useState(initialScrimsDuration);
+//   const [selectedGames, setSelectedGames] = useState([]);
+//   const [formData, setFormData] = useState({
+//     fullName: "",
+//     email: "",
+//     phone: "",
+//     username: "",
+//     discord: "",
+//     bio: "",
+//     game: "",
+//     role: "",
+//     rank: "",
+//     continent: "",
+//     country: "",
+//     city: "",
+//     University: "",
+//     district: "",
+//     fbUrl: "",
+//     youtubeUrl: "",
+//     trnxId: "",
+//     trnxIdConfirm: "",
+//   });
+//   const [profileImagePreview, setProfileImagePreview] = useState(null);
+//   const [bannerImagePreview, setBannerImagePreview] = useState(null);
+//   const profileInputRef = useRef(null);
+//   const bannerInputRef = useRef(null);
 
-  const [promoCode, setPromoCode] = useState("");
-  const [promoCodeData, setPromoCodeData] = useState(null); // Stores validated promo data
-  const [promoCodeError, setPromoCodeError] = useState("");
-  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
-  const [discountedPrice, setDiscountedPrice] = useState(null);
+//   const [promoCode, setPromoCode] = useState("");
+//   const [promoCodeData, setPromoCodeData] = useState(null); // Stores validated promo data
+//   const [promoCodeError, setPromoCodeError] = useState("");
+//   const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+//   const [discountedPrice, setDiscountedPrice] = useState(null);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [notification, setNotification] = useState({
-    show: false,
-    type: "",
-    message: "",
-  });
-  const [qrImageError, setQrImageError] = useState(false);
-  const [qrImageError2, setQrImageError2] = useState(false);
-  const [registrationStep, setRegistrationStep] = useState(null); // null | 'profile' | 'completing'
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [notification, setNotification] = useState({
+//     show: false,
+//     type: "",
+//     message: "",
+//   });
+//   const [qrImageError, setQrImageError] = useState(false);
+//   const [qrImageError2, setQrImageError2] = useState(false);
+//   const [registrationStep, setRegistrationStep] = useState(null); // null | 'profile' | 'completing'
 
-  // --- Account auto-creation (OTP verification after subscription) ---
-  const router = useRouter();
-  const { user: authUser, signupSendOTP, signupVerifyOTP, loginSendOTP, loginVerifyOTP, updateProfile, registerPersonalInfo, registerGamingProfile, registerProfileImages } = useAuth();
-  const [otpStep, setOtpStep] = useState(null); // null | 'sending' | 'input' | 'verifying' | 'success'
-  const [otpValue, setOtpValue] = useState("");
-  const [otpError, setOtpError] = useState("");
-  const [otpAuthMode, setOtpAuthMode] = useState("signup"); // 'signup' | 'login'
-  const [accountPhone, setAccountPhone] = useState(""); // phone used for signup
-  const [accountEmail, setAccountEmail] = useState(""); // email used for signup
-  const otpInputRefs = useRef([]);
+//   // --- Account auto-creation (OTP verification after subscription) ---
+//   const router = useRouter();
+//   const { user: authUser, signupSendOTP, signupVerifyOTP, loginSendOTP, loginVerifyOTP, updateProfile, registerPersonalInfo, registerGamingProfile, registerProfileImages } = useAuth();
+//   const [otpStep, setOtpStep] = useState(null); // null | 'sending' | 'input' | 'verifying' | 'success'
+//   const [otpValue, setOtpValue] = useState("");
+//   const [otpError, setOtpError] = useState("");
+//   const [otpAuthMode, setOtpAuthMode] = useState("signup"); // 'signup' | 'login'
+//   const [accountPhone, setAccountPhone] = useState(""); // phone used for signup
+//   const [accountEmail, setAccountEmail] = useState(""); // email used for signup
+//   const otpInputRefs = useRef([]);
 
-  const handleCopy = (value) => {
-    navigator.clipboard.writeText(value);
-    console.log("Copied:", value); // replace with toast if you want
-  };
+//   const handleCopy = (value) => {
+//     navigator.clipboard.writeText(value);
+//     console.log("Copied:", value); // replace with toast if you want
+//   };
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedPlan(initialPlan);
-      setSelectedBrandType(initialBrandType);
-      setSelectedScrimsDuration(initialScrimsDuration);
-      setSelectedGames([]);
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        username: "",
-        discord: "",
-        bio: "",
-        game: "",
-        role: "",
-        rank: "",
-        continent: "",
-        country: "",
-        city: "",
-        University: "",
-        district: "",
-        fbUrl: "",
-        youtubeUrl: "",
-        trnxId: "",
-        trnxIdConfirm: "",
-      });
-      setPromoCode("");
-      setPromoCodeData(null);
-      setPromoCodeError("");
-      setDiscountedPrice(null);
-      setQrImageError(false);
-      setQrImageError2(false);
-      setOtpStep(null);
-      setOtpValue("");
-      setOtpError("");
-      setOtpAuthMode("signup");
-      setAccountPhone("");
-      setAccountEmail("");
-      setRegistrationStep(null);
-      setProfileImagePreview(null);
-      setBannerImagePreview(null);
-    }
-  }, [isOpen, initialPlan, initialBrandType, initialScrimsDuration]);
+//   useEffect(() => {
+//     if (!isOpen) {
+//       setSelectedPlan(initialPlan);
+//       setSelectedBrandType(initialBrandType);
+//       setSelectedScrimsDuration(initialScrimsDuration);
+//       setSelectedGames([]);
+//       setFormData({
+//         fullName: "",
+//         email: "",
+//         phone: "",
+//         username: "",
+//         discord: "",
+//         bio: "",
+//         game: "",
+//         role: "",
+//         rank: "",
+//         continent: "",
+//         country: "",
+//         city: "",
+//         University: "",
+//         district: "",
+//         fbUrl: "",
+//         youtubeUrl: "",
+//         trnxId: "",
+//         trnxIdConfirm: "",
+//       });
+//       setPromoCode("");
+//       setPromoCodeData(null);
+//       setPromoCodeError("");
+//       setDiscountedPrice(null);
+//       setQrImageError(false);
+//       setQrImageError2(false);
+//       setOtpStep(null);
+//       setOtpValue("");
+//       setOtpError("");
+//       setOtpAuthMode("signup");
+//       setAccountPhone("");
+//       setAccountEmail("");
+//       setRegistrationStep(null);
+//       setProfileImagePreview(null);
+//       setBannerImagePreview(null);
+//     }
+//   }, [isOpen, initialPlan, initialBrandType, initialScrimsDuration]);
 
-  // Sync initial values when props change (e.g. modal reopens with different subscription)
-  useEffect(() => {
-    if (isOpen) {
-      if (initialPlan) setSelectedPlan(initialPlan);
-      if (initialBrandType) setSelectedBrandType(initialBrandType);
-      if (initialScrimsDuration) setSelectedScrimsDuration(initialScrimsDuration);
-    }
-  }, [isOpen, initialPlan, initialBrandType, initialScrimsDuration]);
+//   // Sync initial values when props change (e.g. modal reopens with different subscription)
+//   useEffect(() => {
+//     if (isOpen) {
+//       if (initialPlan) setSelectedPlan(initialPlan);
+//       if (initialBrandType) setSelectedBrandType(initialBrandType);
+//       if (initialScrimsDuration) setSelectedScrimsDuration(initialScrimsDuration);
+//     }
+//   }, [isOpen, initialPlan, initialBrandType, initialScrimsDuration]);
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+//   const handleInputChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
 
-  const handleConfirmTrnxPaste = (e) => {
-    e.preventDefault();
-    showNotification(
-      "error",
-      "Please type the Transaction ID manually. Copy-paste is not allowed for confirmation.",
-    );
-  };
+//   const handleConfirmTrnxPaste = (e) => {
+//     e.preventDefault();
+//     showNotification(
+//       "error",
+//       "Please type the Transaction ID manually. Copy-paste is not allowed for confirmation.",
+//     );
+//   };
 
-  const formatPhoneNumber = (phone) => {
-    let cleaned = phone.replace(/[\s-]/g, "");
-    if (cleaned.startsWith("0")) {
-      cleaned = "+880" + cleaned.substring(1);
-    } else if (cleaned.startsWith("880") && !cleaned.startsWith("+880")) {
-      cleaned = "+" + cleaned;
-    } else if (!cleaned.startsWith("+")) {
-      cleaned = "+880" + cleaned;
-    }
-    return cleaned;
-  };
+//   const formatPhoneNumber = (phone) => {
+//     let cleaned = phone.replace(/[\s-]/g, "");
+//     if (cleaned.startsWith("0")) {
+//       cleaned = "+880" + cleaned.substring(1);
+//     } else if (cleaned.startsWith("880") && !cleaned.startsWith("+880")) {
+//       cleaned = "+" + cleaned;
+//     } else if (!cleaned.startsWith("+")) {
+//       cleaned = "+880" + cleaned;
+//     }
+//     return cleaned;
+//   };
 
-  // Compute subscription key for tracking - prefer explicit subscriptionId prop
-  const getSubKey = () => {
-    if (subscriptionId) return subscriptionId;
-    const dur = selectedScrimsDuration || initialScrimsDuration;
-    const brand = selectedBrandType || initialBrandType;
-    const plan = selectedPlan || initialPlan;
-    if (dur) return `scrims-${dur === "7days" ? "7" : dur === "15days" ? "15" : "30"}`;
-    if (brand) return `brand-${brand}`;
-    if (plan) return `newsletter-${plan}`;
-    if (flowType === "tournament") return "tournament";
-    return flowType || "unknown";
-  };
+//   // Compute subscription key for tracking - prefer explicit subscriptionId prop
+//   const getSubKey = () => {
+//     if (subscriptionId) return subscriptionId;
+//     const dur = selectedScrimsDuration || initialScrimsDuration;
+//     const brand = selectedBrandType || initialBrandType;
+//     const plan = selectedPlan || initialPlan;
+//     if (dur) return `scrims-${dur === "7days" ? "7" : dur === "15days" ? "15" : "30"}`;
+//     if (brand) return `brand-${brand}`;
+//     if (plan) return `newsletter-${plan}`;
+//     if (flowType === "tournament") return "tournament";
+//     return flowType || "unknown";
+//   };
 
-  // Save subscription to sessionStorage immediately on success
-  const saveSubscriptionTracking = () => {
-    if (typeof window === "undefined") return;
-    const subKey = getSubKey();
-    try {
-      const existing = JSON.parse(sessionStorage.getItem("sns_subscriptions") || "{}");
-      existing[subKey] = true;
-      sessionStorage.setItem("sns_subscriptions", JSON.stringify(existing));
-    } catch {}
-  };
+//   // Save subscription to sessionStorage immediately on success
+//   const saveSubscriptionTracking = () => {
+//     if (typeof window === "undefined") return;
+//     const subKey = getSubKey();
+//     try {
+//       const existing = JSON.parse(sessionStorage.getItem("sns_subscriptions") || "{}");
+//       existing[subKey] = true;
+//       sessionStorage.setItem("sns_subscriptions", JSON.stringify(existing));
+//     } catch {}
+//   };
 
-  const showNotification = (type, message, skipAutoAccount = false) => {
-    setNotification({ show: true, type, message });
-    // Always save subscription tracking on success, regardless of auth state
-    if (type === "success") {
-      saveSubscriptionTracking();
-    }
-    if (type === "success" && !skipAutoAccount && !authUser) {
-      // Don't auto-close on success -- we'll trigger OTP account creation
-      // Clear notification after 3s, then the OTP step takes over
-      setTimeout(() => {
-        setNotification({ show: false, type: "", message: "" });
-      }, 3000);
-    } else {
-      setTimeout(() => {
-        setNotification({ show: false, type: "", message: "" });
-        if (type === "success") {
-          onClose();
-        }
-      }, 5000);
-    }
-  };
+//   const showNotification = (type, message, skipAutoAccount = false) => {
+//     setNotification({ show: true, type, message });
+//     // Always save subscription tracking on success, regardless of auth state
+//     if (type === "success") {
+//       saveSubscriptionTracking();
+//     }
+//     if (type === "success" && !skipAutoAccount && !authUser) {
+//       // Don't auto-close on success -- we'll trigger OTP account creation
+//       // Clear notification after 3s, then the OTP step takes over
+//       setTimeout(() => {
+//         setNotification({ show: false, type: "", message: "" });
+//       }, 3000);
+//     } else {
+//       setTimeout(() => {
+//         setNotification({ show: false, type: "", message: "" });
+//         if (type === "success") {
+//           onClose();
+//         }
+//       }, 5000);
+//     }
+//   };
 
-  // --- Auto-create account after successful subscription ---
-  const triggerAccountCreation = async (email, phone) => {
-    if (authUser) return; // Already logged in
-    setOtpStep("sending");
-    setOtpError("");
-    setAccountPhone(phone);
-    setAccountEmail(email);
-    try {
-      // Try signup first
-      await signupSendOTP(email, phone);
-      setOtpAuthMode("signup");
-      setOtpStep("input");
-    } catch (signupErr) {
-      console.log("[v0] Signup OTP failed, trying login:", signupErr.message);
-      // If user already exists, fall back to login
-      try {
-        await loginSendOTP(email);
-        setOtpAuthMode("login");
-        setOtpStep("input");
-      } catch (loginErr) {
-        console.log("[v0] Login OTP also failed:", loginErr.message);
-        setOtpError("Could not send OTP. You can create an account later from the Sign Up page.");
-        setOtpStep(null);
-      }
-    }
-  };
+//   // --- Auto-create account after successful subscription ---
+//   const triggerAccountCreation = async (email, phone) => {
+//     if (authUser) return; // Already logged in
+//     setOtpStep("sending");
+//     setOtpError("");
+//     setAccountPhone(phone);
+//     setAccountEmail(email);
+//     try {
+//       // Try signup first
+//       await signupSendOTP(email, phone);
+//       setOtpAuthMode("signup");
+//       setOtpStep("input");
+//     } catch (signupErr) {
+//       console.log("[v0] Signup OTP failed, trying login:", signupErr.message);
+//       // If user already exists, fall back to login
+//       try {
+//         await loginSendOTP(email);
+//         setOtpAuthMode("login");
+//         setOtpStep("input");
+//       } catch (loginErr) {
+//         console.log("[v0] Login OTP also failed:", loginErr.message);
+//         setOtpError("Could not send OTP. You can create an account later from the Sign Up page.");
+//         setOtpStep(null);
+//       }
+//     }
+//   };
 
-  const handleOtpVerify = async () => {
-    if (otpValue.length < 4) {
-      setOtpError("Please enter the complete OTP");
-      return;
-    }
-    setOtpStep("verifying");
-    setOtpError("");
-    const email = formData.email;
-    try {
-      if (otpAuthMode === "signup") {
-        await signupVerifyOTP(email, otpValue, accountPhone);
-      } else {
-        await loginVerifyOTP(email, otpValue);
-      }
+//   const handleOtpVerify = async () => {
+//     if (otpValue.length < 4) {
+//       setOtpError("Please enter the complete OTP");
+//       return;
+//     }
+//     setOtpStep("verifying");
+//     setOtpError("");
+//     const email = formData.email;
+//     try {
+//       if (otpAuthMode === "signup") {
+//         await signupVerifyOTP(email, otpValue, accountPhone);
+//       } else {
+//         await loginVerifyOTP(email, otpValue);
+//       }
       
-      // Now show the profile completion form
-      setRegistrationStep("profile");
-      setOtpStep(null);
-      console.log("[v0] OTP verified, showing profile completion form");
-    } catch (err) {
-      setOtpError(err.message || "Invalid OTP. Please try again.");
-      setOtpStep("input");
-    }
-  };
+//       // Now show the profile completion form
+//       setRegistrationStep("profile");
+//       setOtpStep(null);
+//       console.log("[v0] OTP verified, showing profile completion form");
+//     } catch (err) {
+//       setOtpError(err.message || "Invalid OTP. Please try again.");
+//       setOtpStep("input");
+//     }
+//   };
 
-  const handleImageChange = (e, type) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setNotification({ show: true, type: "error", message: "Image must be less than 5MB" });
-      return;
-    }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === "profile") setProfileImagePreview(reader.result);
-      else setBannerImagePreview(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
+//   const handleImageChange = (e, type) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+//     if (file.size > 5 * 1024 * 1024) {
+//       setNotification({ show: true, type: "error", message: "Image must be less than 5MB" });
+//       return;
+//     }
+//     const reader = new FileReader();
+//     reader.onloadend = () => {
+//       if (type === "profile") setProfileImagePreview(reader.result);
+//       else setBannerImagePreview(reader.result);
+//     };
+//     reader.readAsDataURL(file);
+//   };
 
-  const handleCompleteProfile = async () => {
-    setRegistrationStep("completing");
-    try {
-      console.log("[v0] Saving personal info:", { fullName: formData.fullName, username: formData.username });
+//   const handleCompleteProfile = async () => {
+//     setRegistrationStep("completing");
+//     try {
+//       console.log("[v0] Saving personal info:", { fullName: formData.fullName, username: formData.username });
       
-      // Step 1: Save personal info
-      await registerPersonalInfo(accountEmail, formData.fullName, formData.username);
-
-      // Step 2: Save gaming profile if game selected
-      if (formData.game) {
-        await registerGamingProfile(accountEmail, {
-          primary_game: formData.game,
-          game_role: formData.role || undefined,
-          rank: formData.rank || undefined,
-          continent: formData.continent || undefined,
-          country: formData.country || undefined,
-        });
-      }
-
-      // Step 3: Save profile images if selected - this also redirects to /profile
-      if (profileImagePreview || bannerImagePreview) {
-        await registerProfileImages(accountEmail, profileImagePreview, bannerImagePreview);
-      } else {
-        // If no images, manually redirect since registerProfileImages won't be called
-        setOtpStep("success");
-        setTimeout(() => {
-          onClose();
-          setRegistrationStep(null);
-          router.push("/profile");
-        }, 1500);
-      }
-    } catch (err) {
-      console.error("[v0] Profile completion error:", err);
-      setNotification({ 
-        show: true, 
-        type: "error", 
-        message: err.message || "Failed to complete profile" 
-      });
-      setRegistrationStep("profile");
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setOtpError("");
-    setOtpValue("");
-    try {
-      if (otpAuthMode === "signup") {
-        await signupSendOTP(formData.email, accountPhone);
-      } else {
-        await loginSendOTP(formData.email);
-      }
-      setOtpError("OTP resent! Check your email.");
-    } catch (err) {
-      setOtpError("Failed to resend OTP: " + err.message);
-    }
-  };
-
-  const getMaxGamesAllowed = () => {
-    if (selectedPlan === "free" || selectedPlan === "premium") return 3;
-    if (selectedBrandType === "solo") return 5;
-    if (selectedBrandType === "team") return 10;
-    if (flowType === "tournament" || flowType.includes("tournament")) return 1;
-    if (flowType === "scrims" || flowType.includes("scrims")) return 2;
-    return 1;
-  };
-
-  const getDurationValue = () => {
-    if (selectedScrimsDuration === "7days") return 7;
-    if (selectedScrimsDuration === "15days") return 15;
-    if (selectedScrimsDuration === "30days") return 30;
-    if (flowType.includes("tournament")) return 30;
-    return null;
-  };
-
-  const getEventTypeForPromo = () => {
-    if (selectedBrandType) return "Brand Deal";
-    if (flowType.includes("tournament")) return "Tournament";
-    if (flowType.includes("scrims") || selectedScrimsDuration) return "Scrims";
-    return null;
-  };
-
-  const getBasePrice = () => {
-    if (selectedPlan === "premium") return 99;
-    if (selectedPlan === "free") return 0;
-    if (selectedBrandType === "solo") return 499; // Updated price
-    if (selectedBrandType === "team") return 999; // Updated price
-    if (selectedScrimsDuration === "7days") return 199;
-    if (selectedScrimsDuration === "15days") return 349;
-    if (selectedScrimsDuration === "30days") return 499;
-    if (flowType.includes("tournament")) return 499;
-    return price;
-  };
-
-  const validatePromoCode = async () => {
-    if (!promoCode.trim()) {
-      setPromoCodeError("Please enter a promo code");
-      return;
-    }
-
-    setIsValidatingPromo(true);
-    setPromoCodeError("");
-    setPromoCodeData(null);
-    setDiscountedPrice(null);
-
-    try {
-      // Promo code validation will be implemented with new API later
-      setPromoCodeError("Promo code validation is temporarily disabled");
-    } catch (error) {
-      console.error("[v0] Promo code validation error:", error);
-      setPromoCodeError("Failed to validate promo code. Please try again.");
-    } finally {
-      setIsValidatingPromo(false);
-    }
-  };
-
-  const removePromoCode = () => {
-    setPromoCode("");
-    setPromoCodeData(null);
-    setPromoCodeError("");
-    setDiscountedPrice(null);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const currentPrice =
-      discountedPrice !== null ? discountedPrice : getBasePrice();
-    if (currentPrice > 0) {
-      if (formData.trnxId !== formData.trnxIdConfirm) {
-        showNotification(
-          "error",
-          "Transaction IDs do not match. Please enter the same Transaction ID in both fields.",
-        );
-        return;
-      }
-      if (!formData.trnxId.trim()) {
-        showNotification("error", "Please enter your Transaction ID.");
-        return;
-      }
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const formattedPhone = formatPhoneNumber(formData.phone);
-
-      if (
-        selectedPlan &&
-        (selectedPlan === "free" || selectedPlan === "premium")
-      ) {
-        const payload = {
-          name: formData.fullName,
-          email: formData.email,
-          phone: formattedPhone,
-          tier: selectedPlan,
-          games: selectedGames.map((g) => g.name),
-          interests: ["gaming", "esports"],
-          source: "website",
-        };
-
-        if (selectedPlan === "premium" && currentPrice > 0) {
-          payload.trnxId = formData.trnxId;
-        }
-
-        // Keeping this for future compatibility
-
-        console.log("[v0] Newsletter subscription payload:", payload);
-
-        const baseURL = "https://inception-games.an.r.appspot.com";
-        const res = await fetch(
-          `${baseURL}/api/v1/auth/register/send-otp`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: payload.email, phone: payload.phone }),
-          },
-        );
-
-        const responseText = await res.text();
-        let responseData;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch {
-          responseData = { message: responseText || "Unknown error occurred" };
-        }
-
-        console.log("[v0] Newsletter API response:", res.status, responseData);
-
-        if (res.ok) {
-          showNotification(
-            "success",
-            responseData.message ||
-            "Subscription successful! Setting up your account...",
-          );
-          // Trigger auto account creation
-          triggerAccountCreation(formData.email, formattedPhone);
-        } else {
-          const errorMsg = responseData.errors
-            ? responseData.errors.map((e) => e.message || e.msg || e).join(", ")
-            : responseData.message || "Something went wrong. Please try again.";
-          showNotification("error", errorMsg);
-        }
-      } else if (
-        selectedBrandType ||
-        flowType.includes("tournament") ||
-        flowType.includes("scrims") ||
-        selectedScrimsDuration
-      ) {
-        const payload = {
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formattedPhone,
-          University: formData.University,
-          district: formData.district,
-          trnxId: formData.trnxId,
-          games: selectedGames.map((g) => g.name),
-          eventName: eventType || "Event Signup",
-        };
-
-        if (formData.fbUrl) payload.fbUrl = formData.fbUrl;
-        if (formData.youtubeUrl) payload.youtubeUrl = formData.youtubeUrl;
-
-        if (promoCodeData?.valid && promoCode.trim()) {
-          payload.promoCode = promoCode.trim().toUpperCase();
-        }
-
-        if (selectedBrandType) {
-          payload.eventType = "Brand Deal";
-          payload.participantType = selectedBrandType;
-        } else if (flowType.includes("tournament")) {
-          payload.eventType = "Tournament";
-          payload.duration = getDurationValue() || 30;
-        } else if (flowType.includes("scrims") || selectedScrimsDuration) {
-          payload.eventType = "Scrims";
-          payload.duration = getDurationValue();
-        }
-
-        console.log("[v0] Event signup payload:", payload);
-
-        const baseURL = "https://inception-games.an.r.appspot.com";
-      const res = await fetch(
-        `${baseURL}/api/v1/auth/register/send-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: payload.email, phone: payload.phone }),
-        },
-      );
-
-        const responseText = await res.text();
-        let responseData;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch {
-          responseData = { message: responseText || "Unknown error occurred" };
-        }
-
-        console.log("[v0] Event API response:", res.status, responseData);
-
-        if (res.ok) {
-          const successMsg =
-            responseData.message ||
-            "Registration successful! Setting up your account...";
-          showNotification("success", successMsg);
-          // Trigger auto account creation
-          triggerAccountCreation(formData.email, formattedPhone);
-        } else {
-          let errorMsg = "Something went wrong. Please try again.";
-
-          if (responseData.errors && Array.isArray(responseData.errors)) {
-            errorMsg = responseData.errors
-              .map((e) => e.message || e.msg || e)
-              .join(", ");
-          } else if (responseData.message) {
-            errorMsg = responseData.message;
-          } else if (responseData.error) {
-            errorMsg = responseData.error;
-          }
-
-          showNotification("error", errorMsg);
-        }
-      } else {
-        // Default newsletter flow
-        const payload = {
-          name: formData.fullName,
-          email: formData.email,
-          phone: formattedPhone,
-          tier: "free",
-          games:
-            selectedGames.length > 0
-              ? selectedGames.map((g) => g.name)
-              : ["General"],
-          interests: ["gaming", "esports"],
-          source: "website",
-        };
-
-        console.log("[v0] Default newsletter payload:", payload);
-
-        const baseURL = "https://inception-games.an.r.appspot.com";
-        const res = await fetch(
-          `${baseURL}/api/v1/auth/register/send-otp`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: payload.email, phone: payload.phone }),
-          },
-        );
-
-        const responseText = await res.text();
-        let responseData;
-        try {
-          responseData = JSON.parse(responseText);
-        } catch {
-          responseData = { message: responseText || "Unknown error occurred" };
-        }
-
-        console.log(
-          "[v0] Default newsletter API response:",
-          res.status,
-          responseData,
-        );
-
-        if (res.ok) {
-          showNotification(
-            "success",
-            responseData.message ||
-            "Thanks for subscribing! Setting up your account...",
-          );
-          // Trigger auto account creation
-          triggerAccountCreation(formData.email, formattedPhone);
-        } else {
-          const errorMsg = responseData.errors
-            ? responseData.errors.map((e) => e.message || e.msg || e).join(", ")
-            : responseData.message || "Something went wrong. Please try again.";
-          showNotification("error", errorMsg);
-        }
-      }
-    } catch (error) {
-      console.error("[v0] Signup error:", error);
-      showNotification(
-        "error",
-        "Network error. Please check your connection and try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  // ============ PROFILE COMPLETION SCREEN ============
-  if (registrationStep === "profile") {
-    const inputClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm";
-    const selectClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm appearance-none cursor-pointer";
-
-    return (
-      <AnimatePresence>
-        <motion.div
-          className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => {}}
-        />
-        <motion.div
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto"
-          initial={{ scale: 0.92, opacity: 0, y: 30 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.92, opacity: 0, y: 30 }}
-          transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 28 }}
-          style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(168,85,247,0.3) transparent' }}
-        >
-          <div className="relative bg-[#111118] rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-              <div>
-                <h2 className="text-xl font-bold text-white">Complete Your Profile</h2>
-                <p className="text-gray-500 text-xs mt-1">Add your gaming information and images</p>
-              </div>
-              <motion.button
-                onClick={() => {}}
-                className="text-gray-500 hover:text-white transition p-2 hover:bg-white/5 rounded-lg disabled:opacity-50"
-                disabled={registrationStep === "completing"}
-              >
-                <X size={20} />
-              </motion.button>
-            </div>
-
-            <form className="p-6 space-y-5">
-              {/* Images Section */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Images</h4>
-                {/* Banner */}
-                <div
-                  onClick={() => bannerInputRef.current?.click()}
-                  className="relative w-full h-28 rounded-xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group mb-3"
-                >
-                  {bannerImagePreview ? (
-                    <>
-                      <img src={bannerImagePreview} alt="Banner" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <Camera size={20} className="text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full gap-1.5 text-gray-600">
-                      <ImageIcon size={22} />
-                      <span className="text-[10px]">Upload banner image</span>
-                    </div>
-                  )}
-                  <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'banner')} />
-                </div>
-                {/* Profile pic */}
-                <div className="flex items-center gap-4">
-                  <div
-                    onClick={() => profileInputRef.current?.click()}
-                    className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group flex-shrink-0"
-                  >
-                    {profileImagePreview ? (
-                      <>
-                        <img src={profileImagePreview} alt="Profile" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <Camera size={16} className="text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full gap-0.5 text-gray-600">
-                        <Camera size={18} />
-                        <span className="text-[9px]">Upload</span>
-                      </div>
-                    )}
-                    <input ref={profileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'profile')} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Profile picture</p>
-                    <p className="text-[10px] text-gray-600 mt-0.5">Square, max 5MB</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Personal Section */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Personal</h4>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      placeholder="Full Name"
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="relative">
-                    <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <input
-                      type="text"
-                      name="username"
-                      value={formData.username}
-                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      placeholder="Gamer Tag / Username"
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="Phone number"
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="relative">
-                    <MessageCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <input
-                      type="text"
-                      name="discord"
-                      value={formData.discord}
-                      onChange={(e) => setFormData({ ...formData, discord: e.target.value })}
-                      placeholder="Discord username"
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="relative">
-                    <FileText className="absolute left-3.5 top-3 text-gray-600 w-4 h-4" />
-                    <textarea
-                      name="bio"
-                      value={formData.bio}
-                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                      placeholder="Bio"
-                      rows={2}
-                      className={`${inputClass} resize-none`}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Gaming Section */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Gaming</h4>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <Gamepad2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <select
-                      name="game"
-                      value={formData.game}
-                      onChange={(e) => setFormData({ ...formData, game: e.target.value, role: '', rank: '' })}
-                      className={selectClass}
-                    >
-                      <option value="" className="bg-[#1a1a24]">Select game</option>
-                      {GAME_NAMES.map(g => <option key={g} value={g} className="bg-[#1a1a24]">{g}</option>)}
-                    </select>
-                  </div>
-                  {formData.game && ROLES[formData.game] && (
-                    <div>
-                      <p className="text-xs text-gray-500 mb-2">Role</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ROLES[formData.game].map(r => (
-                          <button
-                            key={r}
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: r })}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                              formData.role === r
-                                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
-                                : 'bg-white/[0.03] text-gray-500 border border-white/[0.06] hover:text-gray-300'
-                            }`}
-                          >
-                            {r}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {formData.game && RANKS[formData.game] && (
-                    <div className="relative">
-                      <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                      <select
-                        name="rank"
-                        value={formData.rank}
-                        onChange={(e) => setFormData({ ...formData, rank: e.target.value })}
-                        className={selectClass}
-                      >
-                        <option value="" className="bg-[#1a1a24]">Select rank</option>
-                        {RANKS[formData.game].map(rank => <option key={rank} value={rank} className="bg-[#1a1a24]">{rank}</option>)}
-                      </select>
-                    </div>
-                  )}
-                  {/* Continent */}
-                  <div className="relative">
-                    <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                    <select
-                      value={formData.continent}
-                      onChange={(e) => setFormData({ ...formData, continent: e.target.value, country: '', city: '' })}
-                      className={selectClass}
-                    >
-                      <option value="" className="bg-[#1a1a24]">Select continent</option>
-                      {CONTINENTS.map(c => <option key={c} value={c} className="bg-[#1a1a24]">{c}</option>)}
-                    </select>
-                    <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
-                  </div>
-                  {/* Country */}
-                  {formData.continent && (
-                    <div className="relative">
-                      <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                      <select
-                        value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value, city: '' })}
-                        className={selectClass}
-                      >
-                        <option value="" className="bg-[#1a1a24]">Select country</option>
-                        {Object.keys(REGION_DATA[formData.continent] || {}).map(country => (
-                          <option key={country} value={country} className="bg-[#1a1a24]">{country}</option>
-                        ))}
-                      </select>
-                      <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
-                    </div>
-                  )}
-                  {/* City / State */}
-                  {formData.country && REGION_DATA[formData.continent]?.[formData.country]?.length > 0 && (
-                    <div className="relative">
-                      <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                      <select
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        className={selectClass}
-                      >
-                        <option value="" className="bg-[#1a1a24]">Select city / state</option>
-                        {REGION_DATA[formData.continent][formData.country].map(city => (
-                          <option key={city} value={city} className="bg-[#1a1a24]">{city}</option>
-                        ))}
-                      </select>
-                      <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Submit */}
-              <motion.button
-                type="button"
-                disabled={registrationStep === "completing" || !formData.fullName || !formData.username}
-                onClick={handleCompleteProfile}
-                className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-              >
-                {registrationStep === "completing" ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" /> Completing Profile...
-                  </>
-                ) : (
-                  <>
-                    <Check size={16} /> Complete Registration
-                  </>
-                )}
-              </motion.button>
-            </form>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  // ============ OTP VERIFICATION SCREEN ============
-  if (otpStep) {
-    return (
-      <AnimatePresence>
-        <motion.div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden"
-            style={{
-              border: "2px solid transparent",
-              backgroundImage:
-                "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-              backgroundOrigin: "border-box",
-              backgroundClip: "padding-box, border-box",
-            }}
-            initial={{ scale: 0.8, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="p-6 pb-0">
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  {otpStep === "success" ? <CheckCircle size={32} /> : <Shield size={32} />}
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-center mb-1">
-                {otpStep === "success" ? "Account Created!" : otpStep === "sending" || otpStep === "verifying" ? "Please Wait..." : "Verify Your Email"}
-              </h2>
-              <p className="text-gray-400 text-center text-sm mb-4">
-                {otpStep === "success"
-                  ? "Redirecting you to your profile..."
-                  : otpStep === "sending"
-                  ? "Sending verification code to your email..."
-                  : otpStep === "verifying"
-                  ? "Verifying your code..."
-                  : `We sent a verification code to ${formData.email}`}
-              </p>
-            </div>
-
-            <div className="p-6 pt-2">
-              {/* Sending / Verifying spinner */}
-              {(otpStep === "sending" || otpStep === "verifying") && (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="animate-spin text-purple-400" size={40} />
-                </div>
-              )}
-
-              {/* Success */}
-              {otpStep === "success" && (
-                <motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="flex flex-col items-center py-6 gap-3"
-                >
-                  <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle className="text-green-400" size={40} />
-                  </div>
-                  <p className="text-green-400 font-medium">Your account is ready!</p>
-                  <p className="text-gray-500 text-sm">Taking you to your profile...</p>
-                </motion.div>
-              )}
-
-              {/* OTP Input */}
-              {otpStep === "input" && (
-                <div className="space-y-4">
-                  {/* 6-digit OTP input boxes */}
-                  <div className="flex justify-center gap-2">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => { otpInputRefs.current[i] = el; }}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        className="w-11 h-13 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
-                        value={otpValue[i] || ""}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          if (!val && !e.target.value) {
-                            // Backspace on empty
-                            const newOtp = otpValue.slice(0, i) + "" + otpValue.slice(i + 1);
-                            setOtpValue(newOtp);
-                            if (i > 0) otpInputRefs.current[i - 1]?.focus();
-                            return;
-                          }
-                          const newOtp = otpValue.slice(0, i) + val + otpValue.slice(i + 1);
-                          setOtpValue(newOtp.slice(0, 6));
-                          if (val && i < 5) otpInputRefs.current[i + 1]?.focus();
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !otpValue[i] && i > 0) {
-                            otpInputRefs.current[i - 1]?.focus();
-                          }
-                        }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-                          setOtpValue(pasted);
-                          const nextIdx = Math.min(pasted.length, 5);
-                          otpInputRefs.current[nextIdx]?.focus();
-                        }}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Error */}
-                  {otpError && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`text-sm text-center ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}
-                    >
-                      {otpError}
-                    </motion.p>
-                  )}
-
-                  {/* Verify Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleOtpVerify}
-                    disabled={otpValue.length < 4}
-                    className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                  >
-                    Verify & Create Account <ArrowRight size={16} />
-                  </motion.button>
-
-                  {/* Resend & Skip */}
-                  <div className="flex items-center justify-between text-sm">
-                    <button onClick={handleResendOtp} className="text-purple-400 hover:text-purple-300 transition">
-                      Resend OTP
-                    </button>
-                    <button
-                      onClick={() => {
-                        setOtpStep(null);
-                        onClose();
-                      }}
-                      className="text-gray-500 hover:text-gray-300 transition"
-                    >
-                      Skip for now
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  const isNewsletterMode =
-    selectedPlan === "free" || selectedPlan === "premium";
-  const isMonthlySubscription =
-    flowType.includes("tournament") || flowType.includes("scrims");
-  const maxGames = getMaxGamesAllowed();
-
-  const basePrice = getBasePrice();
-  const dynamicPrice = discountedPrice !== null ? discountedPrice : basePrice;
-  const hasDiscount = discountedPrice !== null && discountedPrice < basePrice;
-
-  const showPromoCodeField =
-    (selectedBrandType ||
-      flowType.includes("tournament") ||
-      flowType.includes("scrims") ||
-      selectedScrimsDuration) &&
-    selectedGames.length > 0;
-
-  if (showPlanSelection && !selectedPlan) {
-    return (
-      <AnimatePresence>
-        <motion.div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden p-8"
-            style={{
-              border: "2px solid transparent",
-              backgroundImage:
-                "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-              backgroundOrigin: "border-box",
-              backgroundClip: "padding-box, border-box",
-            }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
-            >
-              <X size={28} />
-            </button>
-
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-              Select Your Plan
-            </h2>
-            <p className="text-gray-400 text-center mb-8">
-              Choose between Free and Premium access to Slice N Share Network
-            </p>
-
-            <div className="grid md:grid-cols-1 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-green-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
-                onClick={() => setSelectedPlan("free")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-green-400 mb-2">
-                    Free Plan
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Get started with basic features
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">৳0</div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ Daily Gaming News </li>
-                    <li>✓ Industry Updates</li>
-                    <li>✓ Weekly Tournament News globally </li>
-                    <li>✓ Monthly Tournament Announcement </li>
-                    <li>✓ Meetup Updates globally </li>
-                    <li>✓ Jobs & Income Insights</li>
-                  </ul>
-                </div>
-              </motion.div>
-              {/* <ComingSoon /> */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900"
-                onClick={() => setSelectedPlan("premium")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-purple-400 mb-2">
-                    Premium Plan
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Unlock all premium features
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">৳99</div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ Daily Gaming News - based on your profile </li>
-                    <li>✓ Exclusive Gaming Job Alerts</li>
-                    <li>✓ Brand Deal Offer </li>
-                    <li>
-                      ✓ Weekly National & Global Tournament Info (Premium
-                      Exclusive)
-                    </li>
-                    <li>✓ Monthly National & Tournament Announcements </li>
-                    <li>✓ Exclusive Meetup Opportunities</li>
-                  </ul>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  if (showBrandDealType && !selectedBrandType) {
-    return (
-      <AnimatePresence>
-        <motion.div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden p-8"
-            style={{
-              border: "2px solid transparent",
-              backgroundImage:
-                "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-              backgroundOrigin: "border-box",
-              backgroundClip: "padding-box, border-box",
-            }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
-            >
-              <X size={28} />
-            </button>
-
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-              Select Brand Deal Type
-            </h2>
-            <p className="text-gray-400 text-center mb-8">
-              Choose between Solo or Team/Organization sponsorship
-            </p>
-            {/* <ComingSoon /> */}
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-blue-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
-                onClick={() => setSelectedBrandType("solo")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-blue-400 mb-2">
-                    Solo
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Individual player sponsorship
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">৳499</div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ Personal brand earning</li>
-                    <li>✓ Individual brand deals</li>
-                    <li>✓ Free tournament entries</li>
-                    <li>✓ Exclusive invitations</li>
-                    <li>✓ Device support (T&C)</li>
-                    <li>✓ Content studio access</li>
-                    <li className="text-green-400 font-medium">
-                      💰 Earning: 5,000 BDT to a few lakhs
-                    </li>
-                  </ul>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900"
-                onClick={() => setSelectedBrandType("team")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-purple-400 mb-2">
-                    Team
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Team or organization sponsorship
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">৳999</div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ Team-based brand earning</li>
-                    <li>✓ Guaranteed team brand deals</li>
-                    <li>✓ Sponsorship pipeline (jersey, bootcamp, gear)</li>
-                    <li>✓ Free team tournament access</li>
-                    <li>✓ VIP event invites</li>
-                    <li>✓ Multi-device/gear support</li>
-                    <li>✓ Full team content studio access</li>
-                    <li className="text-green-400 font-medium">
-                      💰 Earning: 15,000 BDT to several lakhs/month
-                    </li>
-                  </ul>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  if (showScrimsDuration && !selectedScrimsDuration) {
-    return (
-      <AnimatePresence>
-        <motion.div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-5xl relative overflow-hidden p-8 max-h-[90vh] overflow-y-auto"
-            style={{
-              border: "2px solid transparent",
-              backgroundImage:
-                "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-              backgroundOrigin: "border-box",
-              backgroundClip: "padding-box, border-box",
-            }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
-            >
-              <X size={28} />
-            </button>
-
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-              Select Scrims Duration
-            </h2>
-
-            <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg p-6 mb-8 border border-purple-500/30">
-              <h3 className="text-xl font-bold text-white mb-3">
-                Why Monthly Subscription?
-              </h3>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                Our scrims subscription model ensures consistent, high-quality
-                practice sessions with dedicated matchmaking. Subscribers get
-                priority access to scrims, regular practice schedules,
-                performance analytics, and continuous improvement tracking. This
-                commitment helps build better teams and enhances competitive
-                readiness month after month.
-              </p>
-
-              {/* Bangla Translation */}
-              <h3 className="text-xl font-bold text-white mb-4 mt-6">
-                স্ক্রিমের জন্য মাসিক সাবস্ক্রিপশন কেন?
-              </h3>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                আমাদের স্ক্রিম সাবস্ক্রিপশন মডেল আপনাকে ধারাবাহিক ও উচ্চমানের
-                প্র্যাকটিস সেশন নিশ্চিত করে, যেখানে থাকে ডেডিকেটেড ম্যাচমেকিং
-                এবং উচ্চ্যমূল্যের প্রাইজপুল ম্যাচ। সাবস্ক্রাইবাররা পায় স্ক্রিমে
-                প্রাধান্যভিত্তিক অ্যাক্সেস, নিয়মিত প্র্যাকটিস সূচি,
-                পারফরম্যান্স অ্যানালিটিক্স এবং ধারাবাহিক উন্নয়ন ট্র্যাকিং। এই
-                ধারাবাহিকতা দলকে আরও শক্তিশালী করে এবং প্রতি মা���ে
-                প্রতিযোগিতামূলক প্রস্তুতিকে আরও উন্নত করে।
-              </p>
-              <br />
-              <p className="font-bold">
-                বিঃ দ্রঃ প্রতি মাসের প্রাইজপুল ম্যাচ শুরুর আগে জানানো হয়। যেখানে
-                কয়েক হাজার টাকা এবং গেমিং , জার্সি সহ অনেক কিছু গিফট থাকবে।
-              </p>
-            </div>
-            {/* <ComingSoon /> */}
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-green-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
-                onClick={() => setSelectedScrimsDuration("7days")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-green-400 mb-2">
-                    7 Days
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Weekly subscription
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">
-                    ৳199<span className="text-lg text-gray-400"></span>
-                  </div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ 7-day access</li>
-                    <li>
-                      ✓ Just put Daiy Scrim (1 Mini Tournament with prizpool)
-                    </li>
-                    <li>✓ Gifts and Real Money</li>
-                  </ul>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-blue-500 transition-all bg-gradient-to-br from-blue-900/30 to-gray-900"
-                onClick={() => setSelectedScrimsDuration("15days")}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-blue-400 mb-2">
-                    15 Days
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Bi-weekly subscription
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">
-                    ৳349<span className="text-lg text-gray-400"></span>
-                  </div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ 15-day access</li>
-                    <li>✓ Priority scrims</li>
-                    <li>✓ 2 Mini Tournament </li>
-                    <li>✓ Gift , Prizepool Tournament </li>
-                    <li>✓ Free Meetup </li>
-                    <li>✓ Brand Deal Offer Based on your Skill </li>
-                  </ul>
-                </div>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900 relative"
-                onClick={() => setSelectedScrimsDuration("30days")}
-              >
-                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  BEST VALUE
-                </div>
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-purple-400 mb-2">
-                    1 Month
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Monthly subscription
-                  </p>
-                  <div className="text-4xl font-bold text-white mb-4">
-                    ৳499<span className="text-lg text-gray-400"></span>
-                  </div>
-                  <ul className="text-left text-sm text-gray-300 space-y-2">
-                    <li>✓ Full month access</li>
-                    <li>✓ VIP scrims priority</li>
-                    <li>✓ 1 Mini Prizepool Scrims </li>
-                    <li>✓ Larger Prizepool 1 Tournament </li>
-                    <li>✓ Exclusive Event Invitation </li>
-                    <li>✓ Brand Deal offer </li>
-                    <li>✓ Stable Earning Offer </li>
-                    <li>✓ Studio Support if you need </li>
-                    <li>
-                      ✓ Opportunity to be Full Time Professional Players
-                      (Coaching Support){" "}
-                    </li>
-                  </ul>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  const handleGameSelect = (game) => {
-    const isSelected = selectedGames.find((g) => g.id === game.id);
-
-    if (isSelected) {
-      setSelectedGames(selectedGames.filter((g) => g.id !== game.id));
-    } else {
-      if (selectedGames.length < maxGames) {
-        setSelectedGames([...selectedGames, game]);
-      } else {
-        showNotification(
-          "error",
-          `You can select maximum ${maxGames} game${maxGames > 1 ? "s" : ""}.`,
-        );
-      }
-    }
-  };
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
-        <motion.div
-          className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
-          style={{
-            border: "2px solid transparent",
-            backgroundImage:
-              "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-            backgroundOrigin: "border-box",
-            backgroundClip: "padding-box, border-box",
-          }}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
-          >
-            <X size={28} />
-          </button>
-
-          {basePrice > 0 && selectedGames.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              className="absolute top-6 right-16 z-40"
-            >
-              <div className="relative">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-gray-400 to-gray-600"></div>
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 border-2 border-gray-600"></div>
-
-                <div
-                  className="relative w-28 h-28 flex items-center justify-center"
-                  style={{
-                    background: hasDiscount
-                      ? "linear-gradient(135deg, #10B981, #059669, #047857)"
-                      : "linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
-                    clipPath:
-                      "polygon(50% 0%, 61% 8%, 73% 5%, 82% 15%, 90% 10%, 95% 22%, 100% 30%, 98% 43%, 100% 55%, 95% 67%, 90% 73%, 82% 78%, 73% 85%, 61% 82%, 50% 90%, 39% 82%, 27% 85%, 18% 78%, 10% 73%, 5% 67%, 0% 55%, 2% 43%, 0% 30%, 5% 22%, 10% 10%, 18% 15%, 27% 5%, 39% 8%)",
-                    boxShadow: hasDiscount
-                      ? "0 10px 25px rgba(16, 185, 129, 0.5), 0 5px 15px rgba(5, 150, 105, 0.3)"
-                      : "0 10px 25px rgba(129, 23, 238, 0.5), 0 5px 15px rgba(233, 30, 99, 0.3)",
-                  }}
-                >
-                  <div className="flex flex-col items-center justify-center text-white">
-                    {hasDiscount && (
-                      <span className="text-xs line-through opacity-70">
-                        ৳{basePrice}
-                      </span>
-                    )}
-                    <span className="text-2xl font-bold leading-tight">
-                      ৳{dynamicPrice}
-                    </span>
-                    {isMonthlySubscription && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wide opacity-90">
-                        /month
-                      </span>
-                    )}
-                    {hasDiscount && (
-                      <span className="text-[9px] font-bold uppercase tracking-wide text-yellow-300">
-                        DISCOUNT!
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          <AnimatePresence>
-            {notification.show && (
-              <motion.div
-                initial={{ opacity: 0, y: -50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -50 }}
-                className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md"
-              >
-                <div
-                  className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 ${notification.type === "success"
-                      ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                      : "bg-gradient-to-r from-red-500 to-pink-600"
-                    }`}
-                >
-                  {notification.type === "success" ? (
-                    <CheckCircle className="w-6 h-6 flex-shrink-0" />
-                  ) : (
-                    <AlertCircle className="w-6 h-6 flex-shrink-0" />
-                  )}
-                  <p className="font-semibold text-sm">
-                    {notification.message}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="p-6 md:p-8">
-            {flowType.includes("tournament") && selectedGames.length === 0 && (
-              <>
-                {/* <ComingSoon /> */}
-                {/* Championship Banner */}
-                <div className="mb-8 rounded-xl overflow-hidden">
-                  <img
-                    src="/News/championship-banner.png"
-                    alt="Slice N Share Championship"
-                    className="w-full h-auto"
-                  />
-                </div>
-
-                {/* Why Monthly Subscription - Bilingual */}
-                <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg p-6 mb-6 border border-purple-500/30">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Why Monthly Subscription for Tournaments?
-                  </h3>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    Our tournament subscription gives you unlimited access to
-                    all monthly tournaments with guaranteed slots, priority
-                    registration, exclusive rewards, and consistent competitive
-                    experience. Build your ranking, improve your skills, and
-                    compete regularly with the best players every month.
-                  </p>
-
-                  {/* Bangla Translation */}
-                  <h3 className="text-xl font-bold text-white mb-4 mt-6">
-                    টুর্নামেন্টের জন্য মাসিক সাবস্ক্রিপশন কেন?
-                  </h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    আমাদের টুর্নামেন্ট সাবস্ক্রিপশন আপনাকে সকল মাসিক
-                    টুর্নামেন্টে নিশ্চিত স্লট, অগ্রাধিকার নিবন্ধন, এক্সক্লুসিভ
-                    পুরস্কার এবং ধারাবাহিক প্রতিযোগিতামূলক অভিজ্ঞতার সাথে
-                    সীমাহীন অ্যাক্সেস দেয়। আপনার র‍্যাঙ্কিং তৈরি করুন, আপনার
-                    দক্ষতা উন্নত করুন এবং প্রতি মাসে সেরা খেলোয়াড়দের সাথে
-                    নিয়মিত প্রতিদ্বন্দ্বিতা করুন।
-                  </p>
-                </div>
-
-                {/* Prize Pool Section */}
-                <div className="bg-gradient-to-r from-green-900/40 to-blue-900/40 rounded-lg p-6 mb-8 border border-green-500/30">
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold text-green-400 mb-2">
-                      Total 1 Lacs+ BDT Prizepool Monthly & MVP Gift
-                    </h3>
-                    <p className="text-xl text-white font-semibold">
-                      In total 15 lacs on next 12 months
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {selectedGames.length === 0 && (
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-2 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                  Select Your Game{maxGames > 1 ? "s" : ""}
-                </h2>
-                <p className="text-center text-gray-400 mb-6 text-sm">
-                  {maxGames === 1
-                    ? "Select 1 game"
-                    : `Select up to ${maxGames} games`}
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full">
-                  {games.map((game) => {
-                    const isSelected = selectedGames.find(
-                      (g) => g.id === game.id
-                    );
-                    return (
-                      <motion.div
-                        key={game.id}
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`cursor-pointer rounded-xl overflow-hidden border-2 transition-all h-full flex flex-col ${isSelected
-                            ? "border-purple-500 ring-2 ring-purple-400"
-                            : "border-gray-700 hover:border-purple-500"
-                          }`}
-                        onClick={() => handleGameSelect(game)}
-                      >
-                        <div className="relative flex-shrink-0">
-                          {isSelected && (
-                            <div className="absolute top-1 right-1 z-10 bg-purple-500 rounded-full p-1">
-                              <CheckCircle size={16} />
-                            </div>
-                          )}
-                          <Image
-                            src={game.image || "/placeholder.svg"}
-                            alt={game.name}
-                            width={200}
-                            height={120}
-                            className="object-cover w-full h-24"
-                          />
-                        </div>
-                        <div className="flex-1 flex items-center justify-center bg-gray-800 min-h-[48px] p-2">
-                          <p className="text-center text-xs md:text-sm font-medium line-clamp-2">
-                            {game.name}
-                          </p>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-                {selectedGames.length > 0 && (
-                  <div className="mt-6 text-center">
-                    <button
-                      onClick={() => { }}
-                      className="px-8 py-3 rounded-full font-bold text-white transition bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                    >
-                      Continue with {selectedGames.length} game
-                      {selectedGames.length > 1 ? "s" : ""}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {selectedGames.length > 0 && (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex flex-col items-center mb-6">
-                  <div className="flex flex-wrap gap-2 justify-center mb-3">
-                    {selectedGames.map((game) => (
-                      <div key={game.id} className="relative">
-                        <Image
-                          src={game.image || "/placeholder.svg"}
-                          alt={game.name}
-                          width={80}
-                          height={48}
-                          className="rounded-lg shadow-lg border-2 border-purple-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSelectedGames(
-                              selectedGames.filter((g) => g.id !== game.id),
-                            )
-                          }
-                          className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <h3 className="text-2xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                    {selectedGames.map((g) => g.name).join(", ")}{" "}
-                    {isNewsletterMode ? "Subscription" : "Registration"}
-                  </h3>
-                  {eventType && !isMonthlySubscription && (
-                    <p className="text-gray-400 text-sm mt-1">{eventType}</p>
-                  )}
-                  {eventType && isMonthlySubscription && (
-                    <p className="text-gray-400 text-sm mt-1">
-                      {eventType} - Monthly Subscription
-                    </p>
-                  )}
-                </div>
-
-                {isNewsletterMode ? (
-                  <div className="space-y-4">
-                    <AnimatedInput
-                      label="Full Name"
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      required
-                    />
-
-                    <AnimatedInput
-                      label="Email Address"
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-
-                    <AnimatedInput
-                      label="Phone Number (01XXXXXXXXX)"
-                      type="text"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                    />
-
-                    {selectedPlan === "premium" && (
-                      <>
-                        <div className="space-y-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-xl p-6 border border-purple-500/30">
-                          {/* Payment Instructions */}
-                          <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-5 border border-purple-500/20">
-                            <h3 className="text-lg font-bold text-purple-300 mb-4 flex items-center gap-2">
-                              <svg
-                                className="w-5 h-5"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              Payment Instructions
-                            </h3>
-                            <ol className="space-y-2 text-sm text-gray-300">
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  1
-                                </span>
-                                <span>
-                                  Put the amount{" "}
-                                  <span className="font-bold text-purple-400">
-                                    {dynamicPrice} BDT
-                                  </span>{" "}
-                                  (As your package)
-                                </span>
-                              </li>
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  2
-                                </span>
-                                <span>
-                                  Turn ON the{" "}
-                                  <span className="font-semibold text-pink-400">
-                                    bKash Cash Out Charge
-                                  </span>{" "}
-                                  feature on your mobile app (bKash will deduct
-                                  it automatically)
-                                </span>
-                              </li>
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  3
-                                </span>
-                                <span>Send Money (to our personal number)</span>
-                              </li>
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  4
-                                </span>
-                                <span>Enter the Transaction ID (Trx ID)</span>
-                              </li>
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  5
-                                </span>
-                                <span>Submit</span>
-                              </li>
-                              <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                                  6
-                                </span>
-                                <span>
-                                  You will get Email as Confirmation. (If you
-                                  dont get email, send your Transaction ID proof
-                                  to our Facebook page, Admin will confirm)
-                                </span>
-                              </li>
-                            </ol>
-                          </div>
-
-                          {/* QR Codes Section */}
-                          <div className="space-y-6">
-                            <p className="text-center text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                              Scan & Pay ৳{dynamicPrice}
-                            </p>
-
-                            <div className="flex justify-center">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 place-items-center">
-                                {/* Primary QR Block */}
-                                <div className="flex flex-col items-center">
-                                  <div className="relative w-[220px] h-[220px] flex items-center justify-center">
-                                    {/* Glow */}
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-50"></div>
-
-                                    {/* QR Container */}
-                                    <div className="relative bg-white rounded-xl border-2 border-purple-400 shadow-xl w-full h-full flex items-center justify-center p-4">
-                                      {qrImageError ? (
-                                        <div className="w-[180px] h-[180px] flex items-center justify-center text-center bg-gray-100 rounded-lg">
-                                          <div>
-                                            <p className="text-gray-600 text-sm font-semibold mb-1">
-                                              QR Code 1
-                                            </p>
-                                            <p className="text-gray-500 text-xs">
-                                              Add /public/qr.jpeg
-                                            </p>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <Image
-                                          src="/qr.jpeg"
-                                          alt="Primary Payment QR Code"
-                                          width={180}
-                                          height={180}
-                                          className="rounded-lg object-contain"
-                                          onError={() => setQrImageError(true)}
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <p className="text-sm font-semibold text-purple-300 mt-3 text-center">
-                                    Primary QR Code
-                                  </p>
-                                  <p className="text-xs text-gray-400 text-center mb-1">
-                                    Scan with bKash
-                                  </p>
-
-                                  <p className="text-xs text-gray-400 text-center mb-2">
-                                    OR
-                                  </p>
-                                  <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
-                                    {/* 01710789995 */}
-                                    Number coming soon
-                                    {/* <Copy
-                                      size={13}
-                                      onClick={() => handleCopy("01710789995")}
-                                      className="cursor-pointer"
-                                    /> */}
-                                  </p>
-                                </div>
-
-                                {/* Secondary QR Block */}
-                                <div className="flex flex-col items-center">
-                                  <div className="relative w=[220px] h-[220px] flex items-center justify-center">
-                                    {/* Glow */}
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl blur-md opacity-50"></div>
-
-                                    {/* QR Container */}
-                                    <div className="relative bg-white rounded-xl border-2 border-pink-400 shadow-xl w-full h-full flex items-center justify-center p-4">
-                                      {qrImageError2 ? (
-                                        <div className="w-[180px] h-[180px] flex items-center justify-center text-center bg-gray-100 rounded-lg">
-                                          <div>
-                                            <p className="text-gray-600 text-sm font-semibold mb-1">
-                                              QR Code 2
-                                            </p>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <Image
-                                          src="/qr2.png"
-                                          alt="Backup Payment QR Code"
-                                          width={180}
-                                          height={180}
-                                          className="rounded-lg object-contain"
-                                          onError={() => setQrImageError2(true)}
-                                        />
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <p className="text-sm font-semibold text-pink-300 mt-3 text-center">
-                                    Backup QR Code
-                                  </p>
-                                  <p className="text-xs text-gray-400 text-center mb-1">
-                                    Use if primary doesn&#39;t work
-                                  </p>
-                                  <p className="text-xs text-gray-400 text-center mb-2">
-                                    OR
-                                  </p>
-                                  <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
-                                    {/* 01317267498 */}
-                                    Number Coming Soon
-                                    {/* <Copy
-                                      size={13}
-                                      onClick={() => handleCopy("01317267498")}
-                                      className="cursor-pointer"
-                                    /> */}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Note */}
-                            <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-4">
-                              <p className="text-sm text-yellow-200 font-semibold mb-2">
-                                Important Note:
-                              </p>
-                              <p className="text-xs text-gray-300 leading-relaxed">
-                                If the first QR code doesn’t work, use the
-                                second QR code. For any issues, message us on
-                                Facebook — we will reply within 24 hours.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <AnimatedInput
-                          label="Transaction ID"
-                          type="text"
-                          name="trnxId"
-                          value={formData.trnxId}
-                          onChange={handleInputChange}
-                          required
-                        />
-                        <AnimatedInput
-                          label="Confirm Transaction ID (Type again, no copy-paste)"
-                          type="text"
-                          name="trnxIdConfirm"
-                          value={formData.trnxIdConfirm}
-                          onChange={handleInputChange}
-                          onPaste={handleConfirmTrnxPaste}
-                          required
-                        />
-                        {formData.trnxId &&
-                          formData.trnxIdConfirm &&
-                          formData.trnxId !== formData.trnxIdConfirm && (
-                            <p className="text-red-400 text-sm flex items-center gap-1">
-                              <AlertCircle size={14} /> Transaction IDs do not
-                              match
-                            </p>
-                          )}
-                        {formData.trnxId &&
-                          formData.trnxIdConfirm &&
-                          formData.trnxId === formData.trnxIdConfirm && (
-                            <p className="text-green-400 text-sm flex items-center gap-1">
-                              <CheckCircle size={14} /> Transaction IDs match
-                            </p>
-                          )}
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <AnimatedInput
-                        label="Full Name"
-                        type="text"
-                        name="fullName"
-                        value={formData.fullName}
-                        onChange={handleInputChange}
-                        required
-                      />
-
-                      <AnimatedInput
-                        label="Email Address"
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-
-                      <AnimatedInput
-                        label="Phone Number (01XXXXXXXXX)"
-                        type="text"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                      />
-
-                      <AnimatedInput
-                        label="University"
-                        type="text"
-                        name="University"
-                        value={formData.University}
-                        onChange={handleInputChange}
-                        required
-                      />
-
-                      <AnimatedInput
-                        label="District"
-                        type="text"
-                        name="district"
-                        value={formData.district}
-                        onChange={handleInputChange}
-                        required
-                      />
-
-                      <AnimatedInput
-                        label="Facebook URL (Optional)"
-                        type="url"
-                        name="fbUrl"
-                        value={formData.fbUrl}
-                        onChange={handleInputChange}
-                      />
-
-                      <AnimatedInput
-                        label="YouTube URL (Optional)"
-                        type="url"
-                        name="youtubeUrl"
-                        value={formData.youtubeUrl}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    {showPromoCodeField && (
-                      <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Tag size={18} className="text-purple-400" />
-                          <span className="text-sm font-medium text-gray-300">
-                            Have a Promo Code?
-                          </span>
-                        </div>
-
-                        {promoCodeData?.valid ? (
-                          <div className="flex items-center justify-between bg-green-900/30 border border-green-500/50 rounded-lg p-3">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle
-                                size={18}
-                                className="text-green-400"
-                              />
-                              <span className="text-green-400 font-medium">
-                                {promoCodeData.code}
-                              </span>
-                              <span className="text-gray-400 text-sm">
-                                (
-                                {promoCodeData.discountType === "percentage"
-                                  ? `${promoCodeData.discountValue}% off`
-                                  : promoCodeData.discountType === "free"
-                                    ? "FREE"
-                                    : `৳${promoCodeData.discountValue} off`}
-                                )
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={removePromoCode}
-                              className="text-red-400 hover:text-red-300 text-sm font-medium"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={promoCode}
-                              onChange={(e) => {
-                                setPromoCode(e.target.value.toUpperCase());
-                                setPromoCodeError("");
-                              }}
-                              placeholder="Enter promo code"
-                              className="flex-1 bg-gray-700 border border-gray-600 focus:border-purple-500 p-3 rounded-lg outline-none text-white placeholder-gray-500 uppercase"
-                            />
-                            <button
-                              type="button"
-                              onClick={validatePromoCode}
-                              disabled={isValidatingPromo || !promoCode.trim()}
-                              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                              {isValidatingPromo ? (
-                                <>
-                                  <Loader2 size={16} className="animate-spin" />
-                                  Checking...
-                                </>
-                              ) : (
-                                "Apply"
-                              )}
-                            </button>
-                          </div>
-                        )}
-
-                        {promoCodeError && (
-                          <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
-                            <AlertCircle size={14} /> {promoCodeError}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="space-y-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-xl p-6 border border-purple-500/30">
-                      {/* Payment Instructions */}
-                      <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-5 border border-purple-500/20">
-                        <h3 className="text-lg font-bold text-purple-300 mb-4 flex items-center gap-2">
-                          <svg
-                            className="w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          Payment Instructions
-                        </h3>
-                        <ol className="space-y-2 text-sm text-gray-300">
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              1
-                            </span>
-                            <span>
-                              Put the amount{" "}
-                              <span className="font-bold text-purple-400">
-                                {dynamicPrice} BDT
-                              </span>{" "}
-                              (As your package)
-                            </span>
-                          </li>
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              2
-                            </span>
-                            <span>
-                              Turn ON the{" "}
-                              <span className="font-semibold text-pink-400">
-                                bKash Cash Out Charge
-                              </span>{" "}
-                              feature on your mobile app (bKash will deduct it
-                              automatically)
-                            </span>
-                          </li>
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              3
-                            </span>
-                            <span>Send Money (to our personal number)</span>
-                          </li>
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              4
-                            </span>
-                            <span>Enter the Transaction ID (Trx ID)</span>
-                          </li>
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              5
-                            </span>
-                            <span>Submit</span>
-                          </li>
-                          <li className="flex items-start gap-3">
-                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
-                              6
-                            </span>
-                            <span>
-                              You will get Email as Confirmation. (If you dont
-                              get email, send your Transaction ID proof to our
-                              Facebook page, Admin will confirm)
-                            </span>
-                          </li>
-                        </ol>
-                      </div>
-
-                      {/* QR Codes Section */}
-                      <div className="space-y-8">
-                        <p className="text-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                          Scan & Pay ৳{dynamicPrice}
-                        </p>
-
-                        <div className="flex justify-center">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 place-items-center">
-                            {/* QR ITEM — 1 */}
-                            <div className="flex flex-col items-center w-[260px]">
-                              <div className="relative w-[220px] h-[220px] flex items-center justify-center">
-                                {/* Glow Ring */}
-                                <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-60"></div>
-
-                                {/* QR Container */}
-                                <div className="relative bg-white p-4 rounded-xl border-2 border-purple-400 shadow-xl w-full h-full flex items-center justify-center">
-                                  <Image
-                                    src="/qr.jpeg"
-                                    alt="Primary QR Code"
-                                    width={180}
-                                    height={180}
-                                    className="rounded-lg object-contain"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Text */}
-                              <p className="text-center text-sm font-semibold text-purple-300 mt-3">
-                                Primary QR Code
-                              </p>
-                              <p className="text-center text-xs text-gray-400 mb-1">
-                                Scan with bKash
-                              </p>
-                              <p className="text-xs text-gray-400 text-center mb-2">
-                                OR
-                              </p>
-                              <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
-                                {/* 01710789995 */}
-                                Number Coming Soon
-                                {/* <Copy
-                                      size={13}
-                                      onClick={() => handleCopy("01710789995")}
-                                      className="cursor-pointer"
-                                    /> */}
-                              </p>
-                            </div>
-
-                            {/* QR ITEM — 2 */}
-                            <div className="flex flex-col items-center w-[260px]">
-                              <div className="relative w-[220px] h-[220px] flex items-center justify-center">
-                                {/* Glow Ring */}
-                                <div className="absolute -inset-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl blur-md opacity-60"></div>
-
-                                {/* QR Container */}
-                                <div className="relative bg-white p-4 rounded-xl border-2 border-pink-400 shadow-xl w-full h-full flex items-center justify-center">
-                                  <Image
-                                    src="/qr2.png"
-                                    alt="Backup QR Code"
-                                    width={180}
-                                    height={180}
-                                    className="rounded-lg object-contain"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Text */}
-                              <p className="text-center text-sm font-semibold text-pink-300 mt-3">
-                                Backup QR Code
-                              </p>
-                              <p className="text-center text-xs text-gray-400 mb-1">
-                                Use if primary doesn’t work
-                              </p>
-                              <p className="text-xs text-gray-400 text-center mb-2">
-                                OR
-                              </p>
-                              <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
-                                {/* 01317267498 */}
-                                Number Coming Soon
-                                {/* <Copy
-                                      size={13}
-                                      onClick={() => handleCopy("01317267498")}
-                                      className="cursor-pointer"
-                                    /> */}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Note Box */}
-                        <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-5">
-                          <p className="text-sm text-yellow-200 font-semibold mb-2">
-                            Important Note:
-                          </p>
-                          <p className="text-xs text-gray-300 leading-relaxed">
-                            If the first QR code doesn’t work, use the second.
-                            For any issues, message us on Facebook — we will
-                            reply within 24 hours.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {dynamicPrice > 0 && (
-                      <>
-                        <AnimatedInput
-                          label="Transaction ID"
-                          type="text"
-                          name="trnxId"
-                          value={formData.trnxId}
-                          onChange={handleInputChange}
-                          required
-                        />
-                        <AnimatedInput
-                          label="Confirm Transaction ID (Type again, no copy-paste)"
-                          type="text"
-                          name="trnxIdConfirm"
-                          value={formData.trnxIdConfirm}
-                          onChange={handleInputChange}
-                          onPaste={handleConfirmTrnxPaste}
-                          required
-                        />
-                        {formData.trnxId &&
-                          formData.trnxIdConfirm &&
-                          formData.trnxId !== formData.trnxIdConfirm && (
-                            <p className="text-red-400 text-sm flex items-center gap-1">
-                              <AlertCircle size={14} /> Transaction IDs do not
-                              match
-                            </p>
-                          )}
-                        {formData.trnxId &&
-                          formData.trnxIdConfirm &&
-                          formData.trnxId === formData.trnxIdConfirm && (
-                            <p className="text-green-400 text-sm flex items-center gap-1">
-                              <CheckCircle size={14} /> Transaction IDs match
-                            </p>
-                          )}
-                      </>
-                    )}
-
-                    {dynamicPrice === 0 && hasDiscount && (
-                      <div className="text-center mt-4 p-4 bg-green-900/30 rounded-lg border border-green-500/30">
-                        <CheckCircle
-                          size={32}
-                          className="mx-auto mb-2 text-green-400"
-                        />
-                        <p className="text-lg font-semibold text-green-400">
-                          100% Discount Applied!
-                        </p>
-                        <p className="text-gray-400 text-sm">
-                          No payment required with your promo code
-                        </p>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedGames([]);
-                      setFormData({
-                        fullName: "",
-                        email: "",
-                        phone: "",
-                        University: "",
-                        district: "",
-                        fbUrl: "",
-                        youtubeUrl: "",
-                        trnxId: "",
-                        trnxIdConfirm: "",
-                      });
-                      setPromoCode("");
-                      setPromoCodeData(null);
-                      setPromoCodeError("");
-                      setDiscountedPrice(null);
-                    }}
-                    className="flex-1 py-3 rounded-full font-bold text-white transition border-2 border-purple-500 hover:bg-purple-500/10"
-                  >
-                    Back
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={
-                      isSubmitting ||
-                      (dynamicPrice > 0 &&
-                        formData.trnxId !== formData.trnxIdConfirm)
-                    }
-                    className="flex-1 py-3 rounded-full font-bold text-white transition bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Submitting..." : "Submit"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
+//       // Step 1: Save personal info
+//       await registerPersonalInfo(accountEmail, formData.fullName, formData.username);
+
+//       // Step 2: Save gaming profile if game selected
+//       if (formData.game) {
+//         await registerGamingProfile(accountEmail, {
+//           primary_game: formData.game,
+//           game_role: formData.role || undefined,
+//           rank: formData.rank || undefined,
+//           continent: formData.continent || undefined,
+//           country: formData.country || undefined,
+//         });
+//       }
+
+//       // Step 3: Save profile images if selected - this also redirects to /profile
+//       if (profileImagePreview || bannerImagePreview) {
+//         await registerProfileImages(accountEmail, profileImagePreview, bannerImagePreview);
+//       } else {
+//         // If no images, manually redirect since registerProfileImages won't be called
+//         setOtpStep("success");
+//         setTimeout(() => {
+//           onClose();
+//           setRegistrationStep(null);
+//           router.push("/profile");
+//         }, 1500);
+//       }
+//     } catch (err) {
+//       console.error("[v0] Profile completion error:", err);
+//       setNotification({ 
+//         show: true, 
+//         type: "error", 
+//         message: err.message || "Failed to complete profile" 
+//       });
+//       setRegistrationStep("profile");
+//     }
+//   };
+
+//   const handleResendOtp = async () => {
+//     setOtpError("");
+//     setOtpValue("");
+//     try {
+//       if (otpAuthMode === "signup") {
+//         await signupSendOTP(formData.email, accountPhone);
+//       } else {
+//         await loginSendOTP(formData.email);
+//       }
+//       setOtpError("OTP resent! Check your email.");
+//     } catch (err) {
+//       setOtpError("Failed to resend OTP: " + err.message);
+//     }
+//   };
+
+//   const getMaxGamesAllowed = () => {
+//     if (selectedPlan === "free" || selectedPlan === "premium") return 3;
+//     if (selectedBrandType === "solo") return 5;
+//     if (selectedBrandType === "team") return 10;
+//     if (flowType === "tournament" || flowType.includes("tournament")) return 1;
+//     if (flowType === "scrims" || flowType.includes("scrims")) return 2;
+//     return 1;
+//   };
+
+//   const getDurationValue = () => {
+//     if (selectedScrimsDuration === "7days") return 7;
+//     if (selectedScrimsDuration === "15days") return 15;
+//     if (selectedScrimsDuration === "30days") return 30;
+//     if (flowType.includes("tournament")) return 30;
+//     return null;
+//   };
+
+//   const getEventTypeForPromo = () => {
+//     if (selectedBrandType) return "Brand Deal";
+//     if (flowType.includes("tournament")) return "Tournament";
+//     if (flowType.includes("scrims") || selectedScrimsDuration) return "Scrims";
+//     return null;
+//   };
+
+//   const getBasePrice = () => {
+//     if (selectedPlan === "premium") return 99;
+//     if (selectedPlan === "free") return 0;
+//     if (selectedBrandType === "solo") return 499; // Updated price
+//     if (selectedBrandType === "team") return 999; // Updated price
+//     if (selectedScrimsDuration === "7days") return 199;
+//     if (selectedScrimsDuration === "15days") return 349;
+//     if (selectedScrimsDuration === "30days") return 499;
+//     if (flowType.includes("tournament")) return 499;
+//     return price;
+//   };
+
+//   const validatePromoCode = async () => {
+//     if (!promoCode.trim()) {
+//       setPromoCodeError("Please enter a promo code");
+//       return;
+//     }
+
+//     setIsValidatingPromo(true);
+//     setPromoCodeError("");
+//     setPromoCodeData(null);
+//     setDiscountedPrice(null);
+
+//     try {
+//       // Promo code validation will be implemented with new API later
+//       setPromoCodeError("Promo code validation is temporarily disabled");
+//     } catch (error) {
+//       console.error("[v0] Promo code validation error:", error);
+//       setPromoCodeError("Failed to validate promo code. Please try again.");
+//     } finally {
+//       setIsValidatingPromo(false);
+//     }
+//   };
+
+//   const removePromoCode = () => {
+//     setPromoCode("");
+//     setPromoCodeData(null);
+//     setPromoCodeError("");
+//     setDiscountedPrice(null);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const currentPrice =
+//       discountedPrice !== null ? discountedPrice : getBasePrice();
+//     if (currentPrice > 0) {
+//       if (formData.trnxId !== formData.trnxIdConfirm) {
+//         showNotification(
+//           "error",
+//           "Transaction IDs do not match. Please enter the same Transaction ID in both fields.",
+//         );
+//         return;
+//       }
+//       if (!formData.trnxId.trim()) {
+//         showNotification("error", "Please enter your Transaction ID.");
+//         return;
+//       }
+//     }
+
+//     setIsSubmitting(true);
+
+//     try {
+//       const formattedPhone = formatPhoneNumber(formData.phone);
+
+//       if (
+//         selectedPlan &&
+//         (selectedPlan === "free" || selectedPlan === "premium")
+//       ) {
+//         const payload = {
+//           name: formData.fullName,
+//           email: formData.email,
+//           phone: formattedPhone,
+//           tier: selectedPlan,
+//           games: selectedGames.map((g) => g.name),
+//           interests: ["gaming", "esports"],
+//           source: "website",
+//         };
+
+//         if (selectedPlan === "premium" && currentPrice > 0) {
+//           payload.trnxId = formData.trnxId;
+//         }
+
+//         // Keeping this for future compatibility
+
+//         console.log("[v0] Newsletter subscription payload:", payload);
+
+//         const baseURL = "https://inception-games.an.r.appspot.com";
+//         const res = await fetch(
+//           `${baseURL}/api/v1/auth/register/send-otp`,
+//           {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ email: payload.email, phone: payload.phone }),
+//           },
+//         );
+
+//         const responseText = await res.text();
+//         let responseData;
+//         try {
+//           responseData = JSON.parse(responseText);
+//         } catch {
+//           responseData = { message: responseText || "Unknown error occurred" };
+//         }
+
+//         console.log("[v0] Newsletter API response:", res.status, responseData);
+
+//         if (res.ok) {
+//           showNotification(
+//             "success",
+//             responseData.message ||
+//             "Subscription successful! Setting up your account...",
+//           );
+//           // Trigger auto account creation
+//           triggerAccountCreation(formData.email, formattedPhone);
+//         } else {
+//           const errorMsg = responseData.errors
+//             ? responseData.errors.map((e) => e.message || e.msg || e).join(", ")
+//             : responseData.message || "Something went wrong. Please try again.";
+//           showNotification("error", errorMsg);
+//         }
+//       } else if (
+//         selectedBrandType ||
+//         flowType.includes("tournament") ||
+//         flowType.includes("scrims") ||
+//         selectedScrimsDuration
+//       ) {
+//         const payload = {
+//           fullName: formData.fullName,
+//           email: formData.email,
+//           phone: formattedPhone,
+//           University: formData.University,
+//           district: formData.district,
+//           trnxId: formData.trnxId,
+//           games: selectedGames.map((g) => g.name),
+//           eventName: eventType || "Event Signup",
+//         };
+
+//         if (formData.fbUrl) payload.fbUrl = formData.fbUrl;
+//         if (formData.youtubeUrl) payload.youtubeUrl = formData.youtubeUrl;
+
+//         if (promoCodeData?.valid && promoCode.trim()) {
+//           payload.promoCode = promoCode.trim().toUpperCase();
+//         }
+
+//         if (selectedBrandType) {
+//           payload.eventType = "Brand Deal";
+//           payload.participantType = selectedBrandType;
+//         } else if (flowType.includes("tournament")) {
+//           payload.eventType = "Tournament";
+//           payload.duration = getDurationValue() || 30;
+//         } else if (flowType.includes("scrims") || selectedScrimsDuration) {
+//           payload.eventType = "Scrims";
+//           payload.duration = getDurationValue();
+//         }
+
+//         console.log("[v0] Event signup payload:", payload);
+
+//         const baseURL = "https://inception-games.an.r.appspot.com";
+//       const res = await fetch(
+//         `${baseURL}/api/v1/auth/register/send-otp`,
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ email: payload.email, phone: payload.phone }),
+//         },
+//       );
+
+//         const responseText = await res.text();
+//         let responseData;
+//         try {
+//           responseData = JSON.parse(responseText);
+//         } catch {
+//           responseData = { message: responseText || "Unknown error occurred" };
+//         }
+
+//         console.log("[v0] Event API response:", res.status, responseData);
+
+//         if (res.ok) {
+//           const successMsg =
+//             responseData.message ||
+//             "Registration successful! Setting up your account...";
+//           showNotification("success", successMsg);
+//           // Trigger auto account creation
+//           triggerAccountCreation(formData.email, formattedPhone);
+//         } else {
+//           let errorMsg = "Something went wrong. Please try again.";
+
+//           if (responseData.errors && Array.isArray(responseData.errors)) {
+//             errorMsg = responseData.errors
+//               .map((e) => e.message || e.msg || e)
+//               .join(", ");
+//           } else if (responseData.message) {
+//             errorMsg = responseData.message;
+//           } else if (responseData.error) {
+//             errorMsg = responseData.error;
+//           }
+
+//           showNotification("error", errorMsg);
+//         }
+//       } else {
+//         // Default newsletter flow
+//         const payload = {
+//           name: formData.fullName,
+//           email: formData.email,
+//           phone: formattedPhone,
+//           tier: "free",
+//           games:
+//             selectedGames.length > 0
+//               ? selectedGames.map((g) => g.name)
+//               : ["General"],
+//           interests: ["gaming", "esports"],
+//           source: "website",
+//         };
+
+//         console.log("[v0] Default newsletter payload:", payload);
+
+//         const baseURL = "https://inception-games.an.r.appspot.com";
+//         const res = await fetch(
+//           `${baseURL}/api/v1/auth/register/send-otp`,
+//           {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ email: payload.email, phone: payload.phone }),
+//           },
+//         );
+
+//         const responseText = await res.text();
+//         let responseData;
+//         try {
+//           responseData = JSON.parse(responseText);
+//         } catch {
+//           responseData = { message: responseText || "Unknown error occurred" };
+//         }
+
+//         console.log(
+//           "[v0] Default newsletter API response:",
+//           res.status,
+//           responseData,
+//         );
+
+//         if (res.ok) {
+//           showNotification(
+//             "success",
+//             responseData.message ||
+//             "Thanks for subscribing! Setting up your account...",
+//           );
+//           // Trigger auto account creation
+//           triggerAccountCreation(formData.email, formattedPhone);
+//         } else {
+//           const errorMsg = responseData.errors
+//             ? responseData.errors.map((e) => e.message || e.msg || e).join(", ")
+//             : responseData.message || "Something went wrong. Please try again.";
+//           showNotification("error", errorMsg);
+//         }
+//       }
+//     } catch (error) {
+//       console.error("[v0] Signup error:", error);
+//       showNotification(
+//         "error",
+//         "Network error. Please check your connection and try again.",
+//       );
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   if (!isOpen) return null;
+
+//   // ============ PROFILE COMPLETION SCREEN ============
+//   if (registrationStep === "profile") {
+//     const inputClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm";
+//     const selectClass = "w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition text-sm appearance-none cursor-pointer";
+
+//     return (
+//       <AnimatePresence>
+//         <motion.div
+//           className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100]"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//           onClick={() => {}}
+//         />
+//         <motion.div
+//           className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto"
+//           initial={{ scale: 0.92, opacity: 0, y: 30 }}
+//           animate={{ scale: 1, opacity: 1, y: 0 }}
+//           exit={{ scale: 0.92, opacity: 0, y: 30 }}
+//           transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 28 }}
+//           style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(168,85,247,0.3) transparent' }}
+//         >
+//           <div className="relative bg-[#111118] rounded-2xl border border-white/[0.08] shadow-2xl overflow-hidden">
+//             {/* Header */}
+//             <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+//               <div>
+//                 <h2 className="text-xl font-bold text-white">Complete Your Profile</h2>
+//                 <p className="text-gray-500 text-xs mt-1">Add your gaming information and images</p>
+//               </div>
+//               <motion.button
+//                 onClick={() => {}}
+//                 className="text-gray-500 hover:text-white transition p-2 hover:bg-white/5 rounded-lg disabled:opacity-50"
+//                 disabled={registrationStep === "completing"}
+//               >
+//                 <X size={20} />
+//               </motion.button>
+//             </div>
+
+//             <form className="p-6 space-y-5">
+//               {/* Images Section */}
+//               <div>
+//                 <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Images</h4>
+//                 {/* Banner */}
+//                 <div
+//                   onClick={() => bannerInputRef.current?.click()}
+//                   className="relative w-full h-28 rounded-xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group mb-3"
+//                 >
+//                   {bannerImagePreview ? (
+//                     <>
+//                       <img src={bannerImagePreview} alt="Banner" className="w-full h-full object-cover" />
+//                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+//                         <Camera size={20} className="text-white" />
+//                       </div>
+//                     </>
+//                   ) : (
+//                     <div className="flex flex-col items-center justify-center h-full gap-1.5 text-gray-600">
+//                       <ImageIcon size={22} />
+//                       <span className="text-[10px]">Upload banner image</span>
+//                     </div>
+//                   )}
+//                   <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'banner')} />
+//                 </div>
+//                 {/* Profile pic */}
+//                 <div className="flex items-center gap-4">
+//                   <div
+//                     onClick={() => profileInputRef.current?.click()}
+//                     className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/30 bg-white/[0.02] cursor-pointer transition-all overflow-hidden group flex-shrink-0"
+//                   >
+//                     {profileImagePreview ? (
+//                       <>
+//                         <img src={profileImagePreview} alt="Profile" className="w-full h-full object-cover" />
+//                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+//                           <Camera size={16} className="text-white" />
+//                         </div>
+//                       </>
+//                     ) : (
+//                       <div className="flex flex-col items-center justify-center h-full gap-0.5 text-gray-600">
+//                         <Camera size={18} />
+//                         <span className="text-[9px]">Upload</span>
+//                       </div>
+//                     )}
+//                     <input ref={profileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 'profile')} />
+//                   </div>
+//                   <div>
+//                     <p className="text-xs text-gray-400">Profile picture</p>
+//                     <p className="text-[10px] text-gray-600 mt-0.5">Square, max 5MB</p>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Personal Section */}
+//               <div>
+//                 <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Personal</h4>
+//                 <div className="space-y-3">
+//                   <div className="relative">
+//                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <input
+//                       type="text"
+//                       name="fullName"
+//                       value={formData.fullName}
+//                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+//                       placeholder="Full Name"
+//                       className={inputClass}
+//                     />
+//                   </div>
+//                   <div className="relative">
+//                     <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <input
+//                       type="text"
+//                       name="username"
+//                       value={formData.username}
+//                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+//                       placeholder="Gamer Tag / Username"
+//                       className={inputClass}
+//                     />
+//                   </div>
+//                   <div className="relative">
+//                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <input
+//                       type="tel"
+//                       name="phone"
+//                       value={formData.phone}
+//                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+//                       placeholder="Phone number"
+//                       className={inputClass}
+//                     />
+//                   </div>
+//                   <div className="relative">
+//                     <MessageCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <input
+//                       type="text"
+//                       name="discord"
+//                       value={formData.discord}
+//                       onChange={(e) => setFormData({ ...formData, discord: e.target.value })}
+//                       placeholder="Discord username"
+//                       className={inputClass}
+//                     />
+//                   </div>
+//                   <div className="relative">
+//                     <FileText className="absolute left-3.5 top-3 text-gray-600 w-4 h-4" />
+//                     <textarea
+//                       name="bio"
+//                       value={formData.bio}
+//                       onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+//                       placeholder="Bio"
+//                       rows={2}
+//                       className={`${inputClass} resize-none`}
+//                     />
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Gaming Section */}
+//               <div>
+//                 <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Gaming</h4>
+//                 <div className="space-y-3">
+//                   <div className="relative">
+//                     <Gamepad2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <select
+//                       name="game"
+//                       value={formData.game}
+//                       onChange={(e) => setFormData({ ...formData, game: e.target.value, role: '', rank: '' })}
+//                       className={selectClass}
+//                     >
+//                       <option value="" className="bg-[#1a1a24]">Select game</option>
+//                       {GAME_NAMES.map(g => <option key={g} value={g} className="bg-[#1a1a24]">{g}</option>)}
+//                     </select>
+//                   </div>
+//                   {formData.game && ROLES[formData.game] && (
+//                     <div>
+//                       <p className="text-xs text-gray-500 mb-2">Role</p>
+//                       <div className="flex flex-wrap gap-1.5">
+//                         {ROLES[formData.game].map(r => (
+//                           <button
+//                             key={r}
+//                             type="button"
+//                             onClick={() => setFormData({ ...formData, role: r })}
+//                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+//                               formData.role === r
+//                                 ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+//                                 : 'bg-white/[0.03] text-gray-500 border border-white/[0.06] hover:text-gray-300'
+//                             }`}
+//                           >
+//                             {r}
+//                           </button>
+//                         ))}
+//                       </div>
+//                     </div>
+//                   )}
+//                   {formData.game && RANKS[formData.game] && (
+//                     <div className="relative">
+//                       <Award className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                       <select
+//                         name="rank"
+//                         value={formData.rank}
+//                         onChange={(e) => setFormData({ ...formData, rank: e.target.value })}
+//                         className={selectClass}
+//                       >
+//                         <option value="" className="bg-[#1a1a24]">Select rank</option>
+//                         {RANKS[formData.game].map(rank => <option key={rank} value={rank} className="bg-[#1a1a24]">{rank}</option>)}
+//                       </select>
+//                     </div>
+//                   )}
+//                   {/* Continent */}
+//                   <div className="relative">
+//                     <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                     <select
+//                       value={formData.continent}
+//                       onChange={(e) => setFormData({ ...formData, continent: e.target.value, country: '', city: '' })}
+//                       className={selectClass}
+//                     >
+//                       <option value="" className="bg-[#1a1a24]">Select continent</option>
+//                       {CONTINENTS.map(c => <option key={c} value={c} className="bg-[#1a1a24]">{c}</option>)}
+//                     </select>
+//                     <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
+//                   </div>
+//                   {/* Country */}
+//                   {formData.continent && (
+//                     <div className="relative">
+//                       <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                       <select
+//                         value={formData.country}
+//                         onChange={(e) => setFormData({ ...formData, country: e.target.value, city: '' })}
+//                         className={selectClass}
+//                       >
+//                         <option value="" className="bg-[#1a1a24]">Select country</option>
+//                         {Object.keys(REGION_DATA[formData.continent] || {}).map(country => (
+//                           <option key={country} value={country} className="bg-[#1a1a24]">{country}</option>
+//                         ))}
+//                       </select>
+//                       <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
+//                     </div>
+//                   )}
+//                   {/* City / State */}
+//                   {formData.country && REGION_DATA[formData.continent]?.[formData.country]?.length > 0 && (
+//                     <div className="relative">
+//                       <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+//                       <select
+//                         value={formData.city}
+//                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+//                         className={selectClass}
+//                       >
+//                         <option value="" className="bg-[#1a1a24]">Select city / state</option>
+//                         {REGION_DATA[formData.continent][formData.country].map(city => (
+//                           <option key={city} value={city} className="bg-[#1a1a24]">{city}</option>
+//                         ))}
+//                       </select>
+//                       <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4 rotate-90 pointer-events-none" />
+//                     </div>
+//                   )}
+//                 </div>
+//               </div>
+
+//               {/* Submit */}
+//               <motion.button
+//                 type="button"
+//                 disabled={registrationStep === "completing" || !formData.fullName || !formData.username}
+//                 onClick={handleCompleteProfile}
+//                 className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+//                 whileHover={{ scale: 1.01 }}
+//                 whileTap={{ scale: 0.99 }}
+//               >
+//                 {registrationStep === "completing" ? (
+//                   <>
+//                     <Loader2 size={16} className="animate-spin" /> Completing Profile...
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Check size={16} /> Complete Registration
+//                   </>
+//                 )}
+//               </motion.button>
+//             </form>
+//           </div>
+//         </motion.div>
+//       </AnimatePresence>
+//     );
+//   }
+
+//   // ============ OTP VERIFICATION SCREEN ============
+//   if (otpStep) {
+//     return (
+//       <AnimatePresence>
+//         <motion.div
+//           className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//         >
+//           <motion.div
+//             className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden"
+//             style={{
+//               border: "2px solid transparent",
+//               backgroundImage:
+//                 "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//               backgroundOrigin: "border-box",
+//               backgroundClip: "padding-box, border-box",
+//             }}
+//             initial={{ scale: 0.8, opacity: 0, y: 20 }}
+//             animate={{ scale: 1, opacity: 1, y: 0 }}
+//             exit={{ scale: 0.8, opacity: 0, y: 20 }}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             {/* Header */}
+//             <div className="p-6 pb-0">
+//               <div className="flex items-center justify-center mb-4">
+//                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+//                   {otpStep === "success" ? <CheckCircle size={32} /> : <Shield size={32} />}
+//                 </div>
+//               </div>
+//               <h2 className="text-2xl font-bold text-center mb-1">
+//                 {otpStep === "success" ? "Account Created!" : otpStep === "sending" || otpStep === "verifying" ? "Please Wait..." : "Verify Your Email"}
+//               </h2>
+//               <p className="text-gray-400 text-center text-sm mb-4">
+//                 {otpStep === "success"
+//                   ? "Redirecting you to your profile..."
+//                   : otpStep === "sending"
+//                   ? "Sending verification code to your email..."
+//                   : otpStep === "verifying"
+//                   ? "Verifying your code..."
+//                   : `We sent a verification code to ${formData.email}`}
+//               </p>
+//             </div>
+
+//             <div className="p-6 pt-2">
+//               {/* Sending / Verifying spinner */}
+//               {(otpStep === "sending" || otpStep === "verifying") && (
+//                 <div className="flex justify-center py-8">
+//                   <Loader2 className="animate-spin text-purple-400" size={40} />
+//                 </div>
+//               )}
+
+//               {/* Success */}
+//               {otpStep === "success" && (
+//                 <motion.div
+//                   initial={{ scale: 0.5, opacity: 0 }}
+//                   animate={{ scale: 1, opacity: 1 }}
+//                   className="flex flex-col items-center py-6 gap-3"
+//                 >
+//                   <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center">
+//                     <CheckCircle className="text-green-400" size={40} />
+//                   </div>
+//                   <p className="text-green-400 font-medium">Your account is ready!</p>
+//                   <p className="text-gray-500 text-sm">Taking you to your profile...</p>
+//                 </motion.div>
+//               )}
+
+//               {/* OTP Input */}
+//               {otpStep === "input" && (
+//                 <div className="space-y-4">
+//                   {/* 6-digit OTP input boxes */}
+//                   <div className="flex justify-center gap-2">
+//                     {Array.from({ length: 6 }).map((_, i) => (
+//                       <input
+//                         key={i}
+//                         ref={(el) => { otpInputRefs.current[i] = el; }}
+//                         type="text"
+//                         inputMode="numeric"
+//                         maxLength={1}
+//                         className="w-11 h-13 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all"
+//                         value={otpValue[i] || ""}
+//                         onChange={(e) => {
+//                           const val = e.target.value.replace(/\D/g, "");
+//                           if (!val && !e.target.value) {
+//                             // Backspace on empty
+//                             const newOtp = otpValue.slice(0, i) + "" + otpValue.slice(i + 1);
+//                             setOtpValue(newOtp);
+//                             if (i > 0) otpInputRefs.current[i - 1]?.focus();
+//                             return;
+//                           }
+//                           const newOtp = otpValue.slice(0, i) + val + otpValue.slice(i + 1);
+//                           setOtpValue(newOtp.slice(0, 6));
+//                           if (val && i < 5) otpInputRefs.current[i + 1]?.focus();
+//                         }}
+//                         onKeyDown={(e) => {
+//                           if (e.key === "Backspace" && !otpValue[i] && i > 0) {
+//                             otpInputRefs.current[i - 1]?.focus();
+//                           }
+//                         }}
+//                         onPaste={(e) => {
+//                           e.preventDefault();
+//                           const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+//                           setOtpValue(pasted);
+//                           const nextIdx = Math.min(pasted.length, 5);
+//                           otpInputRefs.current[nextIdx]?.focus();
+//                         }}
+//                       />
+//                     ))}
+//                   </div>
+
+//                   {/* Error */}
+//                   {otpError && (
+//                     <motion.p
+//                       initial={{ opacity: 0, y: -5 }}
+//                       animate={{ opacity: 1, y: 0 }}
+//                       className={`text-sm text-center ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}
+//                     >
+//                       {otpError}
+//                     </motion.p>
+//                   )}
+
+//                   {/* Verify Button */}
+//                   <motion.button
+//                     whileHover={{ scale: 1.02 }}
+//                     whileTap={{ scale: 0.98 }}
+//                     onClick={handleOtpVerify}
+//                     disabled={otpValue.length < 4}
+//                     className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+//                   >
+//                     Verify & Create Account <ArrowRight size={16} />
+//                   </motion.button>
+
+//                   {/* Resend & Skip */}
+//                   <div className="flex items-center justify-between text-sm">
+//                     <button onClick={handleResendOtp} className="text-purple-400 hover:text-purple-300 transition">
+//                       Resend OTP
+//                     </button>
+//                     <button
+//                       onClick={() => {
+//                         setOtpStep(null);
+//                         onClose();
+//                       }}
+//                       className="text-gray-500 hover:text-gray-300 transition"
+//                     >
+//                       Skip for now
+//                     </button>
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </motion.div>
+//         </motion.div>
+//       </AnimatePresence>
+//     );
+//   }
+
+//   const isNewsletterMode =
+//     selectedPlan === "free" || selectedPlan === "premium";
+//   const isMonthlySubscription =
+//     flowType.includes("tournament") || flowType.includes("scrims");
+//   const maxGames = getMaxGamesAllowed();
+
+//   const basePrice = getBasePrice();
+//   const dynamicPrice = discountedPrice !== null ? discountedPrice : basePrice;
+//   const hasDiscount = discountedPrice !== null && discountedPrice < basePrice;
+
+//   const showPromoCodeField =
+//     (selectedBrandType ||
+//       flowType.includes("tournament") ||
+//       flowType.includes("scrims") ||
+//       selectedScrimsDuration) &&
+//     selectedGames.length > 0;
+
+//   if (showPlanSelection && !selectedPlan) {
+//     return (
+//       <AnimatePresence>
+//         <motion.div
+//           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//           onClick={onClose}
+//         >
+//           <motion.div
+//             className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden p-8"
+//             style={{
+//               border: "2px solid transparent",
+//               backgroundImage:
+//                 "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//               backgroundOrigin: "border-box",
+//               backgroundClip: "padding-box, border-box",
+//             }}
+//             initial={{ scale: 0.8, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             exit={{ scale: 0.8, opacity: 0 }}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <button
+//               onClick={onClose}
+//               className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
+//             >
+//               <X size={28} />
+//             </button>
+
+//             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+//               Select Your Plan
+//             </h2>
+//             <p className="text-gray-400 text-center mb-8">
+//               Choose between Free and Premium access to Slice N Share Network
+//             </p>
+
+//             <div className="grid md:grid-cols-1 gap-6">
+//               <motion.div
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-green-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
+//                 onClick={() => setSelectedPlan("free")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-green-400 mb-2">
+//                     Free Plan
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Get started with basic features
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">৳0</div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ Daily Gaming News </li>
+//                     <li>✓ Industry Updates</li>
+//                     <li>✓ Weekly Tournament News globally </li>
+//                     <li>✓ Monthly Tournament Announcement </li>
+//                     <li>✓ Meetup Updates globally </li>
+//                     <li>✓ Jobs & Income Insights</li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+//               {/* <ComingSoon /> */}
+//               <motion.div
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900"
+//                 onClick={() => setSelectedPlan("premium")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-purple-400 mb-2">
+//                     Premium Plan
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Unlock all premium features
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">৳99</div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ Daily Gaming News - based on your profile </li>
+//                     <li>✓ Exclusive Gaming Job Alerts</li>
+//                     <li>✓ Brand Deal Offer </li>
+//                     <li>
+//                       ✓ Weekly National & Global Tournament Info (Premium
+//                       Exclusive)
+//                     </li>
+//                     <li>✓ Monthly National & Tournament Announcements </li>
+//                     <li>✓ Exclusive Meetup Opportunities</li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+//             </div>
+//           </motion.div>
+//         </motion.div>
+//       </AnimatePresence>
+//     );
+//   }
+
+//   if (showBrandDealType && !selectedBrandType) {
+//     return (
+//       <AnimatePresence>
+//         <motion.div
+//           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//           onClick={onClose}
+//         >
+//           <motion.div
+//             className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden p-8"
+//             style={{
+//               border: "2px solid transparent",
+//               backgroundImage:
+//                 "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//               backgroundOrigin: "border-box",
+//               backgroundClip: "padding-box, border-box",
+//             }}
+//             initial={{ scale: 0.8, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             exit={{ scale: 0.8, opacity: 0 }}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <button
+//               onClick={onClose}
+//               className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
+//             >
+//               <X size={28} />
+//             </button>
+
+//             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+//               Select Brand Deal Type
+//             </h2>
+//             <p className="text-gray-400 text-center mb-8">
+//               Choose between Solo or Team/Organization sponsorship
+//             </p>
+//             {/* <ComingSoon /> */}
+
+//             <div className="grid md:grid-cols-2 gap-6">
+//               <motion.div
+//                 whileHover={{ scale: 1.02 }}
+//                 whileTap={{ scale: 0.98 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-blue-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
+//                 onClick={() => setSelectedBrandType("solo")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-blue-400 mb-2">
+//                     Solo
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Individual player sponsorship
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">৳499</div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ Personal brand earning</li>
+//                     <li>✓ Individual brand deals</li>
+//                     <li>✓ Free tournament entries</li>
+//                     <li>✓ Exclusive invitations</li>
+//                     <li>✓ Device support (T&C)</li>
+//                     <li>✓ Content studio access</li>
+//                     <li className="text-green-400 font-medium">
+//                       💰 Earning: 5,000 BDT to a few lakhs
+//                     </li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+
+//               <motion.div
+//                 whileHover={{ scale: 1.02 }}
+//                 whileTap={{ scale: 0.98 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900"
+//                 onClick={() => setSelectedBrandType("team")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-purple-400 mb-2">
+//                     Team
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Team or organization sponsorship
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">৳999</div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ Team-based brand earning</li>
+//                     <li>✓ Guaranteed team brand deals</li>
+//                     <li>✓ Sponsorship pipeline (jersey, bootcamp, gear)</li>
+//                     <li>✓ Free team tournament access</li>
+//                     <li>✓ VIP event invites</li>
+//                     <li>✓ Multi-device/gear support</li>
+//                     <li>✓ Full team content studio access</li>
+//                     <li className="text-green-400 font-medium">
+//                       💰 Earning: 15,000 BDT to several lakhs/month
+//                     </li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+//             </div>
+//           </motion.div>
+//         </motion.div>
+//       </AnimatePresence>
+//     );
+//   }
+
+//   if (showScrimsDuration && !selectedScrimsDuration) {
+//     return (
+//       <AnimatePresence>
+//         <motion.div
+//           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//           onClick={onClose}
+//         >
+//           <motion.div
+//             className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-5xl relative overflow-hidden p-8 max-h-[90vh] overflow-y-auto"
+//             style={{
+//               border: "2px solid transparent",
+//               backgroundImage:
+//                 "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//               backgroundOrigin: "border-box",
+//               backgroundClip: "padding-box, border-box",
+//             }}
+//             initial={{ scale: 0.8, opacity: 0 }}
+//             animate={{ scale: 1, opacity: 1 }}
+//             exit={{ scale: 0.8, opacity: 0 }}
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             <button
+//               onClick={onClose}
+//               className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
+//             >
+//               <X size={28} />
+//             </button>
+
+//             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+//               Select Scrims Duration
+//             </h2>
+
+//             <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg p-6 mb-8 border border-purple-500/30">
+//               <h3 className="text-xl font-bold text-white mb-3">
+//                 Why Monthly Subscription?
+//               </h3>
+//               <p className="text-gray-300 text-sm leading-relaxed">
+//                 Our scrims subscription model ensures consistent, high-quality
+//                 practice sessions with dedicated matchmaking. Subscribers get
+//                 priority access to scrims, regular practice schedules,
+//                 performance analytics, and continuous improvement tracking. This
+//                 commitment helps build better teams and enhances competitive
+//                 readiness month after month.
+//               </p>
+
+//               {/* Bangla Translation */}
+//               <h3 className="text-xl font-bold text-white mb-4 mt-6">
+//                 স্ক্রিমের জন্য মাসিক সাবস্ক্রিপশন কেন?
+//               </h3>
+//               <p className="text-gray-300 text-sm leading-relaxed">
+//                 আমাদের স্ক্রিম সাবস্ক্রিপশন মডেল আপনাকে ধারাবাহিক ও উচ্চমানের
+//                 প্র্যাকটিস সেশন নিশ্চিত করে, যেখানে থাকে ডেডিকেটেড ম্যাচমেকিং
+//                 এবং উচ্চ্যমূল্যের প্রাইজপুল ম্যাচ। সাবস্ক্রাইবাররা পায় স্ক্রিমে
+//                 প্রাধান্যভিত্তিক অ্যাক্সেস, নিয়মিত প্র্যাকটিস সূচি,
+//                 পারফরম্যান্স অ্যানালিটিক্স এবং ধারাবাহিক উন্নয়ন ট্র্যাকিং। এই
+//                 ধারাবাহিকতা দলকে আরও শক্তিশালী করে এবং প্রতি মা���ে
+//                 প্রতিযোগিতামূলক প্রস্তুতিকে আরও উন্নত করে।
+//               </p>
+//               <br />
+//               <p className="font-bold">
+//                 বিঃ দ্রঃ প্রতি মাসের প্রাইজপুল ম্যাচ শুরুর আগে জানানো হয়। যেখানে
+//                 কয়েক হাজার টাকা এবং গেমিং , জার্সি সহ অনেক কিছু গিফট থাকবে।
+//               </p>
+//             </div>
+//             {/* <ComingSoon /> */}
+
+//             <div className="grid md:grid-cols-3 gap-6">
+//               <motion.div
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-green-500 transition-all bg-gradient-to-br from-gray-800 to-gray-900"
+//                 onClick={() => setSelectedScrimsDuration("7days")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-green-400 mb-2">
+//                     7 Days
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Weekly subscription
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">
+//                     ৳199<span className="text-lg text-gray-400"></span>
+//                   </div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ 7-day access</li>
+//                     <li>
+//                       ✓ Just put Daiy Scrim (1 Mini Tournament with prizpool)
+//                     </li>
+//                     <li>✓ Gifts and Real Money</li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+
+//               <motion.div
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-blue-500 transition-all bg-gradient-to-br from-blue-900/30 to-gray-900"
+//                 onClick={() => setSelectedScrimsDuration("15days")}
+//               >
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-blue-400 mb-2">
+//                     15 Days
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Bi-weekly subscription
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">
+//                     ৳349<span className="text-lg text-gray-400"></span>
+//                   </div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ 15-day access</li>
+//                     <li>✓ Priority scrims</li>
+//                     <li>✓ 2 Mini Tournament </li>
+//                     <li>✓ Gift , Prizepool Tournament </li>
+//                     <li>✓ Free Meetup </li>
+//                     <li>✓ Brand Deal Offer Based on your Skill </li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+
+//               <motion.div
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 className="cursor-pointer rounded-xl p-6 border-2 border-gray-700 hover:border-purple-500 transition-all bg-gradient-to-br from-purple-900/30 to-gray-900 relative"
+//                 onClick={() => setSelectedScrimsDuration("30days")}
+//               >
+//                 <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+//                   BEST VALUE
+//                 </div>
+//                 <div className="text-center">
+//                   <h3 className="text-2xl font-bold text-purple-400 mb-2">
+//                     1 Month
+//                   </h3>
+//                   <p className="text-gray-400 text-sm mb-4">
+//                     Monthly subscription
+//                   </p>
+//                   <div className="text-4xl font-bold text-white mb-4">
+//                     ৳499<span className="text-lg text-gray-400"></span>
+//                   </div>
+//                   <ul className="text-left text-sm text-gray-300 space-y-2">
+//                     <li>✓ Full month access</li>
+//                     <li>✓ VIP scrims priority</li>
+//                     <li>✓ 1 Mini Prizepool Scrims </li>
+//                     <li>✓ Larger Prizepool 1 Tournament </li>
+//                     <li>✓ Exclusive Event Invitation </li>
+//                     <li>✓ Brand Deal offer </li>
+//                     <li>✓ Stable Earning Offer </li>
+//                     <li>✓ Studio Support if you need </li>
+//                     <li>
+//                       ✓ Opportunity to be Full Time Professional Players
+//                       (Coaching Support){" "}
+//                     </li>
+//                   </ul>
+//                 </div>
+//               </motion.div>
+//             </div>
+//           </motion.div>
+//         </motion.div>
+//       </AnimatePresence>
+//     );
+//   }
+
+//   const handleGameSelect = (game) => {
+//     const isSelected = selectedGames.find((g) => g.id === game.id);
+
+//     if (isSelected) {
+//       setSelectedGames(selectedGames.filter((g) => g.id !== game.id));
+//     } else {
+//       if (selectedGames.length < maxGames) {
+//         setSelectedGames([...selectedGames, game]);
+//       } else {
+//         showNotification(
+//           "error",
+//           `You can select maximum ${maxGames} game${maxGames > 1 ? "s" : ""}.`,
+//         );
+//       }
+//     }
+//   };
+
+//   return (
+//     <AnimatePresence>
+//       <motion.div
+//         className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//         exit={{ opacity: 0 }}
+//         onClick={onClose}
+//       >
+//         <motion.div
+//           className="bg-gray-900 text-white rounded-2xl shadow-2xl w-full max-w-4xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
+//           style={{
+//             border: "2px solid transparent",
+//             backgroundImage:
+//               "linear-gradient(#111827, #111827), linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//             backgroundOrigin: "border-box",
+//             backgroundClip: "padding-box, border-box",
+//           }}
+//           initial={{ scale: 0.8, opacity: 0 }}
+//           animate={{ scale: 1, opacity: 1 }}
+//           exit={{ scale: 0.8, opacity: 0 }}
+//           onClick={(e) => e.stopPropagation()}
+//         >
+//           <button
+//             onClick={onClose}
+//             className="absolute top-4 right-4 text-gray-400 hover:text-white z-50"
+//           >
+//             <X size={28} />
+//           </button>
+
+//           {basePrice > 0 && selectedGames.length > 0 && (
+//             <motion.div
+//               initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+//               animate={{ opacity: 1, scale: 1, rotate: 0 }}
+//               className="absolute top-6 right-16 z-40"
+//             >
+//               <div className="relative">
+//                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-gray-400 to-gray-600"></div>
+//                 <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 border-2 border-gray-600"></div>
+
+//                 <div
+//                   className="relative w-28 h-28 flex items-center justify-center"
+//                   style={{
+//                     background: hasDiscount
+//                       ? "linear-gradient(135deg, #10B981, #059669, #047857)"
+//                       : "linear-gradient(135deg, #8117EE, #E91E63, #FF6B35)",
+//                     clipPath:
+//                       "polygon(50% 0%, 61% 8%, 73% 5%, 82% 15%, 90% 10%, 95% 22%, 100% 30%, 98% 43%, 100% 55%, 95% 67%, 90% 73%, 82% 78%, 73% 85%, 61% 82%, 50% 90%, 39% 82%, 27% 85%, 18% 78%, 10% 73%, 5% 67%, 0% 55%, 2% 43%, 0% 30%, 5% 22%, 10% 10%, 18% 15%, 27% 5%, 39% 8%)",
+//                     boxShadow: hasDiscount
+//                       ? "0 10px 25px rgba(16, 185, 129, 0.5), 0 5px 15px rgba(5, 150, 105, 0.3)"
+//                       : "0 10px 25px rgba(129, 23, 238, 0.5), 0 5px 15px rgba(233, 30, 99, 0.3)",
+//                   }}
+//                 >
+//                   <div className="flex flex-col items-center justify-center text-white">
+//                     {hasDiscount && (
+//                       <span className="text-xs line-through opacity-70">
+//                         ৳{basePrice}
+//                       </span>
+//                     )}
+//                     <span className="text-2xl font-bold leading-tight">
+//                       ৳{dynamicPrice}
+//                     </span>
+//                     {isMonthlySubscription && (
+//                       <span className="text-[10px] font-semibold uppercase tracking-wide opacity-90">
+//                         /month
+//                       </span>
+//                     )}
+//                     {hasDiscount && (
+//                       <span className="text-[9px] font-bold uppercase tracking-wide text-yellow-300">
+//                         DISCOUNT!
+//                       </span>
+//                     )}
+//                   </div>
+//                 </div>
+//               </div>
+//             </motion.div>
+//           )}
+
+//           <AnimatePresence>
+//             {notification.show && (
+//               <motion.div
+//                 initial={{ opacity: 0, y: -50 }}
+//                 animate={{ opacity: 1, y: 0 }}
+//                 exit={{ opacity: 0, y: -50 }}
+//                 className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md"
+//               >
+//                 <div
+//                   className={`px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 ${notification.type === "success"
+//                       ? "bg-gradient-to-r from-green-500 to-emerald-600"
+//                       : "bg-gradient-to-r from-red-500 to-pink-600"
+//                     }`}
+//                 >
+//                   {notification.type === "success" ? (
+//                     <CheckCircle className="w-6 h-6 flex-shrink-0" />
+//                   ) : (
+//                     <AlertCircle className="w-6 h-6 flex-shrink-0" />
+//                   )}
+//                   <p className="font-semibold text-sm">
+//                     {notification.message}
+//                   </p>
+//                 </div>
+//               </motion.div>
+//             )}
+//           </AnimatePresence>
+
+//           <div className="p-6 md:p-8">
+//             {flowType.includes("tournament") && selectedGames.length === 0 && (
+//               <>
+//                 {/* <ComingSoon /> */}
+//                 {/* Championship Banner */}
+//                 <div className="mb-8 rounded-xl overflow-hidden">
+//                   <img
+//                     src="/News/championship-banner.png"
+//                     alt="Slice N Share Championship"
+//                     className="w-full h-auto"
+//                   />
+//                 </div>
+
+//                 {/* Why Monthly Subscription - Bilingual */}
+//                 <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg p-6 mb-6 border border-purple-500/30">
+//                   <h3 className="text-xl font-bold text-white mb-4">
+//                     Why Monthly Subscription for Tournaments?
+//                   </h3>
+//                   <p className="text-gray-300 text-sm leading-relaxed mb-4">
+//                     Our tournament subscription gives you unlimited access to
+//                     all monthly tournaments with guaranteed slots, priority
+//                     registration, exclusive rewards, and consistent competitive
+//                     experience. Build your ranking, improve your skills, and
+//                     compete regularly with the best players every month.
+//                   </p>
+
+//                   {/* Bangla Translation */}
+//                   <h3 className="text-xl font-bold text-white mb-4 mt-6">
+//                     টুর্নামেন্টের জন্য মাসিক সাবস্ক্রিপশন কেন?
+//                   </h3>
+//                   <p className="text-gray-300 text-sm leading-relaxed">
+//                     আমাদের টুর্নামেন্ট সাবস্ক্রিপশন আপনাকে সকল মাসিক
+//                     টুর্নামেন্টে নিশ্চিত স্লট, অগ্রাধিকার নিবন্ধন, এক্সক্লুসিভ
+//                     পুরস্কার এবং ধারাবাহিক প্রতিযোগিতামূলক অভিজ্ঞতার সাথে
+//                     সীমাহীন অ্যাক্সেস দেয়। আপনার র‍্যাঙ্কিং তৈরি করুন, আপনার
+//                     দক্ষতা উন্নত করুন এবং প্রতি মাসে সেরা খেলোয়াড়দের সাথে
+//                     নিয়মিত প্রতিদ্বন্দ্বিতা করুন।
+//                   </p>
+//                 </div>
+
+//                 {/* Prize Pool Section */}
+//                 <div className="bg-gradient-to-r from-green-900/40 to-blue-900/40 rounded-lg p-6 mb-8 border border-green-500/30">
+//                   <div className="text-center">
+//                     <h3 className="text-2xl font-bold text-green-400 mb-2">
+//                       Total 1 Lacs+ BDT Prizepool Monthly & MVP Gift
+//                     </h3>
+//                     <p className="text-xl text-white font-semibold">
+//                       In total 15 lacs on next 12 months
+//                     </p>
+//                   </div>
+//                 </div>
+//               </>
+//             )}
+
+//             {selectedGames.length === 0 && (
+//               <div>
+//                 <h2 className="text-3xl md:text-4xl font-bold mb-2 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+//                   Select Your Game{maxGames > 1 ? "s" : ""}
+//                 </h2>
+//                 <p className="text-center text-gray-400 mb-6 text-sm">
+//                   {maxGames === 1
+//                     ? "Select 1 game"
+//                     : `Select up to ${maxGames} games`}
+//                 </p>
+//                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full">
+//                   {games.map((game) => {
+//                     const isSelected = selectedGames.find(
+//                       (g) => g.id === game.id
+//                     );
+//                     return (
+//                       <motion.div
+//                         key={game.id}
+//                         whileHover={{ scale: 1.05, y: -5 }}
+//                         whileTap={{ scale: 0.95 }}
+//                         className={`cursor-pointer rounded-xl overflow-hidden border-2 transition-all h-full flex flex-col ${isSelected
+//                             ? "border-purple-500 ring-2 ring-purple-400"
+//                             : "border-gray-700 hover:border-purple-500"
+//                           }`}
+//                         onClick={() => handleGameSelect(game)}
+//                       >
+//                         <div className="relative flex-shrink-0">
+//                           {isSelected && (
+//                             <div className="absolute top-1 right-1 z-10 bg-purple-500 rounded-full p-1">
+//                               <CheckCircle size={16} />
+//                             </div>
+//                           )}
+//                           <Image
+//                             src={game.image || "/placeholder.svg"}
+//                             alt={game.name}
+//                             width={200}
+//                             height={120}
+//                             className="object-cover w-full h-24"
+//                           />
+//                         </div>
+//                         <div className="flex-1 flex items-center justify-center bg-gray-800 min-h-[48px] p-2">
+//                           <p className="text-center text-xs md:text-sm font-medium line-clamp-2">
+//                             {game.name}
+//                           </p>
+//                         </div>
+//                       </motion.div>
+//                     );
+//                   })}
+//                 </div>
+//                 {selectedGames.length > 0 && (
+//                   <div className="mt-6 text-center">
+//                     <button
+//                       onClick={() => { }}
+//                       className="px-8 py-3 rounded-full font-bold text-white transition bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+//                     >
+//                       Continue with {selectedGames.length} game
+//                       {selectedGames.length > 1 ? "s" : ""}
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
+//             {selectedGames.length > 0 && (
+//               <form onSubmit={handleSubmit} className="space-y-4">
+//                 <div className="flex flex-col items-center mb-6">
+//                   <div className="flex flex-wrap gap-2 justify-center mb-3">
+//                     {selectedGames.map((game) => (
+//                       <div key={game.id} className="relative">
+//                         <Image
+//                           src={game.image || "/placeholder.svg"}
+//                           alt={game.name}
+//                           width={80}
+//                           height={48}
+//                           className="rounded-lg shadow-lg border-2 border-purple-500"
+//                         />
+//                         <button
+//                           type="button"
+//                           onClick={() =>
+//                             setSelectedGames(
+//                               selectedGames.filter((g) => g.id !== game.id),
+//                             )
+//                           }
+//                           className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600"
+//                         >
+//                           <X size={12} />
+//                         </button>
+//                       </div>
+//                     ))}
+//                   </div>
+//                   <h3 className="text-2xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+//                     {selectedGames.map((g) => g.name).join(", ")}{" "}
+//                     {isNewsletterMode ? "Subscription" : "Registration"}
+//                   </h3>
+//                   {eventType && !isMonthlySubscription && (
+//                     <p className="text-gray-400 text-sm mt-1">{eventType}</p>
+//                   )}
+//                   {eventType && isMonthlySubscription && (
+//                     <p className="text-gray-400 text-sm mt-1">
+//                       {eventType} - Monthly Subscription
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 {isNewsletterMode ? (
+//                   <div className="space-y-4">
+//                     <AnimatedInput
+//                       label="Full Name"
+//                       type="text"
+//                       name="fullName"
+//                       value={formData.fullName}
+//                       onChange={handleInputChange}
+//                       required
+//                     />
+
+//                     <AnimatedInput
+//                       label="Email Address"
+//                       type="email"
+//                       name="email"
+//                       value={formData.email}
+//                       onChange={handleInputChange}
+//                       required
+//                     />
+
+//                     <AnimatedInput
+//                       label="Phone Number (01XXXXXXXXX)"
+//                       type="text"
+//                       name="phone"
+//                       value={formData.phone}
+//                       onChange={handleInputChange}
+//                       required
+//                     />
+
+//                     {selectedPlan === "premium" && (
+//                       <>
+//                         <div className="space-y-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-xl p-6 border border-purple-500/30">
+//                           {/* Payment Instructions */}
+//                           <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-5 border border-purple-500/20">
+//                             <h3 className="text-lg font-bold text-purple-300 mb-4 flex items-center gap-2">
+//                               <svg
+//                                 className="w-5 h-5"
+//                                 fill="currentColor"
+//                                 viewBox="0 0 20 20"
+//                               >
+//                                 <path
+//                                   fillRule="evenodd"
+//                                   d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+//                                   clipRule="evenodd"
+//                                 />
+//                               </svg>
+//                               Payment Instructions
+//                             </h3>
+//                             <ol className="space-y-2 text-sm text-gray-300">
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   1
+//                                 </span>
+//                                 <span>
+//                                   Put the amount{" "}
+//                                   <span className="font-bold text-purple-400">
+//                                     {dynamicPrice} BDT
+//                                   </span>{" "}
+//                                   (As your package)
+//                                 </span>
+//                               </li>
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   2
+//                                 </span>
+//                                 <span>
+//                                   Turn ON the{" "}
+//                                   <span className="font-semibold text-pink-400">
+//                                     bKash Cash Out Charge
+//                                   </span>{" "}
+//                                   feature on your mobile app (bKash will deduct
+//                                   it automatically)
+//                                 </span>
+//                               </li>
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   3
+//                                 </span>
+//                                 <span>Send Money (to our personal number)</span>
+//                               </li>
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   4
+//                                 </span>
+//                                 <span>Enter the Transaction ID (Trx ID)</span>
+//                               </li>
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   5
+//                                 </span>
+//                                 <span>Submit</span>
+//                               </li>
+//                               <li className="flex items-start gap-3">
+//                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                                   6
+//                                 </span>
+//                                 <span>
+//                                   You will get Email as Confirmation. (If you
+//                                   dont get email, send your Transaction ID proof
+//                                   to our Facebook page, Admin will confirm)
+//                                 </span>
+//                               </li>
+//                             </ol>
+//                           </div>
+
+//                           {/* QR Codes Section */}
+//                           <div className="space-y-6">
+//                             <p className="text-center text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+//                               Scan & Pay ৳{dynamicPrice}
+//                             </p>
+
+//                             <div className="flex justify-center">
+//                               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 place-items-center">
+//                                 {/* Primary QR Block */}
+//                                 <div className="flex flex-col items-center">
+//                                   <div className="relative w-[220px] h-[220px] flex items-center justify-center">
+//                                     {/* Glow */}
+//                                     <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-50"></div>
+
+//                                     {/* QR Container */}
+//                                     <div className="relative bg-white rounded-xl border-2 border-purple-400 shadow-xl w-full h-full flex items-center justify-center p-4">
+//                                       {qrImageError ? (
+//                                         <div className="w-[180px] h-[180px] flex items-center justify-center text-center bg-gray-100 rounded-lg">
+//                                           <div>
+//                                             <p className="text-gray-600 text-sm font-semibold mb-1">
+//                                               QR Code 1
+//                                             </p>
+//                                             <p className="text-gray-500 text-xs">
+//                                               Add /public/qr.jpeg
+//                                             </p>
+//                                           </div>
+//                                         </div>
+//                                       ) : (
+//                                         <Image
+//                                           src="/qr.jpeg"
+//                                           alt="Primary Payment QR Code"
+//                                           width={180}
+//                                           height={180}
+//                                           className="rounded-lg object-contain"
+//                                           onError={() => setQrImageError(true)}
+//                                         />
+//                                       )}
+//                                     </div>
+//                                   </div>
+
+//                                   <p className="text-sm font-semibold text-purple-300 mt-3 text-center">
+//                                     Primary QR Code
+//                                   </p>
+//                                   <p className="text-xs text-gray-400 text-center mb-1">
+//                                     Scan with bKash
+//                                   </p>
+
+//                                   <p className="text-xs text-gray-400 text-center mb-2">
+//                                     OR
+//                                   </p>
+//                                   <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
+//                                     {/* 01710789995 */}
+//                                     Number coming soon
+//                                     {/* <Copy
+//                                       size={13}
+//                                       onClick={() => handleCopy("01710789995")}
+//                                       className="cursor-pointer"
+//                                     /> */}
+//                                   </p>
+//                                 </div>
+
+//                                 {/* Secondary QR Block */}
+//                                 <div className="flex flex-col items-center">
+//                                   <div className="relative w=[220px] h-[220px] flex items-center justify-center">
+//                                     {/* Glow */}
+//                                     <div className="absolute -inset-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl blur-md opacity-50"></div>
+
+//                                     {/* QR Container */}
+//                                     <div className="relative bg-white rounded-xl border-2 border-pink-400 shadow-xl w-full h-full flex items-center justify-center p-4">
+//                                       {qrImageError2 ? (
+//                                         <div className="w-[180px] h-[180px] flex items-center justify-center text-center bg-gray-100 rounded-lg">
+//                                           <div>
+//                                             <p className="text-gray-600 text-sm font-semibold mb-1">
+//                                               QR Code 2
+//                                             </p>
+//                                           </div>
+//                                         </div>
+//                                       ) : (
+//                                         <Image
+//                                           src="/qr2.png"
+//                                           alt="Backup Payment QR Code"
+//                                           width={180}
+//                                           height={180}
+//                                           className="rounded-lg object-contain"
+//                                           onError={() => setQrImageError2(true)}
+//                                         />
+//                                       )}
+//                                     </div>
+//                                   </div>
+
+//                                   <p className="text-sm font-semibold text-pink-300 mt-3 text-center">
+//                                     Backup QR Code
+//                                   </p>
+//                                   <p className="text-xs text-gray-400 text-center mb-1">
+//                                     Use if primary doesn&#39;t work
+//                                   </p>
+//                                   <p className="text-xs text-gray-400 text-center mb-2">
+//                                     OR
+//                                   </p>
+//                                   <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
+//                                     {/* 01317267498 */}
+//                                     Number Coming Soon
+//                                     {/* <Copy
+//                                       size={13}
+//                                       onClick={() => handleCopy("01317267498")}
+//                                       className="cursor-pointer"
+//                                     /> */}
+//                                   </p>
+//                                 </div>
+//                               </div>
+//                             </div>
+
+//                             {/* Note */}
+//                             <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-4">
+//                               <p className="text-sm text-yellow-200 font-semibold mb-2">
+//                                 Important Note:
+//                               </p>
+//                               <p className="text-xs text-gray-300 leading-relaxed">
+//                                 If the first QR code doesn’t work, use the
+//                                 second QR code. For any issues, message us on
+//                                 Facebook — we will reply within 24 hours.
+//                               </p>
+//                             </div>
+//                           </div>
+//                         </div>
+
+//                         <AnimatedInput
+//                           label="Transaction ID"
+//                           type="text"
+//                           name="trnxId"
+//                           value={formData.trnxId}
+//                           onChange={handleInputChange}
+//                           required
+//                         />
+//                         <AnimatedInput
+//                           label="Confirm Transaction ID (Type again, no copy-paste)"
+//                           type="text"
+//                           name="trnxIdConfirm"
+//                           value={formData.trnxIdConfirm}
+//                           onChange={handleInputChange}
+//                           onPaste={handleConfirmTrnxPaste}
+//                           required
+//                         />
+//                         {formData.trnxId &&
+//                           formData.trnxIdConfirm &&
+//                           formData.trnxId !== formData.trnxIdConfirm && (
+//                             <p className="text-red-400 text-sm flex items-center gap-1">
+//                               <AlertCircle size={14} /> Transaction IDs do not
+//                               match
+//                             </p>
+//                           )}
+//                         {formData.trnxId &&
+//                           formData.trnxIdConfirm &&
+//                           formData.trnxId === formData.trnxIdConfirm && (
+//                             <p className="text-green-400 text-sm flex items-center gap-1">
+//                               <CheckCircle size={14} /> Transaction IDs match
+//                             </p>
+//                           )}
+//                       </>
+//                     )}
+//                   </div>
+//                 ) : (
+//                   <>
+//                     <div className="grid md:grid-cols-2 gap-4">
+//                       <AnimatedInput
+//                         label="Full Name"
+//                         type="text"
+//                         name="fullName"
+//                         value={formData.fullName}
+//                         onChange={handleInputChange}
+//                         required
+//                       />
+
+//                       <AnimatedInput
+//                         label="Email Address"
+//                         type="email"
+//                         name="email"
+//                         value={formData.email}
+//                         onChange={handleInputChange}
+//                         required
+//                       />
+
+//                       <AnimatedInput
+//                         label="Phone Number (01XXXXXXXXX)"
+//                         type="text"
+//                         name="phone"
+//                         value={formData.phone}
+//                         onChange={handleInputChange}
+//                         required
+//                       />
+
+//                       <AnimatedInput
+//                         label="University"
+//                         type="text"
+//                         name="University"
+//                         value={formData.University}
+//                         onChange={handleInputChange}
+//                         required
+//                       />
+
+//                       <AnimatedInput
+//                         label="District"
+//                         type="text"
+//                         name="district"
+//                         value={formData.district}
+//                         onChange={handleInputChange}
+//                         required
+//                       />
+
+//                       <AnimatedInput
+//                         label="Facebook URL (Optional)"
+//                         type="url"
+//                         name="fbUrl"
+//                         value={formData.fbUrl}
+//                         onChange={handleInputChange}
+//                       />
+
+//                       <AnimatedInput
+//                         label="YouTube URL (Optional)"
+//                         type="url"
+//                         name="youtubeUrl"
+//                         value={formData.youtubeUrl}
+//                         onChange={handleInputChange}
+//                       />
+//                     </div>
+
+//                     {showPromoCodeField && (
+//                       <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+//                         <div className="flex items-center gap-2 mb-3">
+//                           <Tag size={18} className="text-purple-400" />
+//                           <span className="text-sm font-medium text-gray-300">
+//                             Have a Promo Code?
+//                           </span>
+//                         </div>
+
+//                         {promoCodeData?.valid ? (
+//                           <div className="flex items-center justify-between bg-green-900/30 border border-green-500/50 rounded-lg p-3">
+//                             <div className="flex items-center gap-2">
+//                               <CheckCircle
+//                                 size={18}
+//                                 className="text-green-400"
+//                               />
+//                               <span className="text-green-400 font-medium">
+//                                 {promoCodeData.code}
+//                               </span>
+//                               <span className="text-gray-400 text-sm">
+//                                 (
+//                                 {promoCodeData.discountType === "percentage"
+//                                   ? `${promoCodeData.discountValue}% off`
+//                                   : promoCodeData.discountType === "free"
+//                                     ? "FREE"
+//                                     : `৳${promoCodeData.discountValue} off`}
+//                                 )
+//                               </span>
+//                             </div>
+//                             <button
+//                               type="button"
+//                               onClick={removePromoCode}
+//                               className="text-red-400 hover:text-red-300 text-sm font-medium"
+//                             >
+//                               Remove
+//                             </button>
+//                           </div>
+//                         ) : (
+//                           <div className="flex gap-2">
+//                             <input
+//                               type="text"
+//                               value={promoCode}
+//                               onChange={(e) => {
+//                                 setPromoCode(e.target.value.toUpperCase());
+//                                 setPromoCodeError("");
+//                               }}
+//                               placeholder="Enter promo code"
+//                               className="flex-1 bg-gray-700 border border-gray-600 focus:border-purple-500 p-3 rounded-lg outline-none text-white placeholder-gray-500 uppercase"
+//                             />
+//                             <button
+//                               type="button"
+//                               onClick={validatePromoCode}
+//                               disabled={isValidatingPromo || !promoCode.trim()}
+//                               className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+//                             >
+//                               {isValidatingPromo ? (
+//                                 <>
+//                                   <Loader2 size={16} className="animate-spin" />
+//                                   Checking...
+//                                 </>
+//                               ) : (
+//                                 "Apply"
+//                               )}
+//                             </button>
+//                           </div>
+//                         )}
+
+//                         {promoCodeError && (
+//                           <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
+//                             <AlertCircle size={14} /> {promoCodeError}
+//                           </p>
+//                         )}
+//                       </div>
+//                     )}
+
+//                     <div className="space-y-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-xl p-6 border border-purple-500/30">
+//                       {/* Payment Instructions */}
+//                       <div className="bg-gray-900/50 backdrop-blur-sm rounded-lg p-5 border border-purple-500/20">
+//                         <h3 className="text-lg font-bold text-purple-300 mb-4 flex items-center gap-2">
+//                           <svg
+//                             className="w-5 h-5"
+//                             fill="currentColor"
+//                             viewBox="0 0 20 20"
+//                           >
+//                             <path
+//                               fillRule="evenodd"
+//                               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+//                               clipRule="evenodd"
+//                             />
+//                           </svg>
+//                           Payment Instructions
+//                         </h3>
+//                         <ol className="space-y-2 text-sm text-gray-300">
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               1
+//                             </span>
+//                             <span>
+//                               Put the amount{" "}
+//                               <span className="font-bold text-purple-400">
+//                                 {dynamicPrice} BDT
+//                               </span>{" "}
+//                               (As your package)
+//                             </span>
+//                           </li>
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               2
+//                             </span>
+//                             <span>
+//                               Turn ON the{" "}
+//                               <span className="font-semibold text-pink-400">
+//                                 bKash Cash Out Charge
+//                               </span>{" "}
+//                               feature on your mobile app (bKash will deduct it
+//                               automatically)
+//                             </span>
+//                           </li>
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               3
+//                             </span>
+//                             <span>Send Money (to our personal number)</span>
+//                           </li>
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               4
+//                             </span>
+//                             <span>Enter the Transaction ID (Trx ID)</span>
+//                           </li>
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               5
+//                             </span>
+//                             <span>Submit</span>
+//                           </li>
+//                           <li className="flex items-start gap-3">
+//                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center font-bold">
+//                               6
+//                             </span>
+//                             <span>
+//                               You will get Email as Confirmation. (If you dont
+//                               get email, send your Transaction ID proof to our
+//                               Facebook page, Admin will confirm)
+//                             </span>
+//                           </li>
+//                         </ol>
+//                       </div>
+
+//                       {/* QR Codes Section */}
+//                       <div className="space-y-8">
+//                         <p className="text-center text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+//                           Scan & Pay ৳{dynamicPrice}
+//                         </p>
+
+//                         <div className="flex justify-center">
+//                           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 place-items-center">
+//                             {/* QR ITEM — 1 */}
+//                             <div className="flex flex-col items-center w-[260px]">
+//                               <div className="relative w-[220px] h-[220px] flex items-center justify-center">
+//                                 {/* Glow Ring */}
+//                                 <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-60"></div>
+
+//                                 {/* QR Container */}
+//                                 <div className="relative bg-white p-4 rounded-xl border-2 border-purple-400 shadow-xl w-full h-full flex items-center justify-center">
+//                                   <Image
+//                                     src="/qr.jpeg"
+//                                     alt="Primary QR Code"
+//                                     width={180}
+//                                     height={180}
+//                                     className="rounded-lg object-contain"
+//                                   />
+//                                 </div>
+//                               </div>
+
+//                               {/* Text */}
+//                               <p className="text-center text-sm font-semibold text-purple-300 mt-3">
+//                                 Primary QR Code
+//                               </p>
+//                               <p className="text-center text-xs text-gray-400 mb-1">
+//                                 Scan with bKash
+//                               </p>
+//                               <p className="text-xs text-gray-400 text-center mb-2">
+//                                 OR
+//                               </p>
+//                               <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
+//                                 {/* 01710789995 */}
+//                                 Number Coming Soon
+//                                 {/* <Copy
+//                                       size={13}
+//                                       onClick={() => handleCopy("01710789995")}
+//                                       className="cursor-pointer"
+//                                     /> */}
+//                               </p>
+//                             </div>
+
+//                             {/* QR ITEM — 2 */}
+//                             <div className="flex flex-col items-center w-[260px]">
+//                               <div className="relative w-[220px] h-[220px] flex items-center justify-center">
+//                                 {/* Glow Ring */}
+//                                 <div className="absolute -inset-2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl blur-md opacity-60"></div>
+
+//                                 {/* QR Container */}
+//                                 <div className="relative bg-white p-4 rounded-xl border-2 border-pink-400 shadow-xl w-full h-full flex items-center justify-center">
+//                                   <Image
+//                                     src="/qr2.png"
+//                                     alt="Backup QR Code"
+//                                     width={180}
+//                                     height={180}
+//                                     className="rounded-lg object-contain"
+//                                   />
+//                                 </div>
+//                               </div>
+
+//                               {/* Text */}
+//                               <p className="text-center text-sm font-semibold text-pink-300 mt-3">
+//                                 Backup QR Code
+//                               </p>
+//                               <p className="text-center text-xs text-gray-400 mb-1">
+//                                 Use if primary doesn’t work
+//                               </p>
+//                               <p className="text-xs text-gray-400 text-center mb-2">
+//                                 OR
+//                               </p>
+//                               <p className="text-md font-bold flex items-center gap-2 text-gray-400 text-center cursor-pointer">
+//                                 {/* 01317267498 */}
+//                                 Number Coming Soon
+//                                 {/* <Copy
+//                                       size={13}
+//                                       onClick={() => handleCopy("01317267498")}
+//                                       className="cursor-pointer"
+//                                     /> */}
+//                               </p>
+//                             </div>
+//                           </div>
+//                         </div>
+
+//                         {/* Note Box */}
+//                         <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-5">
+//                           <p className="text-sm text-yellow-200 font-semibold mb-2">
+//                             Important Note:
+//                           </p>
+//                           <p className="text-xs text-gray-300 leading-relaxed">
+//                             If the first QR code doesn’t work, use the second.
+//                             For any issues, message us on Facebook — we will
+//                             reply within 24 hours.
+//                           </p>
+//                         </div>
+//                       </div>
+//                     </div>
+
+//                     {dynamicPrice > 0 && (
+//                       <>
+//                         <AnimatedInput
+//                           label="Transaction ID"
+//                           type="text"
+//                           name="trnxId"
+//                           value={formData.trnxId}
+//                           onChange={handleInputChange}
+//                           required
+//                         />
+//                         <AnimatedInput
+//                           label="Confirm Transaction ID (Type again, no copy-paste)"
+//                           type="text"
+//                           name="trnxIdConfirm"
+//                           value={formData.trnxIdConfirm}
+//                           onChange={handleInputChange}
+//                           onPaste={handleConfirmTrnxPaste}
+//                           required
+//                         />
+//                         {formData.trnxId &&
+//                           formData.trnxIdConfirm &&
+//                           formData.trnxId !== formData.trnxIdConfirm && (
+//                             <p className="text-red-400 text-sm flex items-center gap-1">
+//                               <AlertCircle size={14} /> Transaction IDs do not
+//                               match
+//                             </p>
+//                           )}
+//                         {formData.trnxId &&
+//                           formData.trnxIdConfirm &&
+//                           formData.trnxId === formData.trnxIdConfirm && (
+//                             <p className="text-green-400 text-sm flex items-center gap-1">
+//                               <CheckCircle size={14} /> Transaction IDs match
+//                             </p>
+//                           )}
+//                       </>
+//                     )}
+
+//                     {dynamicPrice === 0 && hasDiscount && (
+//                       <div className="text-center mt-4 p-4 bg-green-900/30 rounded-lg border border-green-500/30">
+//                         <CheckCircle
+//                           size={32}
+//                           className="mx-auto mb-2 text-green-400"
+//                         />
+//                         <p className="text-lg font-semibold text-green-400">
+//                           100% Discount Applied!
+//                         </p>
+//                         <p className="text-gray-400 text-sm">
+//                           No payment required with your promo code
+//                         </p>
+//                       </div>
+//                     )}
+//                   </>
+//                 )}
+
+//                 <div className="flex gap-4 pt-4">
+//                   <button
+//                     type="button"
+//                     onClick={() => {
+//                       setSelectedGames([]);
+//                       setFormData({
+//                         fullName: "",
+//                         email: "",
+//                         phone: "",
+//                         University: "",
+//                         district: "",
+//                         fbUrl: "",
+//                         youtubeUrl: "",
+//                         trnxId: "",
+//                         trnxIdConfirm: "",
+//                       });
+//                       setPromoCode("");
+//                       setPromoCodeData(null);
+//                       setPromoCodeError("");
+//                       setDiscountedPrice(null);
+//                     }}
+//                     className="flex-1 py-3 rounded-full font-bold text-white transition border-2 border-purple-500 hover:bg-purple-500/10"
+//                   >
+//                     Back
+//                   </button>
+
+//                   <button
+//                     type="submit"
+//                     disabled={
+//                       isSubmitting ||
+//                       (dynamicPrice > 0 &&
+//                         formData.trnxId !== formData.trnxIdConfirm)
+//                     }
+//                     className="flex-1 py-3 rounded-full font-bold text-white transition bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+//                   >
+//                     {isSubmitting ? "Submitting..." : "Submit"}
+//                   </button>
+//                 </div>
+//               </form>
+//             )}
+//           </div>
+//         </motion.div>
+//       </motion.div>
+//     </AnimatePresence>
+//   );
+// }

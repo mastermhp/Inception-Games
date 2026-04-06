@@ -8,8 +8,8 @@ export default function QuickInfo({ user }) {
   const infoItems = [
     { label: 'Full Name', value: user?.fullName, icon: User, accent: 'purple' },
     { label: 'Gamer Tag', value: user?.username, icon: AtSign, accent: 'pink' },
-    { label: 'Primary Game', value: user?.game, icon: Gamepad2, accent: 'purple' },
-    { label: 'Role', value: user?.role, icon: Users2, accent: 'pink' },
+    { label: 'Primary Game', value: user?.primaryGame, icon: Gamepad2, accent: 'purple' },
+    { label: 'Role', value: user?.gameRole, icon: Users2, accent: 'pink' },
     { label: 'Rank', value: user?.rank, icon: Award, accent: 'purple' },
     { label: 'Region', value: user?.region, icon: MapPin, accent: 'pink' },
     { label: 'Email', value: user?.email, icon: Mail, accent: 'purple' },
@@ -29,7 +29,7 @@ export default function QuickInfo({ user }) {
     visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
   }
 
-  const hasGamingInfo = user?.game || user?.role || user?.rank || user?.region
+  const hasGamingInfo = user?.primaryGame || user?.gameRole || user?.rank || user?.region
 
   return (
     <motion.div
