@@ -215,8 +215,6 @@ export default function EventDetailPage() {
   const router = useRouter()
   const [event, setEvent] = useState(null)
   const [activeTab, setActiveTab] = useState('result')
-  const [liked, setLiked] = useState(false)
-  const [reminded, setReminded] = useState(false)
   const [showSignupForm, setShowSignupForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notification, setNotification] = useState({ show: false, type: '', message: '' })
@@ -483,34 +481,14 @@ export default function EventDetailPage() {
                     />
                   </div>
                   <span className="text-white font-semibold text-lg">{gameName}</span>
-                  <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
+                  {/* <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
                     <Users size={14} />
                     Follow
-                  </button>
+                  </button> */}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => setLiked(!liked)}
-                    className={`px-4 py-2.5 text-sm rounded-lg flex items-center gap-2 transition-colors ${
-                      liked 
-                        ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' 
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
-                    Like
-                  </button>
-                  <button 
-                    onClick={() => setReminded(!reminded)}
-                    className={`px-4 py-2.5 text-sm rounded-lg flex items-center gap-2 transition-colors ${
-                      reminded 
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    <Bell size={16} fill={reminded ? 'currentColor' : 'none'} />
-                    Remind Me
-                  </button>
+                
+                  
                   <button 
                     onClick={handleShare}
                     className="px-4 py-2.5 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors"
@@ -610,8 +588,105 @@ export default function EventDetailPage() {
                 </div>
               </div>
 
+
+
+
+{/* Tabs */}
+<div className="border-b border-gray-800 mb-6">
+  <div className="flex gap-1 overflow-x-auto pb-px">
+    {tabs.map((tab) => (
+      <button
+        key={tab.id}
+        onClick={() => setActiveTab(tab.id)}
+        className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
+          activeTab === tab.id
+            ? 'text-purple-400'
+            : 'text-gray-400 hover:text-gray-300'
+        }`}
+      >
+        {tab.label}
+        {activeTab === tab.id && (
+          <motion.div
+            layoutId="activeEventTab"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
+          />
+        )}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Tab Content */}
+<div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+  <div className="flex flex-col items-center justify-center py-16 text-center">
+    <div className="w-16 h-16 mb-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center">
+      <Clock size={28} className="text-purple-400" />
+    </div>
+    <h4 className="text-lg font-bold text-white mb-2">Coming Soon</h4>
+    <p className="text-gray-500 text-sm max-w-xs">
+      {activeTab === 'result' && 'Tournament results will be posted here once the event concludes.'}
+      {activeTab === 'brackets' && 'Brackets will be revealed once the tournament begins.'}
+      {activeTab === 'schedule' && 'The full schedule will be published closer to the event date.'}
+      {activeTab === 'participants' && 'Participant list will be visible after registration closes.'}
+      {activeTab === 'rules' && 'Rules & guidelines will be available before the event starts.'}
+      {activeTab === 'support' && 'Support chat will be available once the event is live.'}
+    </p>
+    <div className="mt-5 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+      <span className="text-purple-400 text-xs font-medium tracking-wide uppercase">Stay Tuned</span>
+    </div>
+  </div>
+</div>
+
+
+{/* Tabs */}
+<div className="border-b border-gray-800 mb-6">
+  <div className="flex gap-1 overflow-x-auto pb-px">
+    {tabs.map((tab) => (
+      <button
+        key={tab.id}
+        onClick={() => setActiveTab(tab.id)}
+        className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
+          activeTab === tab.id
+            ? 'text-purple-400'
+            : 'text-gray-400 hover:text-gray-300'
+        }`}
+      >
+        {tab.label}
+        {activeTab === tab.id && (
+          <motion.div
+            layoutId="activeEventTab"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
+          />
+        )}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Tab Content */}
+<div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+  <div className="flex flex-col items-center justify-center py-16 text-center">
+    <div className="w-16 h-16 mb-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center">
+      <Clock size={28} className="text-purple-400" />
+    </div>
+    <h4 className="text-lg font-bold text-white mb-2">Coming Soon</h4>
+    <p className="text-gray-500 text-sm max-w-xs">
+      {activeTab === 'result' && 'Tournament results will be posted here once the event concludes.'}
+      {activeTab === 'brackets' && 'Brackets will be revealed once the tournament begins.'}
+      {activeTab === 'schedule' && 'The full schedule will be published closer to the event date.'}
+      {activeTab === 'participants' && 'Participant list will be visible after registration closes.'}
+      {activeTab === 'rules' && 'Rules & guidelines will be available before the event starts.'}
+      {activeTab === 'support' && 'Support chat will be available once the event is live.'}
+    </p>
+    <div className="mt-5 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+      <span className="text-purple-400 text-xs font-medium tracking-wide uppercase">Stay Tuned</span>
+    </div>
+  </div>
+</div>
+
+
               {/* Tabs */}
-              <div className="border-b border-gray-800 mb-6">
+              {/* <div className="border-b border-gray-800 mb-6">
                 <div className="flex gap-1 overflow-x-auto pb-px">
                   {tabs.map((tab) => (
                     <button
@@ -633,10 +708,10 @@ export default function EventDetailPage() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               {/* Tab Content */}
-              <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+              {/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
                 {activeTab === 'result' && (
                   <div>
                     <h4 className="text-lg font-semibold text-white mb-4">Tournament Result</h4>
@@ -723,7 +798,8 @@ export default function EventDetailPage() {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
+
             </div>
 
             {/* Sidebar */}
