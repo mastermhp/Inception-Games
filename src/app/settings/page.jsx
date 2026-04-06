@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '../hooks/useAuth'
+// import { useAuth } from '../hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { Settings, User, Bell, Lock, LogOut, ChevronRight, Loader, RefreshCw, Mail, Phone, Shield } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { useAuth } from '../context/AuthContext'
 
 export default function SettingsPage() {
   const { user, isAuthenticated, logout, logoutAll, updateProfile, fetchProfile, loading: authLoading } = useAuth()

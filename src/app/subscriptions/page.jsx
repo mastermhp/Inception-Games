@@ -2,11 +2,12 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '../hooks/useAuth'
+// import { useAuth } from '../hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import SubscriptionsSection from '../components/ProfileComponents/SubscriptionsSection'
+import { useAuth } from '../context/AuthContext'
 
 export default function SubscriptionsPage() {
   const { user, isAuthenticated, loading } = useAuth()
