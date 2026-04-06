@@ -16,64 +16,64 @@ export default function LatestNews() {
   const smallNews = [
 
     {
-      title: "Mousepad Giveaway tonight guys. Don’t miss the chance. ",
+      title: "Mousepad Giveaway tonight guys. Don't miss the chance. ",
       image: "/News/mouse-pad.jpg",
       category: "E-sports",
       time: "March 25",
-      link: "https://www.facebook.com/share/p/1BVfKRejgi",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_1}`,
     },
     {
       title: "5 Jerseys Giveaway is ON GKEC 🎉",
       image: "/News/jersey.jpg",
       category: "E-sports",
       time: "March 30",
-      link: "https://www.facebook.com/share/p/17f6LEzCVk",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_2}`,
     },
     {
       title: "GPU Winner - AL MOHAIMIN FARABI",
       image: "/News/gpu-winner.jpg",
       category: "E-sports",
       time: "March 16",
-      link: "https://www.facebook.com/share/p/18DmDAhESB",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_3}`,
     },
     {
       title: "Gaming Mouse Winner - ANTOR HASAN",
       image: "/News/mouse-winner.jpg",
       category: "E-sports",
       time: "March 16",
-      link: "https://www.facebook.com/share/p/1XEPx8McxY",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_4}`,
     },
     {
       title: "Slice N Share at Startup Showcase Event - Connecting with aspiring entrepreneurs and gamers",
       image: "/News/showcase.jpg",
       category: "E-sports",
       time: "November 14",
-      link: "https://www.facebook.com/share/p/17MYC1BAZR",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_5}`,
     },
     {
       title: "YUNet Bangladesh Gaming & Esports Summit 2025 - Sign Up going on. Follow YUNet Esport Arena",
       image: "/News/summit.jpg",
       category: "E-sports",
       time: "December 7",
-      link: "https://www.facebook.com/share/p/1MCDXG1dSU",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_6}`,
     },
     {
       title: "Digital Entrepreneurship and Innovation Ecosystem Development (DEIED) Project Office has organized a Dialogue Session to introduce the Startup and Scaleup Program (Accelerating Bangladesh) and the University Innovation Hub Program to senior public-sector leadership. ",
       image: "/News/news3.jpg",
       category: "E-sports",
       time: "December 10",
-      link: "https://www.facebook.com/share/p/1TdTB2uQvS/?mibextid=wwXIfr",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_7}`,
     },
     {
-      title: "Dedicating to my Core Teammates & gamers ❤️. Tournament sign up going on at our website. Don’t forget to sign up. Slice N Share at Airtel Buzz Presents Bangladesh Gaming & Esports Summit 2025 ",
+      title: "Dedicating to my Core Teammates & gamers ❤️. Tournament sign up going on at our website. Don't forget to sign up. Slice N Share at Airtel Buzz Presents Bangladesh Gaming & Esports Summit 2025 ",
       image: "/News/news4.jpg",
       category: "E-sports",
       time: "December 10",
-      link: "https://www.facebook.com/share/p/1BthbTQrsq/?mibextid=wwXIfr",
+      link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_8}`,
     },
   ]
 
-  const shareUrl = "https://www.facebook.com/share/p/16yMhZvtR9/?mibextid=wwXIfr"
+  const shareUrl = `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FEATURED_FACEBOOK_POST}?mibextid=wwXIfr`
   const shareTitle = "Slice N Share Championship - 15 Lakh BDT Prize Pool!"
 
   const handleShare = (platform) => {

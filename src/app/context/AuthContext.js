@@ -415,14 +415,26 @@ export function AuthProvider({ children }) {
    */
   const updateProfile = useCallback(async (userId, updates) => {
     setError(null);
-    console.log("Updating profile for:", userId);
+    console.log("[v0] Updating profile for:", userId);
+    const tokens = getStoredTokens();
+    console.log("[v0] Tokens available:", !!tokens?.accessToken);
+    
+    if (!tokens?.accessToken) {
+      const msg = "Not authenticated - no access token found";
+      console.log("[v0]", msg);
+      setError(msg);
+      throw new Error(msg);
+    }
+    
     const url = API.PROFILE_UPDATE.replace(":userId", userId);
+    console.log("[v0] Making PUT request to:", url);
+    
     const res = await authFetch(url, {
       method: "PUT",
       body: JSON.stringify(updates),
     });
     const data = await res.json();
-    console.log("Update profile response:", JSON.stringify(data, null, 2));
+    console.log("[v0] Update profile response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.message || "Failed to update profile";
       setError(msg);

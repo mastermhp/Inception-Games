@@ -219,7 +219,7 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
         </div>
 
         {/* Bottom stats row */}
-        <motion.div
+        {/* <motion.div
           className="flex items-center gap-8 mt-8 pt-6 border-t border-white/[0.06]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,7 +237,7 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
             <p className="text-gray-500 text-[10px] font-semibold uppercase tracking-widest">Member Since</p>
             <p className="text-xl sm:text-2xl font-bold text-white mt-0.5">2025</p>
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
 
       {/* Top accent line */}

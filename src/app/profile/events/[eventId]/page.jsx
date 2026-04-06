@@ -11,6 +11,7 @@ import {
 import Image from 'next/image'
 import Header from '@/app/components/Header'
 import Footer from '@/app/components/Footer'
+import { API } from '@/lib/api'
 
 // Games data (from NewSignupModal)
 const games = [
@@ -243,9 +244,38 @@ export default function EventDetailPage() {
   })
 
   useEffect(() => {
-    const foundEvent = SAMPLE_EVENTS.find(e => e.id === params.eventId)
-    if (foundEvent) {
-      setEvent(foundEvent)
+    const fetchEvent = async () => {
+      try {
+        const url = API.EVENTS_GET_BY_ID.replace(':eventId', params.eventId)
+        console.log("[v0] Fetching event from:", url)
+        const response = await fetch(url)
+        const data = await response.json()
+        console.log("[v0] Event fetched:", data)
+        
+        if (data.success && data.data) {
+          setEvent(data.data)
+        } else if (response.ok && data) {
+          setEvent(data)
+        } else {
+          console.error("[v0] Failed to fetch event:", data)
+          // Fallback to sample events if API fails
+          const foundEvent = SAMPLE_EVENTS.find(e => e.id === `event-${params.eventId}`)
+          if (foundEvent) {
+            setEvent(foundEvent)
+          }
+        }
+      } catch (error) {
+        console.error("[v0] Error fetching event:", error)
+        // Fallback to sample events if API fails
+        const foundEvent = SAMPLE_EVENTS.find(e => e.id === `event-${params.eventId}`)
+        if (foundEvent) {
+          setEvent(foundEvent)
+        }
+      }
+    }
+    
+    if (params.eventId) {
+      fetchEvent()
     }
   }, [params.eventId])
 
@@ -336,11 +366,22 @@ export default function EventDetailPage() {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-[#030305] flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-b from-[#030305] to-black text-white">
+        <Header />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <Loader2 className="animate-spin mx-auto mb-4" size={48} />
+            <p>Loading event details...</p>
+          </div>
+        </div>
+        <Footer />
       </div>
     )
   }
+
+  // Ensure event has required properties
+  const gameImage = event.game?.image || event.gameImage || '/images/default-game.jpg'
+  const gameName = event.game?.name || event.gameName || 'Unknown Game'
 
   const tabs = [
     { id: 'result', label: 'Result' },
@@ -404,8 +445,8 @@ export default function EventDetailPage() {
               {/* Banner */}
               <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden mb-6">
                 <Image
-                  src={event.game.image}
-                  alt={event.game.name}
+                  src={gameImage}
+                  alt={gameName}
                   fill
                   className="object-cover"
                 />
@@ -434,14 +475,14 @@ export default function EventDetailPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
                     <Image
-                      src={event.game.image}
-                      alt={event.game.name}
+                      src={gameImage}
+                      alt={gameName}
                       width={48}
                       height={48}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <span className="text-white font-semibold text-lg">{event.game.name}</span>
+                  <span className="text-white font-semibold text-lg">{gameName}</span>
                   <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
                     <Users size={14} />
                     Follow
@@ -521,7 +562,7 @@ export default function EventDetailPage() {
               {/* Description */}
               <div className="text-sm text-gray-400 mb-8 space-y-2 p-4 bg-white/[0.02] rounded-xl border border-white/[0.06]">
                 <p>Date: {new Date(event.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                <p>Game: {event.game.name} ({event.teamType})</p>
+                <p>Game: {gameName} ({event.teamType})</p>
                 <p>
                   Location: {event.address}. 
                   <a href="#" className="text-blue-400 hover:underline ml-1">(Map Link)</a>
@@ -827,14 +868,14 @@ export default function EventDetailPage() {
                             {/* Game Info */}
                             <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
                               <Image
-                                src={event.game.image}
-                                alt={event.game.name}
+                                src={gameImage}
+                                alt={gameName}
                                 width={48}
                                 height={48}
                                 className="rounded-lg"
                               />
                               <div>
-                                <p className="text-white font-semibold">{event.game.name}</p>
+                                <p className="text-white font-semibold">{gameName}</p>
                                 <p className="text-gray-400 text-sm">{event.eventType}</p>
                               </div>
                             </div>

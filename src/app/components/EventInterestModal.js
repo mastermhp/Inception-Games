@@ -27,7 +27,7 @@ export default function EventInterestModal({ isOpen, onClose, eventTitle, eventI
     setError("")
 
     try {
-      const baseURL = "https://inception-games.an.r.appspot.com"
+      const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api/v1', '')
       const response = await fetch(`${baseURL}/api/v1/auth/register/send-otp`, {
         method: "POST",
         headers: {

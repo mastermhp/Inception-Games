@@ -40,7 +40,7 @@ export default function Footer() {
             </h3>
             <div className="space-y-3 sm:space-y-4">
               <motion.a
-                href="https://www.linkedin.com/company/slice-n-share"
+                href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
                 className="flex items-center justify-center md:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
                 whileHover={{ x: 5 }}
               >
@@ -59,7 +59,7 @@ export default function Footer() {
               </motion.a>
 
               <motion.a
-                href="https://www.facebook.com/slicenshareFB"
+                href={process.env.NEXT_PUBLIC_FACEBOOK_URL}
                 className="flex items-center justify-center md:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
                 whileHover={{ x: 5 }}
               >

@@ -7,17 +7,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <title>Slice N Share - Esports Platform</title>
+        <title>Inception Games - Esports Platform</title>
         <meta
           name="description"
-          content="Slice N Share - Bangladesh's premier esports platform for tournaments, events, and gaming community."
+          content="Inception Games - Bangladesh's premier esports platform for tournaments, events, and gaming community."
         />
         <link
-          href="https://api.fontshare.com/v2/css?f[]=bebas-neue@400&display=swap"
+          href={process.env.NEXT_PUBLIC_FONTSHARE_URL}
           rel="stylesheet"
         />
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XL5SWYB0WF"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XL5SWYB0WF');
+            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}');
           `}
         </Script>
       </head>

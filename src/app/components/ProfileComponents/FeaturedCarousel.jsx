@@ -7,11 +7,11 @@ import { ChevronLeft, ChevronRight, ExternalLink, Briefcase, TrendingUp, Shoppin
 const CAROUSEL_ITEMS = [
   {
     id: 1,
-    type: 'job',
-    badge: 'Hot Job',
+    type: 'career',
+    badge: 'Hiring',
     badgeColor: 'from-orange-500 to-red-500',
-    title: 'Pro Team Coach Wanted',
-    subtitle: 'Lead a top-tier competitive team to victory',
+    title: 'Head Coach - Esports Team',
+    subtitle: 'Full-time position available now',
     description: 'Join a leading esports organization as Head Coach. Remote friendly, competitive salary with performance bonuses.',
     cta: 'Apply Now',
     link: '#',
@@ -19,7 +19,7 @@ const CAROUSEL_ITEMS = [
     gradient: 'from-orange-600/20 via-red-600/10 to-transparent',
     accentColor: 'text-orange-400',
     borderColor: 'border-orange-500/20',
-    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=340&fit=crop',
+    image: process.env.NEXT_PUBLIC_FEATURED_IMAGE_1,
   },
   {
     id: 2,
@@ -30,12 +30,12 @@ const CAROUSEL_ITEMS = [
     subtitle: 'Help us build your competitive profile',
     description: 'Fill out your career stats form so we can match you with teams, tournaments, and opportunities tailored to your skill level.',
     cta: 'Fill Career Form',
-    link: 'https://forms.gle/wKAi8K1wuDn6XcDp9',
+    link: process.env.NEXT_PUBLIC_FEATURED_FORM_URL,
     icon: TrendingUp,
     gradient: 'from-emerald-600/20 via-teal-600/10 to-transparent',
     accentColor: 'text-emerald-400',
     borderColor: 'border-emerald-500/20',
-    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=340&fit=crop',
+    image: process.env.NEXT_PUBLIC_FEATURED_IMAGE_2,
   },
   {
     id: 3,
@@ -51,7 +51,7 @@ const CAROUSEL_ITEMS = [
     gradient: 'from-purple-600/20 via-pink-600/10 to-transparent',
     accentColor: 'text-purple-400',
     borderColor: 'border-purple-500/20',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=340&fit=crop',
+    image: process.env.NEXT_PUBLIC_FEATURED_IMAGE_3,
   },
   {
     id: 4,
@@ -67,7 +67,7 @@ const CAROUSEL_ITEMS = [
     gradient: 'from-cyan-600/20 via-blue-600/10 to-transparent',
     accentColor: 'text-cyan-400',
     borderColor: 'border-cyan-500/20',
-    image: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=340&fit=crop',
+    image: process.env.NEXT_PUBLIC_FEATURED_IMAGE_4,
   },
   {
     id: 5,
@@ -83,7 +83,7 @@ const CAROUSEL_ITEMS = [
     gradient: 'from-amber-600/20 via-yellow-600/10 to-transparent',
     accentColor: 'text-amber-400',
     borderColor: 'border-amber-500/20',
-    image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=600&h=340&fit=crop',
+    image: process.env.NEXT_PUBLIC_FEATURED_IMAGE_5,
   },
 ]
 
