@@ -21,6 +21,17 @@ export const API = {
   // Profile - use userId per API docs
   PROFILE_GET:           `${BASE_URL}/auth/profile/:userId`,
   PROFILE_UPDATE:        `${BASE_URL}/auth/profile/:userId`,
+
+  // Events API
+  EVENTS_GET_ALL:        `${BASE_URL}/api/events`,
+  EVENTS_GET_BY_ID:      `${BASE_URL}/api/events/:eventId`,
+  EVENTS_GET_BY_STATUS:  `${BASE_URL}/api/events?status=:status`,
+
+  // Event Signups API
+  EVENT_SIGNUP:          `${BASE_URL}/events/signup`,
+  EVENT_SIGNUPS_ALL:     `${BASE_URL}/events/signup/all`,
+  EVENT_SIGNUPS_BY_EVENT:`${BASE_URL}/events/signup/:eventId`,
+  EVENT_SIGNUP_BY_ID:    `${BASE_URL}/events/signup/:signupId`,
 };
 
 /**

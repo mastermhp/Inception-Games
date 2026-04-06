@@ -158,20 +158,30 @@ export function AuthProvider({ children }) {
     console.log("Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
     setTokens(tokens);
 
+    // Build user object with all available data from login response
+    const userData = data.user || data.data || data;
     const userObj = {
-      id: data.userId || data.user?.id || data.id,
-      email: data.email || email,
-      username: data.username || "",
-      fullName: data.fullName || data.full_name || "",
-      phone: data.phone || "",
-      avatar: data.avatar_url || "",
+      id: data.userId || userData.id || userData._id,
+      email: userData.email || email,
+      username: userData.username || "",
+      fullName: userData.fullName || userData.full_name || "",
+      phone: userData.phone || "",
+      avatar: userData.avatar_url || userData.avatar || "",
+      banner: userData.banner_url || userData.banner || "",
+      discord: userData.discord || "",
+      bio: userData.bio || "",
+      primaryGame: userData.primary_game || userData.primaryGame || "",
+      gameRole: userData.game_role || userData.gameRole || "",
+      rank: userData.rank || "",
+      continent: userData.continent || "",
+      country: userData.country || "",
       authMethod: "email",
     };
     console.log("Login user object:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
 
-    // Fetch full profile in background
+    // Fetch full profile in background to get any additional data
     fetchProfile().catch(() => {});
 
     // Redirect to profile page after login
@@ -180,7 +190,7 @@ export function AuthProvider({ children }) {
     }, 500);
 
     return { user: userObj, tokens };
-  }, [fetchProfile]);
+  }, [fetchProfile, router]);
 
   /**
    * Registration Flow Step 1 - Send OTP
@@ -235,15 +245,19 @@ export function AuthProvider({ children }) {
 
   /**
    * Registration Flow Step 3 - Save Personal Info
-   * POST /auth/register/personal-info  body: { email, full_name, username }
+   * POST /auth/register/personal-info  body: { email, full_name, username, discord?, bio? }
    */
-  const registerPersonalInfo = useCallback(async (email, fullName, username) => {
+  const registerPersonalInfo = useCallback(async (email, fullName, username, discord = '', bio = '') => {
     setError(null);
     console.log("Register personal info for:", email);
+    const body = { email, full_name: fullName, username };
+    if (discord) body.discord = discord;
+    if (bio) body.bio = bio;
+    
     const res = await fetch(API.REGISTER_PERSONAL_INFO, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, full_name: fullName, username }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     console.log("Register personal info response:", res.status, JSON.stringify(data));
@@ -254,7 +268,11 @@ export function AuthProvider({ children }) {
     }
     // Store personal info for later use in profile completion
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("sns_registration_info", JSON.stringify({ email, fullName, username }));
+      sessionStorage.setItem("sns_registration_info", JSON.stringify({ email, fullName, username, discord, bio }));
+    }
+    // Store userId if returned
+    if (data.userId) {
+      sessionStorage.setItem("temp_userId", data.userId);
     }
     return data;
   }, []);
@@ -277,6 +295,19 @@ export function AuthProvider({ children }) {
       const msg = data.error || data.message || "Failed to save gaming profile";
       setError(msg);
       throw new Error(msg);
+    }
+    // Store gaming profile info for later use
+    if (typeof window !== "undefined") {
+      const existingInfo = sessionStorage.getItem("sns_registration_info");
+      const parsedInfo = existingInfo ? JSON.parse(existingInfo) : {};
+      sessionStorage.setItem("sns_registration_info", JSON.stringify({
+        ...parsedInfo,
+        primaryGame: gameData.primary_game,
+        gameRole: gameData.game_role,
+        rank: gameData.rank,
+        continent: gameData.continent,
+        country: gameData.country,
+      }));
     }
     return data;
   }, []);
@@ -313,8 +344,8 @@ export function AuthProvider({ children }) {
       setTokens(tokens);
     }
 
-    // Retrieve personal info from sessionStorage
-    let registrationInfo = { fullName: "", username: "" };
+    // Retrieve personal info from sessionStorage including gaming profile
+    let registrationInfo = {};
     if (typeof window !== "undefined") {
       try {
         const stored = sessionStorage.getItem("sns_registration_info");
@@ -326,15 +357,26 @@ export function AuthProvider({ children }) {
       }
     }
 
+    // Build complete user object with all registration data + API response
+    const userData = data.data || data.user || data;
     const userObj = {
-      id: data.userId || data.user?.id,
+      id: data.userId || userData.id || userData._id || sessionStorage.getItem("temp_userId"),
       email: email,
-      username: registrationInfo.username || data.username || "",
-      fullName: registrationInfo.fullName || data.full_name || "",
-      phone: data.phone || "",
-      avatar: avatarUrl || "",
+      username: registrationInfo.username || userData.username || "",
+      fullName: registrationInfo.fullName || userData.full_name || "",
+      phone: userData.phone || "",
+      avatar: avatarUrl || userData.avatar_url || "",
+      banner: bannerUrl || userData.banner_url || "",
+      discord: registrationInfo.discord || userData.discord || "",
+      bio: registrationInfo.bio || userData.bio || "",
+      primaryGame: registrationInfo.primaryGame || userData.primary_game || "",
+      gameRole: registrationInfo.gameRole || userData.game_role || "",
+      rank: registrationInfo.rank || userData.rank || "",
+      continent: registrationInfo.continent || userData.continent || "",
+      country: registrationInfo.country || userData.country || "",
       authMethod: "email",
     };
+    console.log("[v0] Complete user object after registration:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
     sessionStorage.removeItem("temp_userId");
@@ -346,7 +388,7 @@ export function AuthProvider({ children }) {
     }, 500);
 
     return data;
-  }, []);
+  }, [router]);
 
   // Backwards compatibility aliases for signup
   const signupSendOTP = registerSendOTP;

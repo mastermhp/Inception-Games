@@ -1,16 +1,17 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Trophy, Swords, Briefcase, Search, ChevronDown, ChevronUp,
   MapPin, Monitor, Users, Calendar, DollarSign, Clock, Flag,
-  Bell, Heart, Share2, ExternalLink, CheckCircle2
+  Bell, Heart, Share2, ExternalLink, CheckCircle2, Loader2, RefreshCw
 } from 'lucide-react'
 import Image from 'next/image'
+import { API } from '@/lib/api'
 
-// Games data (from NewSignupModal)
+// Games data (for mapping game names to images)
 const games = [
   { id: "apex", name: "Apex Legends", image: "/games/apex.png" },
   { id: "cod-bo7", name: "Call of Duty: Black Ops 7", image: "/games/codm.png" },
@@ -44,83 +45,37 @@ const games = [
   { id: "brawlstars", name: "Brawl Stars", image: "/games/brawlstars.png" },
 ]
 
-// Generate sample events - one event per game per event type (all games)
-const generateSampleEvents = () => {
-  const eventTypes = ['Tournament', 'Scrims', 'Brand Deal']
-  const statuses = ['Upcoming', 'Ongoing', 'Completed']
-  const platforms = ['PC', 'Mobile', 'Console']
-  const teamTypes = ['Solo', 'Duo', 'Squad']
-  const locations = ['Bangladesh', 'India', 'Southeast Asia', 'Global']
-  
-  const events = []
-  let eventId = 0
-  
-  // Create events for each game for each event type
-  games.forEach((game, gameIdx) => {
-    eventTypes.forEach((eventType, typeIdx) => {
-      const idx = eventId
-      const status = statuses[idx % 3]
-      const platform = platforms[gameIdx % 3]
-      const teamType = teamTypes[gameIdx % 3]
-      
-      const baseDate = new Date()
-      baseDate.setDate(baseDate.getDate() + (idx * 2) - 30)
-      
-      events.push({
-        id: `event-${eventId}`,
-        title: `SNS ${game.name} ${eventType} ${eventType === 'Brand Deal' ? 'Opportunity' : 'Championship'}`,
-        game: game,
-        eventType: eventType,
-        status: status,
-        date: baseDate.toISOString(),
-        endDate: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        location: locations[gameIdx % 4],
-        platform: platform,
-        teamType: teamType,
-        prizePool: eventType === 'Brand Deal' ? 0 : (gameIdx + 1) * 5000,
-        currency: 'BDT',
-        totalSlots: 64,
-        filledSlots: Math.floor(Math.random() * 64),
-        registrationStart: new Date(baseDate.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        registrationEnd: new Date(baseDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        tournamentStart: baseDate.toISOString(),
-        tournamentEnd: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        host: 'Slice N Share',
-        description: `Join the ${game.name} ${eventType.toLowerCase()} and compete against the best players in ${locations[gameIdx % 4]}!`,
-        rules: [
-          'All participants must be registered before the deadline',
-          'Fair play policy strictly enforced',
-          'All matches will be streamed on official channels',
-          'Prizes will be distributed within 7 days of event completion',
-        ],
-        address: eventType !== 'Brand Deal' ? 'Online Event' : 'Contact for Details',
-      })
-      eventId++
-    })
-  })
-  
-  return events
+// Helper to get game image from title or game name
+function getGameImage(eventTitle, gameName) {
+  // Try to find a matching game from the games list
+  const searchTerm = (gameName || eventTitle || '').toLowerCase()
+  const matchedGame = games.find(g => 
+    searchTerm.includes(g.name.toLowerCase()) || 
+    g.name.toLowerCase().includes(searchTerm.split(' ')[0])
+  )
+  return matchedGame?.image || '/games/pubg.png' // Default fallback
 }
 
-const SAMPLE_EVENTS = generateSampleEvents()
-
-const FILTER_TABS = [
-  { id: 'all', label: 'All', count: SAMPLE_EVENTS.length },
-  { id: 'Tournament', label: 'Tournaments', count: SAMPLE_EVENTS.filter(e => e.eventType === 'Tournament').length, icon: Trophy },
-  { id: 'Scrims', label: 'Scrims', count: SAMPLE_EVENTS.filter(e => e.eventType === 'Scrims').length, icon: Swords },
-  { id: 'Brand Deal', label: 'Brand Deals', count: SAMPLE_EVENTS.filter(e => e.eventType === 'Brand Deal').length, icon: Briefcase },
-]
+// Helper to determine event type from title
+function getEventType(title, organizer) {
+  const lowerTitle = (title || '').toLowerCase()
+  const lowerOrg = (organizer || '').toLowerCase()
+  
+  if (lowerTitle.includes('brand') || lowerTitle.includes('deal') || lowerTitle.includes('sponsor')) {
+    return 'Brand Deal'
+  }
+  if (lowerTitle.includes('scrim')) {
+    return 'Scrims'
+  }
+  return 'Tournament'
+}
 
 function formatDate(dateStr) {
+  if (!dateStr) return 'TBD'
   const date = new Date(dateStr)
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   return `${days[date.getDay()]} ${date.getDate()}${getOrdinalSuffix(date.getDate())} ${months[date.getMonth()]} ${date.getFullYear()}`
-}
-
-function formatDateTime(dateStr) {
-  const date = new Date(dateStr)
-  return `${date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })} ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}`
 }
 
 function getOrdinalSuffix(day) {
@@ -134,27 +89,31 @@ function getOrdinalSuffix(day) {
 }
 
 function getStatusColor(status) {
-  switch (status) {
-    case 'Upcoming': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
-    case 'Ongoing': return 'text-blue-400 bg-blue-500/10 border-blue-500/30'
-    case 'Completed': return 'text-red-400 bg-red-500/10 border-red-500/30'
-    default: return 'text-gray-400 bg-gray-500/10 border-gray-500/30'
-  }
+  const lowerStatus = (status || '').toLowerCase()
+  if (lowerStatus === 'upcoming') return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
+  if (lowerStatus === 'ongoing') return 'text-blue-400 bg-blue-500/10 border-blue-500/30'
+  if (lowerStatus === 'completed' || lowerStatus === 'cancelled') return 'text-red-400 bg-red-500/10 border-red-500/30'
+  return 'text-gray-400 bg-gray-500/10 border-gray-500/30'
 }
 
-function getStatusText(status, date) {
-  switch (status) {
-    case 'Upcoming': return 'Registration Open'
-    case 'Ongoing': return 'In Progress'
-    case 'Completed': return 'Tournament Ended'
-    default: return status
-  }
+function getStatusText(status) {
+  const lowerStatus = (status || '').toLowerCase()
+  if (lowerStatus === 'upcoming') return 'Registration Open'
+  if (lowerStatus === 'ongoing') return 'In Progress'
+  if (lowerStatus === 'completed') return 'Event Ended'
+  if (lowerStatus === 'cancelled') return 'Cancelled'
+  return status || 'Unknown'
 }
 
 // Event Card Component
 function EventCard({ event, onClick }) {
   const [expanded, setExpanded] = useState(false)
-  const slotsPercentage = (event.filledSlots / event.totalSlots) * 100
+  const eventType = event.eventType || getEventType(event.title, event.organizer)
+  const gameImage = event.game?.image || getGameImage(event.title, event.game_name)
+  const gameName = event.game?.name || event.game_name || 'Gaming Event'
+  
+  // Calculate slots percentage if available
+  const slotsPercentage = event.totalSlots > 0 ? (event.filledSlots / event.totalSlots) * 100 : 50
 
   return (
     <motion.div
@@ -168,8 +127,8 @@ function EventCard({ event, onClick }) {
         onClick={() => onClick(event)}
       >
         <Image
-          src={event.game.image}
-          alt={event.game.name}
+          src={gameImage}
+          alt={gameName}
           fill
           className="object-cover"
         />
@@ -181,7 +140,10 @@ function EventCard({ event, onClick }) {
             <div className="flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur-sm rounded-lg">
               <Calendar size={14} className="text-amber-400" />
               <span className="text-white text-sm font-medium">
-                {new Date(event.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase().replace(/ /g, ' ')}
+                {event.start_date 
+                  ? new Date(event.start_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+                  : 'TBD'
+                }
               </span>
             </div>
           </div>
@@ -195,19 +157,19 @@ function EventCard({ event, onClick }) {
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
               <Image
-                src={event.game.image}
-                alt={event.game.name}
+                src={gameImage}
+                alt={gameName}
                 width={32}
                 height={32}
                 className="w-full h-full object-cover"
               />
             </div>
             <span className="text-white text-sm font-medium truncate max-w-[120px]">
-              {event.game.name.length > 15 ? event.game.name.split(':')[0].split(' ').slice(0, 2).join(' ') : event.game.name}
+              {gameName.length > 15 ? gameName.split(':')[0].split(' ').slice(0, 2).join(' ') : gameName}
             </span>
           </div>
-          <span className={`px-2 py-0.5 text-xs font-semibold rounded border ${getStatusColor(event.status)}`}>
-            {event.status}
+          <span className={`px-2 py-0.5 text-xs font-semibold rounded border capitalize ${getStatusColor(event.status)}`}>
+            {event.status || 'Upcoming'}
           </span>
         </div>
 
@@ -222,24 +184,24 @@ function EventCard({ event, onClick }) {
         {/* Date & Status */}
         <div className="flex items-center gap-2 text-sm mb-3">
           <Calendar size={14} className="text-red-400" />
-          <span className="text-red-400 font-medium">{formatDate(event.date)}</span>
+          <span className="text-red-400 font-medium">{formatDate(event.start_date)}</span>
           <span className="text-gray-500">·</span>
-          <span className="text-red-400">{getStatusText(event.status, event.date)}</span>
+          <span className="text-red-400">{getStatusText(event.status)}</span>
         </div>
 
         {/* Meta Info */}
         <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
           <div className="flex items-center gap-1">
             <Flag size={12} />
-            <span>{event.location}</span>
+            <span>{event.venue || event.location || 'Online'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Monitor size={12} />
-            <span>{event.platform}</span>
+            <span>{event.platform || 'All Platforms'}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users size={12} />
-            <span>{event.teamType}</span>
+            <span>{event.teamType || 'Open'}</span>
           </div>
         </div>
 
@@ -253,35 +215,49 @@ function EventCard({ event, onClick }) {
               className="overflow-hidden"
             >
               {/* Slots Progress */}
-              <div className="mb-3">
-                <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-                  <span>Slots</span>
-                  <div className="flex items-center gap-1">
-                    <Users size={12} />
-                    <span>{event.status === 'Completed' ? 'Slots Closed' : `${event.filledSlots}/${event.totalSlots}`}</span>
+              {event.totalSlots > 0 && (
+                <div className="mb-3">
+                  <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                    <span>Slots</span>
+                    <div className="flex items-center gap-1">
+                      <Users size={12} />
+                      <span>{event.status === 'completed' ? 'Slots Closed' : `${event.filledSlots || 0}/${event.totalSlots}`}</span>
+                    </div>
+                  </div>
+                  <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                      style={{ width: `${slotsPercentage}%` }}
+                    />
                   </div>
                 </div>
-                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                    style={{ width: `${slotsPercentage}%` }}
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Prize Pool */}
-              <div className="flex items-center gap-2 text-sm mb-3">
-                <DollarSign size={14} className="text-amber-400" />
-                <span className="text-white font-semibold">
-                  {event.prizePool > 0 ? `${event.currency} ${event.prizePool.toLocaleString()}` : '0'} PrizePool
-                </span>
-              </div>
+              {event.prizePool > 0 && (
+                <div className="flex items-center gap-2 text-sm mb-3">
+                  <DollarSign size={14} className="text-amber-400" />
+                  <span className="text-white font-semibold">
+                    {event.currency || 'BDT'} {event.prizePool.toLocaleString()} PrizePool
+                  </span>
+                </div>
+              )}
+
+              {/* Description */}
+              {event.description && (
+                <p className="text-gray-400 text-sm mb-3 line-clamp-3">{event.description}</p>
+              )}
 
               {/* Event Type Tag */}
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 text-xs font-medium text-gray-300 bg-gray-800 rounded-full border border-gray-700">
-                  {event.eventType}
+                  {eventType}
                 </span>
+                {event.organizer && (
+                  <span className="px-3 py-1 text-xs font-medium text-purple-300 bg-purple-800/30 rounded-full border border-purple-700/30">
+                    {event.organizer}
+                  </span>
+                )}
               </div>
             </motion.div>
           )}
@@ -303,18 +279,93 @@ function EventCard({ event, onClick }) {
 // Main Events Section Component
 export default function EventsSection({ user }) {
   const router = useRouter()
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeFilter, setActiveFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const filteredEvents = SAMPLE_EVENTS.filter(event => {
+  // Fetch events from API
+  const fetchEvents = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(API.EVENTS_GET_ALL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      const data = await res.json()
+      console.log('[v0] Events API response:', data)
+      
+      if (res.ok && data.success) {
+        // Transform API events to our format
+        const transformedEvents = (data.data || []).map(event => ({
+          ...event,
+          eventType: getEventType(event.title, event.organizer),
+          game: {
+            name: event.game_name || event.title?.split(' ')[0] || 'Gaming',
+            image: getGameImage(event.title, event.game_name),
+          },
+          date: event.start_date,
+          endDate: event.end_date,
+          location: event.venue,
+          platform: event.platform || 'All Platforms',
+          teamType: event.team_type || 'Open',
+          prizePool: event.prize_pool || 0,
+          currency: event.currency || 'BDT',
+          totalSlots: event.total_slots || 64,
+          filledSlots: event.filled_slots || 0,
+          registrationStart: event.registration_start,
+          registrationEnd: event.registration_end,
+          tournamentStart: event.start_date,
+          tournamentEnd: event.end_date,
+          host: event.organizer || 'Slice N Share',
+        }))
+        setEvents(transformedEvents)
+      } else {
+        console.log('[v0] Events fetch returned no data or error')
+        setEvents([])
+      }
+    } catch (err) {
+      console.error('[v0] Failed to fetch events:', err)
+      setError('Failed to load events. Please try again.')
+      setEvents([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchEvents()
+  }, [fetchEvents])
+
+  // Calculate filter counts
+  const filterCounts = {
+    all: events.length,
+    Tournament: events.filter(e => e.eventType === 'Tournament').length,
+    Scrims: events.filter(e => e.eventType === 'Scrims').length,
+    'Brand Deal': events.filter(e => e.eventType === 'Brand Deal').length,
+  }
+
+  const FILTER_TABS = [
+    { id: 'all', label: 'All', count: filterCounts.all },
+    { id: 'Tournament', label: 'Tournaments', count: filterCounts.Tournament, icon: Trophy },
+    { id: 'Scrims', label: 'Scrims', count: filterCounts.Scrims, icon: Swords },
+    { id: 'Brand Deal', label: 'Brand Deals', count: filterCounts['Brand Deal'], icon: Briefcase },
+  ]
+
+  const filteredEvents = events.filter(event => {
     const matchesFilter = activeFilter === 'all' || event.eventType === activeFilter
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          event.game.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = (event.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (event.game?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (event.organizer || '').toLowerCase().includes(searchQuery.toLowerCase())
     return matchesFilter && matchesSearch
   })
 
   const handleEventClick = (event) => {
-    // Navigate to event detail page instead of opening modal
+    // Navigate to event detail page with actual event ID
     router.push(`/profile/events/${event.id}`)
   }
 
@@ -351,42 +402,81 @@ export default function EventsSection({ user }) {
           })}
         </div>
 
-        {/* Search */}
-        <div className="relative w-full md:w-72">
-          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[#111115] border border-white/[0.06] rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
-          />
+        {/* Search + Refresh */}
+        <div className="flex items-center gap-2">
+          <div className="relative w-full md:w-72">
+            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-[#111115] border border-white/[0.06] rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
+            />
+          </div>
+          <button
+            onClick={fetchEvents}
+            disabled={loading}
+            className="p-2.5 bg-[#111115] border border-white/[0.06] rounded-xl text-gray-400 hover:text-white hover:border-white/[0.12] transition-all disabled:opacity-50"
+          >
+            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          </button>
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 size={32} className="text-purple-500 animate-spin" />
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <motion.div
+          className="text-center py-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+            <ExternalLink size={24} className="text-red-500" />
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">Failed to load events</h3>
+          <p className="text-gray-500 mb-4">{error}</p>
+          <button
+            onClick={fetchEvents}
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </motion.div>
+      )}
+
       {/* Events Grid */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-        layout
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredEvents.map((event) => (
-            <motion.div
-              key={event.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <EventCard event={event} onClick={handleEventClick} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      {!loading && !error && (
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredEvents.map((event) => (
+              <motion.div
+                key={event.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                <EventCard event={event} onClick={handleEventClick} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
 
       {/* Empty State */}
-      {filteredEvents.length === 0 && (
+      {!loading && !error && filteredEvents.length === 0 && (
         <motion.div
           className="text-center py-16"
           initial={{ opacity: 0 }}
@@ -396,10 +486,24 @@ export default function EventsSection({ user }) {
             <Search size={24} className="text-gray-500" />
           </div>
           <h3 className="text-xl font-bold text-white mb-2">No events found</h3>
-          <p className="text-gray-500">Try adjusting your filters or search query</p>
+          <p className="text-gray-500">
+            {events.length === 0 
+              ? 'No events are available at the moment. Check back later!'
+              : 'Try adjusting your filters or search query'
+            }
+          </p>
         </motion.div>
       )}
-
-          </motion.div>
+    </motion.div>
   )
 }
+
+
+
+
+
+/*Firstly, i have attached my whole sys[pasted 2872 lines]tem with the live api integrated for user signup through the tournamentCarousel but the issue is i am setting the personal info and gaming info during signup through the api but after successfull signup i'm not getting the data in the profile page to the profile components and also in the edit profile i'm not getting them fetching there to eid them also all are showing blank and after registration successfull user should redirect to profile page /profile directly he can't show home page anymore i also attached the user-signup&login&edit-profile.txt file so that you understand better about the api and endpoints
+
+i have attached the events$signups.txt for the profile page events section you can see there have static tournaments,scrims and brand deals now they all will be in real time using api also the filters for tournament or scrims or brand deal and also for tournament, scrims or brand deal signup all are in the api you have to do them perfectly integrated and signup successfully
+
+i have attached the /profile endpoints in the screenshot so that you can work properly by reading them and don't change the design as it is if need some updates do that but don't change the design and this is the api base url https://inception-games.an.r.appspot.com/api/v1*/
