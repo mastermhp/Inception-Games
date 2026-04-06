@@ -55,8 +55,8 @@ const generateSampleEvents = () => {
   const teamTypes = ['Solo', 'Duo', 'Squad']
   const locations = ['Bangladesh', 'India', 'Southeast Asia', 'Global']
   
-  const events = []
-  let eventId = 0
+  const events = []   // need to be fix 
+  let eventId = 0  
   
   games.forEach((game, gameIdx) => {
     eventTypes.forEach((eventType, typeIdx) => {
@@ -215,8 +215,6 @@ export default function EventDetailPage() {
   const router = useRouter()
   const [event, setEvent] = useState(null)
   const [activeTab, setActiveTab] = useState('result')
-  const [liked, setLiked] = useState(false)
-  const [reminded, setReminded] = useState(false)
   const [showSignupForm, setShowSignupForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notification, setNotification] = useState({ show: false, type: '', message: '' })
@@ -224,6 +222,7 @@ export default function EventDetailPage() {
   const [otpStep, setOtpStep] = useState(null)
   const [otpValue, setOtpValue] = useState('')
   const [otpError, setOtpError] = useState('')
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const otpInputRefs = useRef([])
   
   const [formData, setFormData] = useState({
@@ -299,19 +298,49 @@ export default function EventDetailPage() {
     }
   }
 
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  e.preventDefault()
+  setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/tournaments/${params.eventId}/register`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      }
+    )
 
-    // Simulate OTP flow
-    setOtpStep('sending')
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setOtpStep('input')
+    const data = await response.json()
+
+    if (!response.ok) {
+      showNotificationMessage('error', data.message || 'Registration failed. Please try again.')
+      setIsSubmitting(false)
+      return
+    }
+
+
+    // success modal
+    setShowSuccessModal(true)
+
+
+    
+  } catch (error) {
+    // console.error('[registration] Error:', error)
+    showNotificationMessage('error', 'Network error. Please check your connection and try again.')
+  } finally {
     setIsSubmitting(false)
   }
+}
+
 
   const handleOtpVerify = async () => {
     if (otpValue.length < 4) return
@@ -389,7 +418,7 @@ export default function EventDetailPage() {
     { id: 'schedule', label: 'Schedule' },
     { id: 'participants', label: 'Participants' },
     { id: 'rules', label: 'Rules' },
-    { id: 'support', label: 'Contact Support' },
+    { id: 'support', label: 'Contact Support' }
   ]
 
   const progressionSteps = [
@@ -483,34 +512,14 @@ export default function EventDetailPage() {
                     />
                   </div>
                   <span className="text-white font-semibold text-lg">{gameName}</span>
-                  <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
+                  {/* <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
                     <Users size={14} />
                     Follow
-                  </button>
+                  </button> */}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => setLiked(!liked)}
-                    className={`px-4 py-2.5 text-sm rounded-lg flex items-center gap-2 transition-colors ${
-                      liked 
-                        ? 'bg-pink-500/20 text-pink-400 border border-pink-500/30' 
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
-                    Like
-                  </button>
-                  <button 
-                    onClick={() => setReminded(!reminded)}
-                    className={`px-4 py-2.5 text-sm rounded-lg flex items-center gap-2 transition-colors ${
-                      reminded 
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    <Bell size={16} fill={reminded ? 'currentColor' : 'none'} />
-                    Remind Me
-                  </button>
+                
+                  
                   <button 
                     onClick={handleShare}
                     className="px-4 py-2.5 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors"
@@ -610,120 +619,178 @@ export default function EventDetailPage() {
                 </div>
               </div>
 
-              {/* Tabs */}
-              <div className="border-b border-gray-800 mb-6">
-                <div className="flex gap-1 overflow-x-auto pb-px">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
-                        activeTab === tab.id
-                          ? 'text-purple-400'
-                          : 'text-gray-400 hover:text-gray-300'
-                      }`}
-                    >
-                      {tab.label}
-                      {activeTab === tab.id && (
-                        <motion.div
-                          layoutId="activeEventTab"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Tab Content */}
-              <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
-                {activeTab === 'result' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Tournament Result</h4>
-                    <div className="text-center py-12 text-gray-500 bg-gray-800/30 rounded-lg">
-                      Result not added yet
-                    </div>
-                  </div>
-                )}
-                {activeTab === 'brackets' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Tournament Brackets</h4>
-                    <div className="text-center py-12 text-gray-500 bg-gray-800/30 rounded-lg">
-                      Brackets will be available once the tournament starts
-                    </div>
-                  </div>
-                )}
-                {activeTab === 'schedule' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Event Schedule</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
-                        <span className="text-gray-300">Registration Opens</span>
-                        <span className="text-gray-400">{formatDate(event.registrationStart)}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
-                        <span className="text-gray-300">Registration Closes</span>
-                        <span className="text-gray-400">{formatDate(event.registrationEnd)}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
-                        <span className="text-gray-300">Event Start</span>
-                        <span className="text-gray-400">{formatDate(event.tournamentStart)}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg">
-                        <span className="text-gray-300">Event End</span>
-                        <span className="text-gray-400">{formatDate(event.tournamentEnd)}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {activeTab === 'participants' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Participants ({event.filledSlots}/{event.totalSlots})</h4>
-                    <div className="text-center py-12 text-gray-500 bg-gray-800/30 rounded-lg">
-                      Participant list will be available after registration
-                    </div>
-                  </div>
-                )}
-                {activeTab === 'rules' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Rules & Guidelines</h4>
-                    <ul className="space-y-3">
-                      {event.rules.map((rule, index) => (
-                        <li key={index} className="flex items-start gap-3 text-gray-300">
-                          <CheckCircle2 size={16} className="text-emerald-400 mt-0.5 flex-shrink-0" />
-                          <span>{rule}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {activeTab === 'support' && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Contact Support</h4>
-                    <p className="text-gray-400 mb-4">
-                      Need help with this event? Reach out to our support team.
-                    </p>
-                    <div className="space-y-3">
-                      <a 
-                        href="mailto:support@slicenshare.com" 
-                        className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg text-gray-300 hover:bg-gray-800/50 transition-colors"
-                      >
-                        <ExternalLink size={16} />
-                        <span>support@slicenshare.com</span>
-                      </a>
-                      <a 
-                        href="https://facebook.com/slicenshare" 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg text-gray-300 hover:bg-gray-800/50 transition-colors"
-                      >
-                        <ExternalLink size={16} />
-                        <span>Facebook Page</span>
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
+
+
+
+
+
+
+
+
+
+
+{/* Tabs */}
+<div className="border-b border-gray-800 mb-6">
+  <div className="flex gap-1 overflow-x-auto pb-px">
+    {tabs.map((tab) => (
+      <button
+        key={tab.id}
+        onClick={() => setActiveTab(tab.id)}
+        className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
+          activeTab === tab.id
+            ? 'text-purple-400'
+            : 'text-gray-400 hover:text-gray-300'
+        }`}
+      >
+        {tab.label}
+        {activeTab === tab.id && (
+          <motion.div
+            layoutId="activeEventTab"
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
+          />
+        )}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Tab Content */}
+{/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+  <div className="flex flex-col items-center justify-center py-16 text-center">
+    <div className="w-16 h-16 mb-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center">
+      <Clock size={28} className="text-purple-400" />
+    </div>
+    <h4 className="text-lg font-bold text-white mb-2">Coming Soon</h4>
+ 
+    <p className="text-gray-500 text-sm max-w-xs">
+  {activeTab === 'result' && 'Tournament results will be posted here once the event concludes.'}
+  {activeTab === 'brackets' && 'Brackets will be revealed once the tournament begins.'}
+  {activeTab === 'schedule' && 'The full schedule will be published closer to the event date.'}
+  {activeTab === 'participants' && 'Participant list will be visible after registration closes.'}
+  {activeTab === 'rules' && 'Rules & guidelines will be available before the event starts.'}
+
+  {activeTab === 'support' && (
+    <>
+      For any kind of update, contact our Facebook page.{' '}
+      <a
+        href="https://www.facebook.com/profile.php?id=61562495805179"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-purple-400 underline hover:text-purple-300 transition-colors"
+      >
+        Visit Page
+      </a>
+    </>
+  )}
+</p>
+    <div className="mt-5 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+      <span className="text-purple-400 text-xs font-medium tracking-wide uppercase">Stay Tuned</span>
+    </div>
+  </div>
+</div> */}
+
+
+{/* Tab Content */}
+{activeTab === 'support' ? (
+  <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      
+      <h4 className="text-lg font-bold text-white mb-2">
+        Contact Support
+      </h4>
+
+      <p className="text-gray-500 text-sm max-w-xs">
+        For any kind of update, contact our Facebook page.
+      </p>
+
+      <a
+        href="https://www.facebook.com/profile.php?id=61562495805179"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-5 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium hover:bg-purple-500/20 transition"
+      >
+        Visit Facebook Page
+      </a>
+
+    </div>
+  </div>
+) : (
+  <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      
+      <div className="w-16 h-16 mb-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center">
+        <Clock size={28} className="text-purple-400" />
+      </div>
+
+      <h4 className="text-lg font-bold text-white mb-2">Coming Soon</h4>
+
+      <p className="text-gray-500 text-sm max-w-xs">
+        {activeTab === 'result' && 'Tournament results will be posted here once the event concludes.'}
+        {activeTab === 'brackets' && 'Brackets will be revealed once the tournament begins.'}
+        {activeTab === 'schedule' && 'The full schedule will be published closer to the event date.'}
+        {activeTab === 'participants' && 'Participant list will be visible after registration closes.'}
+        {activeTab === 'rules' && 'Rules & guidelines will be available before the event starts.'}
+      </p>
+
+      <div className="mt-5 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20">
+        <span className="text-purple-400 text-xs font-medium tracking-wide uppercase">
+          Stay Tuned
+        </span>
+      </div>
+
+    </div>
+  </div>
+)}
+
+
+{/* successful modal  */}
+
+
+
+<AnimatePresence>
+  {showSuccessModal && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) setShowSuccessModal(false) }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.92, y: 20 }}
+        transition={{ type: 'spring', duration: 0.4 }}
+        className="bg-gray-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl"
+      >
+        <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5">
+          <CheckCircle size={32} className="text-emerald-400" />
+        </div>
+
+        <span className="inline-block text-xs font-semibold tracking-widest uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full mb-4">
+          Phase 1 Complete
+        </span>
+
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Registration Successful!
+        </h2>
+        <p className="text-gray-400 text-sm leading-relaxed mb-6">
+          You're locked in for Phase 1. Check your email for the next steps to complete your payment.
+        </p>
+
+      
+        <button
+          onClick={() => setShowSuccessModal(false)}
+          className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
+        >
+          Got it!
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
             </div>
 
             {/* Sidebar */}
@@ -918,6 +985,8 @@ export default function EventDetailPage() {
                               </div>
                             )}
 
+
+
                             <form onSubmit={handleSubmit} className="space-y-3">
                               <AnimatedInput
                                 label="Full Name"
@@ -1054,6 +1123,8 @@ export default function EventDetailPage() {
                                 )}
                               </motion.button>
                             </form>
+
+
                           </>
                         )}
                       </div>

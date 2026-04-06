@@ -3,6 +3,7 @@ import Header from "./components/Header"
 import HeroSection from "./components/HeroSection"
 import TournamentCarousel from "./components/TournamentCarousel.js"
 import TrustedBrands from "./components/TrustedBrands"
+import ShowcaseCarousel from "./components/ShowcaseCarousel"
 import UpcomingEvents from "./components/UpcomingEvents"
 import LatestNews from "./components/LatestNews"
 import ContactSection from "./components/ContactSection"
@@ -16,7 +17,8 @@ export default function Home() {
       {/* <ComingSoon/> */}
       <TournamentCarousel />
       <TrustedBrands />
-      <UpcomingEvents />
+      <ShowcaseCarousel />
+      {/* <UpcomingEvents /> */}
       <LatestNews />
       <ContactSection />
       <Footer />
