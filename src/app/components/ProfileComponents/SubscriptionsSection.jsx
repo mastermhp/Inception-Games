@@ -66,7 +66,7 @@ const ALL_SUBSCRIPTIONS = [
       'MVP Gifts',
       'Rankings & competitive experience',
     ],
-    flowProps: { flowType: 'tournament', eventType: 'Slice N Share Monthly Tournament', showPayment: true },
+    flowProps: { flowType: 'tournament', eventType: 'Inception Games Monthly Tournament', showPayment: true },
   },
   {
     id: 'scrims-7',
@@ -247,7 +247,7 @@ export default function SubscriptionsSection({ user }) {
             </div>
             My Subscriptions
           </h2>
-          <p className="text-gray-500 mt-2 text-sm">All Slice N Share offerings -- click to subscribe directly</p>
+          <p className="text-gray-500 mt-2 text-sm">All Inception Games offerings -- click to subscribe directly</p>
         </div>
         {activeCount > 0 && (
           <div className="px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 font-semibold text-xs">

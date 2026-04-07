@@ -113,7 +113,7 @@ const generateSampleEvents = () => {
         registrationEnd: new Date(baseDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         tournamentStart: baseDate.toISOString(),
         tournamentEnd: new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        host: 'Slice N Share',
+        host: 'Inception Games',
         description: `Join the ${game.name} ${eventType.toLowerCase()} and compete against the best players in ${locations[gameIdx % 4]}!`,
         rules: [
           'All participants must be registered before the deadline',
@@ -324,8 +324,8 @@ export default function EventDetailPage() {
             registration_end: eventData.reg_end_at,
             tournamentStart: eventData.tournament_start_at,
             tournamentEnd: eventData.tournament_end_at,
-            host: eventData.hosted_by || 'Slice N Share',
-            organizer: eventData.hosted_by || 'Slice N Share',
+            host: eventData.hosted_by || 'Inception Games',
+            organizer: eventData.hosted_by || 'Inception Games',
             banner_image: eventData.banner_image,
           }
           

@@ -44,7 +44,7 @@ export default function LatestNews() {
       link: `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FACEBOOK_POST_4}`,
     },
     {
-      title: "Slice N Share at Startup Showcase Event - Connecting with aspiring entrepreneurs and gamers",
+      title: "Inception Games at Startup Showcase Event - Connecting with aspiring entrepreneurs and gamers",
       image: "/News/showcase.jpg",
       category: "E-sports",
       time: "November 14",
@@ -74,7 +74,7 @@ export default function LatestNews() {
   ]
 
   const shareUrl = `https://www.facebook.com/share/p/${process.env.NEXT_PUBLIC_FEATURED_FACEBOOK_POST}?mibextid=wwXIfr`
-  const shareTitle = "Slice N Share Championship - 15 Lakh BDT Prize Pool!"
+  const shareTitle = "Inception Games Championship - 15 Lakh BDT Prize Pool!"
 
   const handleShare = (platform) => {
     const url = encodeURIComponent(shareUrl)

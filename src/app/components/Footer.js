@@ -15,7 +15,7 @@ export default function Footer() {
             className="flex items-center justify-center md:justify-start"
           >
             <div className="flex items-center space-x-1">
-              <img src="/Logo/Logo.png" alt="Slice N Share Logo" />
+              <img src="/Logo/Logo.png" alt="Inceptions Logo" />
             </div>
           </motion.div>
 

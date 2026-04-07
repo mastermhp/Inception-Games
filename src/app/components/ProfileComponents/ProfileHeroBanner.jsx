@@ -192,7 +192,7 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white transition"
                       onClick={() => {
                         const url = typeof window !== 'undefined' ? window.location.href : ''
-                        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`Check out ${user?.fullName || 'this player'} on Slice N Share!`)}`, '_blank', 'width=600,height=400')
+                        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`Check out ${user?.fullName || 'this player'} on Inception Games!`)}`, '_blank', 'width=600,height=400')
                         setShowShareMenu(false)
                       }}
                     >

@@ -8,30 +8,30 @@ import UnifiedAuthModal from "./AuthModals/UnifiedAuthModal"
 const tournamentData = [
   {
     id: 1,
-    title: "Slice N Share Tournaments",
+    title: "Inceptions Tournaments",
     description:
-      "Step into the arena with Slice N Share — where passion meets competition. We're empowering the eSports community of bangladesh",
+      "Step into the arena with Inceptions — where passion meets competition. We're empowering the eSports community of bangladesh",
     image: "/Hero/tournament-card.png",
-    eventType: "Slicenshare Tournament",
+    eventType: "Inceptions Tournament",
     price: 399,
     flowType: "tournament",
   },
   {
     id: 2,
-    title: "Slice N Share Scrims",
+    title: "Inceptions Scrims",
     description: "A revolutionary esports tournament bringing together the best talent from across the region",
     image: "/Hero/tournament-card.png",
-    eventType: "Slicenshare Scrims",
+    eventType: "Inceptions Scrims",
     price: 299,
     flowType: "scrims",
   },
   {
     id: 3,
-    title: "Slice N Share Brand Deal",
+    title: "Inceptions Brand Deal",
     description:
       "Join the premier esports championship of south asia with massive prize pool and international exposure",
     image: "/Hero/tournament-card.png",
-    eventType: "Slicenshare Brand Deal",
+    eventType: "Inceptions Brand Deal",
     price: 499,
     flowType: "brand-deal",
   },

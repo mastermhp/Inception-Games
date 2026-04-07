@@ -335,8 +335,8 @@ export default function EventsSection({ user }) {
           registration_end: event.reg_end_at,
           tournamentStart: event.tournament_start_at,
           tournamentEnd: event.tournament_end_at,
-          host: event.hosted_by || 'Slice N Share',
-          organizer: event.hosted_by || 'Slice N Share',
+          host: event.hosted_by || 'Inception Games',
+          organizer: event.hosted_by || 'Inception Games',
           banner_image: event.banner_image,
         }
         })
