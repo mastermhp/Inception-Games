@@ -57,44 +57,43 @@ const showcaseData = {
         name: "Z Inception",
         photo: "/Ecosystem/Games/zinception.jpg",
         smallLogo: "/Ecosystem/Games/zinception.jpg",
-        link: "#",
+        link: "https://drive.google.com/file/d/1a0PfwyBeGXXJAvE5wRGG_7wey0y5JCzX/view",
       },
       {
         id: 2,
         name: "Beyblade",
         photo: "/Ecosystem/Games/Beyblade.png",
         smallLogo: "/Ecosystem/Games/Beyblade.png",
-        link: "#",
+        link: "https://gamejolt.com/games/bayblade_demo/274742",
       },
       {
         id: 3,
         name: "Dhaka Racing Sim",
         photo: "/Ecosystem/Games/DhakaRacingSim.jpg",
         smallLogo: "/Ecosystem/Games/DhakaRacingSim.jpg",
-        link: "#",
+        link: "https://www.facebook.com/reel/2260993467662799",
       },
       {
         id: 4,
         name: "Exo Discover",
         photo: "/Ecosystem/Games/discover.png",
         smallLogo: "/Ecosystem/Games/discover.png",
-        link: "#",
+        link: "https://imtiazahmeddipto.itch.io/exo-descover",
       },
       {
         id: 5,
         name: "Arcade Game",
         photo: "/Ecosystem/Games/ArcadeGame.jpeg",
         smallLogo: "/Ecosystem/Games/ArcadeGame.jpeg",
-        link: "#",
+        link: "https://play.google.com/store/apps/details?id=asia.ifarmer.farmers&pcampaignid=web_share",
       },
       {
         id: 6,
         name: "Unknown Surge",
         photo: "/Ecosystem/Games/unknownsurge.png",
         smallLogo: "/Ecosystem/Games/unknownsurge.png",
-        link: "#",
+        link: "https://store.steampowered.com/app/1132450/Unknown_Surge/",
       },
-      
     ],
   },
   community: {
@@ -109,14 +108,6 @@ const showcaseData = {
       { id: 6, photo: "/Ecosystem/Community/c6.jpg" },
       { id: 7, photo: "/Ecosystem/Community/c7.jpg" },
       { id: 8, photo: "/Ecosystem/Community/c8.jpg" },
-      // { id: 9, photo: "/Ecosystem/Community/c9.png" },
-      // { id: 10, photo: "/Ecosystem/Community/c10.png" },
-      // { id:11, photo: "/Ecosystem/Community/c11.png" },
-      // { id: 12, photo: "/Ecosystem/Community/c12.png" },
-      // { id: 13, photo: "/Ecosystem/Community/c13.png" },
-      // { id: 14, photo: "/Ecosystem/Community/c14.png" },
-      // { id: 15, photo: "/Ecosystem/Community/c15.png" },
-      // { id: 16, photo: "/Ecosystem/Community/c16.png" },
       { id: 17, photo: "/Ecosystem/Community/c17.jpg" },
     ],
   },
@@ -176,24 +167,31 @@ function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
 
   if (type === "games") {
     return (
-      <div
-        className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? "shadow-2xl shadow-purple-500/20" : ""}`}
+      <Link
+        href={item.link || "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block h-full"
       >
-        {/* Game Image */}
-        <img
-          src={item.photo}
-          alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover object-top"
-        />
+        <div
+          className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? "shadow-2xl shadow-purple-500/20" : ""}`}
+        >
+          {/* Game Image */}
+          <img
+            src={item.photo}
+            alt={item.name}
+            className="absolute inset-0 w-full h-full object-cover object-top"
+          />
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
 
-        {/* Title */}
-        <div className="absolute bottom-4 left-4 right-4 text-center">
-          <h4 className="text-white font-semibold text-lg">{item.name}</h4>
+          {/* Title */}
+          <div className="absolute bottom-4 left-4 right-4 text-center">
+            <h4 className="text-white font-semibold text-lg">{item.name}</h4>
+          </div>
         </div>
-      </div>
+      </Link>
     );
   }
 
