@@ -301,7 +301,7 @@ function EventCard({ event, onClick }) {
               className="overflow-hidden"
             >
               {/* Slots Progress */}
-              {event.totalSlots > 0 && (
+              {/* {event.totalSlots > 0 && (
                 <div className="mb-3">
                   <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
                     <span>Slots</span>
@@ -321,7 +321,7 @@ function EventCard({ event, onClick }) {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Prize Pool */}
               {event.prizePool > 0 && (
@@ -648,9 +648,3 @@ export default function EventsSection({ user }) {
     </motion.div>
   );
 }
-
-/*Firstly, i have attached my whole sys[pasted 2872 lines]tem with the live api integrated for user signup through the tournamentCarousel but the issue is i am setting the personal info and gaming info during signup through the api but after successfull signup i'm not getting the data in the profile page to the profile components and also in the edit profile i'm not getting them fetching there to eid them also all are showing blank and after registration successfull user should redirect to profile page /profile directly he can't show home page anymore i also attached the user-signup&login&edit-profile.txt file so that you understand better about the api and endpoints
-
-i have attached the events$signups.txt for the profile page events section you can see there have static tournaments,scrims and brand deals now they all will be in real time using api also the filters for tournament or scrims or brand deal and also for tournament, scrims or brand deal signup all are in the api you have to do them perfectly integrated and signup successfully
-
-i have attached the /profile endpoints in the screenshot so that you can work properly by reading them and don't change the design as it is if need some updates do that but don't change the design and this is the api base url https://inception-games.an.r.appspot.com/api/v1*/
