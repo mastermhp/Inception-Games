@@ -115,7 +115,7 @@ export default function HeroSection() {
             className="mb-1"
           >
             <div className="flex items-center justify-center space-x-2 mb-2">
-              {/* <img src="/Logo/SNS_Logo.svg" alt="SNS Logo" className="hero-logo" /> */}
+              <img src="/Logo/fullLogo.png" alt="SNS Logo" className="hero-logo" />
             </div>
           </motion.div>
 
