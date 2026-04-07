@@ -904,7 +904,7 @@ export default function EventDetailPage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Users size={20} />
-                    Sign Up for {event.eventType}
+                    Sign Up
                   </motion.button>
                 )}
 
@@ -1201,7 +1201,7 @@ export default function EventDetailPage() {
                 )}
 
                 {/* Slots Info */}
-                <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+                {/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-gray-400 text-sm">Registration Slots</span>
                     <span className="text-white font-semibold">
@@ -1217,14 +1217,14 @@ export default function EventDetailPage() {
                   <p className="text-xs text-gray-500 mt-2">
                     {event.totalSlots - event.filledSlots} slots remaining
                   </p>
-                </div>
+                </div> */}
 
                 {/* Event Type Badge */}
-                <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-4 text-center">
+                {/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-4 text-center">
                   <span className={`inline-flex px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(event.status)}`}>
                     {event.eventType}
                   </span>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
