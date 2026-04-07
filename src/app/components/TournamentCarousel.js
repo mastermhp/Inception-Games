@@ -192,7 +192,7 @@ export default function TournamentCarousel() {
                             className="font-bold mb-3 md:mb-4"
                             style={{
                               fontFamily: "Bebas Neue, sans-serif",
-                              fontSize: isCenter ? "48px" : "32px",
+                              fontSize: isCenter ? "40px" : "32px",
                             }}
                             animate={{
                               opacity: isCenter ? 1 : 0.7,
@@ -204,7 +204,7 @@ export default function TournamentCarousel() {
                           <motion.p
                             className="text-gray-200 mb-4 md:mb-6 line-clamp-3 max-w-2xl"
                             style={{
-                              fontSize: isCenter ? "20px" : "16px",
+                              fontSize: isCenter ? "14px" : "14px",
                             }}
                             animate={{
                               opacity: isCenter ? 1 : 0.6,
