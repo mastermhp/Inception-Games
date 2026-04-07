@@ -1,8 +1,8 @@
-"use client"
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+"use client";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 // Data for the three sections
 const showcaseData = {
@@ -18,8 +18,9 @@ const showcaseData = {
         link: "#",
         caption: {
           normalText: "31,000+ Active Users powering ",
-          highlightText: '"ভাগ্যের ছক্কা" Ludo Arcade — in collaboration with iFarmer & Folon.',
-        }
+          highlightText:
+            '"ভাগ্যের ছক্কা" Ludo Arcade — in collaboration with iFarmer & Folon.',
+        },
       },
       {
         id: 2,
@@ -29,8 +30,9 @@ const showcaseData = {
         link: "#",
         caption: {
           normalText: "Mime is our official Internet Sponsor — ",
-          highlightText: "powering seamless connectivity for every gamer in the ecosystem.",
-        }
+          highlightText:
+            "powering seamless connectivity for every gamer in the ecosystem.",
+        },
       },
       {
         id: 3,
@@ -40,28 +42,60 @@ const showcaseData = {
         link: "#",
         caption: {
           normalText: "Moar fuels the competitive spirit — ",
-          highlightText: "official tournament sponsor empowering the gaming community.",
-        }
+          highlightText:
+            "official tournament sponsor empowering the gaming community.",
+        },
       },
-    ]
+    ],
   },
   games: {
     title: "Our Games",
     subtitle: "Compete in your favorite titles",
     items: [
-      { id: 1,  name: "PUBG Mobile",        logo: "/Ecosystem/Community/c1.jpg"       },
-      { id: 2,  name: "Valorant",            logo: "/Ecosystem/Community/c2.jpg"   },
-      { id: 3,  name: "CS:GO",               logo: "/games/csgo.png"       },
-      { id: 4,  name: "Free Fire",           logo: "/games/freefire.png" },
-      { id: 5,  name: "Mobile Legends",      logo: "/games/mlbb.png"      },
-      { id: 6,  name: "FC Mobile",           logo: "/games/fcmobile.png"  },
-      { id: 7,  name: "eFootball",           logo: "/games/efootball.png"  },
-      { id: 8,  name: "Dota 2",              logo: "/games/dota2.png"      },
-      { id: 9,  name: "League of Legends",   logo: "/games/lol.png"       },
-      { id: 10, name: "Call of Duty Mobile", logo: "/games/codm.png"      },
-      { id: 11, name: "Apex Legends",        logo: "/games/apex.png"   },
-      { id: 12, name: "Fortnite",            logo: "/games/fortnite.png"},
-    ]
+      {
+        id: 1,
+        name: "Z Inception",
+        photo: "/Ecosystem/Games/zinception.jpg",
+        smallLogo: "/Ecosystem/Games/zinception.jpg",
+        link: "#",
+      },
+      {
+        id: 2,
+        name: "Beyblade",
+        photo: "/Ecosystem/Games/Beyblade.png",
+        smallLogo: "/Ecosystem/Games/Beyblade.png",
+        link: "#",
+      },
+      {
+        id: 3,
+        name: "Dhaka Racing Sim",
+        photo: "/Ecosystem/Games/DhakaRacingSim.jpg",
+        smallLogo: "/Ecosystem/Games/DhakaRacingSim.jpg",
+        link: "#",
+      },
+      {
+        id: 4,
+        name: "Exo Discover",
+        photo: "/Ecosystem/Games/discover.png",
+        smallLogo: "/Ecosystem/Games/discover.png",
+        link: "#",
+      },
+      {
+        id: 5,
+        name: "Arcade Game",
+        photo: "/Ecosystem/Games/ArcadeGame.jpeg",
+        smallLogo: "/Ecosystem/Games/ArcadeGame.jpeg",
+        link: "#",
+      },
+      {
+        id: 6,
+        name: "Unknown Surge",
+        photo: "/Ecosystem/Games/unknownsurge.png",
+        smallLogo: "/Ecosystem/Games/unknownsurge.png",
+        link: "#",
+      },
+      
+    ],
   },
   community: {
     title: "Our Community",
@@ -84,22 +118,22 @@ const showcaseData = {
       // { id: 15, photo: "/Ecosystem/Community/c15.png" },
       // { id: 16, photo: "/Ecosystem/Community/c16.png" },
       { id: 17, photo: "/Ecosystem/Community/c17.jpg" },
-    ]
-  }
-}
+    ],
+  },
+};
 
 const tabs = [
-  { key: 'partners',  label: 'Partners'  },
-  { key: 'games',     label: 'Games'     },
-  { key: 'community', label: 'Community' },
-]
+  { key: "partners", label: "Partners" },
+  { key: "games", label: "Games" },
+  { key: "community", label: "Community" },
+];
 
 // ── Quote-style Partner Card ─────────────────────────────────────────────────
 function PartnerCard({ item, isFeatured = false }) {
   return (
     <div
       className={`relative h-full rounded-3xl overflow-hidden ${
-        isFeatured ? 'shadow-2xl shadow-purple-500/20' : ''
+        isFeatured ? "shadow-2xl shadow-purple-500/20" : ""
       }`}
     >
       {/* Full-bleed background photo */}
@@ -117,7 +151,7 @@ function PartnerCard({ item, isFeatured = false }) {
         {/* Yellow opening quote mark */}
         <div
           className="text-3xl md:text-4xl font-serif leading-none mb-1 select-none"
-          style={{ color: '#E8C840' }}
+          style={{ color: "#E8C840" }}
         >
           ❝❝
         </div>
@@ -125,40 +159,49 @@ function PartnerCard({ item, isFeatured = false }) {
         {/* FIX: text-xs on mobile, text-sm/base on larger screens */}
         <p className="text-white text-xs sm:text-sm md:text-base leading-snug font-medium drop-shadow-md">
           {item.caption.normalText}
-          <span className="font-bold" style={{ color: '#E8C840' }}>
+          <span className="font-bold" style={{ color: "#E8C840" }}>
             {item.caption.highlightText}
           </span>
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 // ── Shared ShowcaseCard dispatcher ───────────────────────────────────────────
 function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
-  if (type === 'partners') {
-    return <PartnerCard item={item} isFeatured={isFeatured} />
+  if (type === "partners") {
+    return <PartnerCard item={item} isFeatured={isFeatured} />;
   }
 
-  if (type === 'games') {
+  if (type === "games") {
     return (
-      <div className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? 'shadow-2xl shadow-purple-500/20' : ''}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-gray-900 to-pink-900/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-        <div className="relative h-full flex flex-col items-center justify-center p-1">
-          <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg shadow-black/50">
-            {/* <Link href={item.link}> */}
-              {/* <img src={item.logo} alt={item.name} className="w-full h-full object-cover" /> */}
-            {/* </Link> */}
-          </div>
+      <div
+        className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? "shadow-2xl shadow-purple-500/20" : ""}`}
+      >
+        {/* Game Image */}
+        <img
+          src={item.photo}
+          alt={item.name}
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+
+        {/* Title */}
+        <div className="absolute bottom-4 left-4 right-4 text-center">
+          <h4 className="text-white font-semibold text-lg">{item.name}</h4>
         </div>
       </div>
-    )
+    );
   }
 
-  if (type === 'community') {
+  if (type === "community") {
     return (
-      <div className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? 'shadow-2xl shadow-purple-500/20' : ''}`}>
+      <div
+        className={`relative h-full rounded-3xl overflow-hidden ${isFeatured ? "shadow-2xl shadow-purple-500/20" : ""}`}
+      >
         <img
           src={item.photo}
           alt={`Community member ${item.id}`}
@@ -171,17 +214,41 @@ function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
           </span>
         </div>
       </div>
-    )
+    );
   }
 
-  return null
+  return null;
 }
 
 // ── Small Bottom Thumbnail ───────────────────────────────────────────────────
 function SmallCard({ item, type, isActive }) {
-  if (type === 'partners') {
+  if (type === "partners") {
     return (
-      <div className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? 'border-purple-500' : 'border-white/10'}`}>
+      <div
+        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
+      >
+        <img
+          src={item.photo}
+          alt={item.name}
+          className="absolute inset-0 w-full h-full object-cover "
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/10" />
+        <div className="relative h-full flex items-end justify-center pb-2">
+          <img
+            src={item.smallLogo}
+            alt={item.name}
+            className="h-6 sm:h-7 w-auto object-contain filter brightness-110 drop-shadow-lg"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "games") {
+    return (
+      <div
+        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
+      >
         <img
           src={item.photo}
           alt={item.name}
@@ -196,26 +263,14 @@ function SmallCard({ item, type, isActive }) {
           />
         </div>
       </div>
-    )
+    );
   }
 
-  if (type === 'games') {
+  if (type === "community") {
     return (
-      <div className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border transition-all ${isActive ? 'border-purple-500' : 'border-white/10'}`}>
-        <div className="h-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3">
-          <img src={item.logo} alt={item.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover" />
-          <div className="flex-1 min-w-0">
-            <p className="text-white text-xs sm:text-sm font-medium truncate">{item.name}</p>
-            <p className="text-white/50 text-xs">Play now</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (type === 'community') {
-    return (
-      <div className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? 'border-purple-500' : 'border-white/10'}`}>
+      <div
+        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
+      >
         <img
           src={item.photo}
           alt={`Community member ${item.id}`}
@@ -228,83 +283,87 @@ function SmallCard({ item, type, isActive }) {
           </span>
         </div>
       </div>
-    )
+    );
   }
 
-  return null
+  return null;
 }
 
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function ShowcaseCarousel() {
-  const [activeTab, setActiveTab] = useState('partners')
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
-  const containerRef = useRef(null)
+  const [activeTab, setActiveTab] = useState("partners");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const containerRef = useRef(null);
 
   // Touch/swipe state
-  const touchStartX = useRef(null)
-  const touchStartY = useRef(null)
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
 
-  const currentData = showcaseData[activeTab]
-  const items = currentData.items
+  const currentData = showcaseData[activeTab];
+  const items = currentData.items;
 
   useEffect(() => {
-    if (!isAutoPlaying) return
+    if (!isAutoPlaying) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % items.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [isAutoPlaying, items.length, activeTab])
+      setActiveIndex((prev) => (prev + 1) % items.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, items.length, activeTab]);
 
-  useEffect(() => { setActiveIndex(0) }, [activeTab])
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [activeTab]);
 
   const goToPrev = useCallback(() => {
-    setIsAutoPlaying(false)
-    setActiveIndex((prev) => (prev - 1 + items.length) % items.length)
-  }, [items.length])
+    setIsAutoPlaying(false);
+    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
+  }, [items.length]);
 
   const goToNext = useCallback(() => {
-    setIsAutoPlaying(false)
-    setActiveIndex((prev) => (prev + 1) % items.length)
-  }, [items.length])
+    setIsAutoPlaying(false);
+    setActiveIndex((prev) => (prev + 1) % items.length);
+  }, [items.length]);
 
   const goToIndex = useCallback((index) => {
-    setIsAutoPlaying(false)
-    setActiveIndex(index)
-  }, [])
+    setIsAutoPlaying(false);
+    setActiveIndex(index);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft') goToPrev()
-      if (e.key === 'ArrowRight') goToNext()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [goToPrev, goToNext])
+      if (e.key === "ArrowLeft") goToPrev();
+      if (e.key === "ArrowRight") goToNext();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [goToPrev, goToNext]);
 
   // ── Touch / swipe handlers ────────────────────────────────────────────────
   const handleTouchStart = useCallback((e) => {
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
-  }, [])
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
 
-  const handleTouchEnd = useCallback((e) => {
-    if (touchStartX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
-    // Only trigger if horizontal swipe is dominant and >= 50px
-    if (Math.abs(dx) > 50 && Math.abs(dx) > dy) {
-      if (dx < 0) goToNext()
-      else goToPrev()
-    }
-    touchStartX.current = null
-    touchStartY.current = null
-  }, [goToNext, goToPrev])
+  const handleTouchEnd = useCallback(
+    (e) => {
+      if (touchStartX.current === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+      // Only trigger if horizontal swipe is dominant and >= 50px
+      if (Math.abs(dx) > 50 && Math.abs(dx) > dy) {
+        if (dx < 0) goToNext();
+        else goToPrev();
+      }
+      touchStartX.current = null;
+      touchStartY.current = null;
+    },
+    [goToNext, goToPrev],
+  );
 
   return (
     <section className="py-12 md:py-20 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
       <div className="container mx-auto px-4">
-
         {/* Section Header */}
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
@@ -321,7 +380,9 @@ export default function ShowcaseCarousel() {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`relative px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
-                  activeTab === tab.key ? 'text-white' : 'text-white/60 hover:text-white/80'
+                  activeTab === tab.key
+                    ? "text-white"
+                    : "text-white/60 hover:text-white/80"
                 }`}
               >
                 {activeTab === tab.key && (
@@ -347,14 +408,17 @@ export default function ShowcaseCarousel() {
             transition={{ duration: 0.3 }}
             className="text-center mb-6 md:mb-8"
           >
-            <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2">{currentData.title}</h3>
-            <p className="text-white/60 text-sm md:text-base">{currentData.subtitle}</p>
+            <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2">
+              {currentData.title}
+            </h3>
+            <p className="text-white/60 text-sm md:text-base">
+              {currentData.subtitle}
+            </p>
           </motion.div>
         </AnimatePresence>
 
         {/* Main Carousel */}
         <div className="relative" ref={containerRef}>
-
           {/* ── Nav arrows: on mobile sit outside card area using negative margin ── */}
           <button
             onClick={goToPrev}
@@ -405,11 +469,17 @@ export default function ShowcaseCarousel() {
                 exit={{ opacity: 0, scale: 0.85 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="w-full max-w-[500px] flex-shrink-0"
-                style={{ aspectRatio: '3/4' }}  /* mobile: natural proportional height */
+                style={{
+                  aspectRatio: "3/4",
+                }} /* mobile: natural proportional height */
               >
                 {/* On md+ override the aspect-ratio with fixed height via inline style */}
                 <div className="h-full md:h-[500px] md:[aspect-ratio:unset]">
-                  <ShowcaseCard item={items[activeIndex]} type={activeTab} isFeatured />
+                  <ShowcaseCard
+                    item={items[activeIndex]}
+                    type={activeTab}
+                    isFeatured
+                  />
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -436,8 +506,8 @@ export default function ShowcaseCarousel() {
                 onClick={() => goToIndex(idx)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   idx === activeIndex
-                    ? 'w-8 bg-gradient-to-r from-purple-500 to-pink-500'
-                    : 'w-2 bg-white/30 hover:bg-white/50'
+                    ? "w-8 bg-gradient-to-r from-purple-500 to-pink-500"
+                    : "w-2 bg-white/30 hover:bg-white/50"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
@@ -457,7 +527,11 @@ export default function ShowcaseCarousel() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <SmallCard item={item} type={activeTab} isActive={idx === activeIndex} />
+                <SmallCard
+                  item={item}
+                  type={activeTab}
+                  isActive={idx === activeIndex}
+                />
               </motion.div>
             ))}
           </div>
@@ -472,5 +546,5 @@ export default function ShowcaseCarousel() {
         }
       `}</style>
     </section>
-  )
+  );
 }
