@@ -100,9 +100,9 @@ export default function Header() {
             <Link href="#e-sports" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               E-Sports
             </Link>
-            <Link href="#events" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+            {/* <Link href="#events" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               Events
-            </Link>
+            </Link> */}
             <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               News
             </Link>

@@ -113,13 +113,13 @@ export default function Footer() {
               >
                 E-Sports
               </motion.a>
-              <motion.a
+              {/* <motion.a
                 href="#events"
                 className="block text-white hover:text-gray-300 transition-colors"
                 whileHover={{ x: 5 }}
               >
                 Events
-              </motion.a>
+              </motion.a> */}
               <motion.a
                 href="#news"
                 className="block text-white hover:text-gray-300 transition-colors"
