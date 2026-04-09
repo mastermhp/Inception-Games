@@ -495,11 +495,11 @@ export default function EventDetailPage() {
   const gameName = event.game?.name || event.gameName || 'Unknown Game'
 
   const tabs = [
-    { id: 'result', label: 'Result' },
+    { id: 'rules', label: 'Rules' },
     { id: 'brackets', label: 'Brackets' },
     { id: 'schedule', label: 'Schedule' },
     { id: 'participants', label: 'Participants' },
-    { id: 'rules', label: 'Rules' },
+    { id: 'result', label: 'Result' },
     { id: 'support', label: 'Contact Support' }
   ]
 
