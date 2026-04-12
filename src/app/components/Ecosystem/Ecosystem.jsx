@@ -164,7 +164,7 @@ function CarouselSection({ tabKey }) {
           onMouseLeave={() => setIsHovered(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ height: "400px", minHeight: "400px" }}
+          style={{ height: "420px", minHeight: "420px" }}
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {visibleCards.map((card) => {
@@ -192,38 +192,76 @@ function CarouselSection({ tabKey }) {
               }
 
               return (
-                <motion.div
-                  key={card.key}
-                  className="absolute flex-shrink-0"
-                  initial={{
-                    x: centerWidth / 2 + sideWidth / 2 + 200,
-                    opacity: 0,
-                    scale: 0.7,
-                  }}
-                  animate={{
-                    x: xPosition,
-                    opacity: isCenter ? 1 : 0.5,
-                    scale: isCenter ? 1 : 0.8,
-                    zIndex: isCenter ? 30 : 10,
-                  }}
-                  exit={{
-                    x: -centerWidth / 2 - sideWidth / 2 - 200,
-                    opacity: 0,
-                    scale: 0.7,
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 30,
-                    mass: 0.8,
-                  }}
-                  style={{
-                    width: `${cardWidth}px`,
-                    height: `${cardHeight}px`,
-                  }}
-                >
-                  <ShowcaseCard item={card} isFeatured={isCenter} />
-                </motion.div>
+                // <motion.div
+                //   key={card.key}
+                //   className="absolute flex-shrink-0"
+                //   initial={{
+                //     x: centerWidth / 2 + sideWidth / 2 + 200,
+                //     opacity: 0,
+                //     scale: 0.7,
+                //   }}
+                //   animate={{
+                //     x: xPosition,
+                //     opacity: isCenter ? 1 : 0.5,
+                //     scale: isCenter ? 1 : 0.8,
+                //     zIndex: isCenter ? 30 : 10,
+                //   }}
+                //   exit={{
+                //     x: -centerWidth / 2 - sideWidth / 2 - 200,
+                //     opacity: 0,
+                //     scale: 0.7,
+                //   }}
+                //   transition={{
+                //     type: "spring",
+                //     stiffness: 260,
+                //     damping: 30,
+                //     mass: 0.8,
+                //   }}
+                //   style={{
+                //     width: `${cardWidth}px`,
+                //     height: `${cardHeight}px`,
+                //   }}
+                // >
+                //   <ShowcaseCard item={card} isFeatured={isCenter} />
+                // </motion.div>
+
+                // AFTER — let the card stretch to fill its motion wrapper naturally
+<motion.div
+  key={card.key}
+  className="absolute flex-shrink-0"
+  initial={{
+    x: centerWidth / 2 + sideWidth / 2 + 200,
+    opacity: 0,
+    scale: 0.7,
+  }}
+  animate={{
+    x: xPosition,
+    opacity: isCenter ? 1 : 0.5,
+    scale: isCenter ? 1 : 0.8,
+    zIndex: isCenter ? 30 : 10,
+  }}
+  exit={{
+    x: -centerWidth / 2 - sideWidth / 2 - 200,
+    opacity: 0,
+    scale: 0.7,
+  }}
+  transition={{
+    type: "spring",
+    stiffness: 260,
+    damping: 30,
+    mass: 0.8,
+  }}
+  style={{
+    width: `${cardWidth}px`,
+    height: `${cardHeight}px`,
+  }}
+>
+  {/* Stretch inner div to fill motion wrapper 100% */}
+  <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <ShowcaseCard item={card} isFeatured={isCenter} />
+  </div>
+</motion.div>
+
               );
             })}
           </AnimatePresence>

@@ -1,4 +1,3 @@
-// data
 export const communityData = {
   title: "Our Community",
   subtitle: "Join thousands of passionate gamers",
