@@ -47,9 +47,10 @@ export function PartnerCard({ item, isFeatured = false }) {
         height: "100%",
         borderRadius: "1.5rem",
         overflow: "hidden",
-        boxShadow: isFeatured ? "0 25px 50px rgba(168,85,247,0.2)" : "none",
+       
       }}
     >
+      {/* Background Image */}
       <img
         src={item.photo}
         alt={item.name}
@@ -65,60 +66,76 @@ export function PartnerCard({ item, isFeatured = false }) {
         }}
       />
 
-      {/* Overlay */}
+
+      {/* Dark Overlay for better text visibility */}
       <div
         style={{
           position: "absolute",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.45)",
+          inset: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(2px)",
         }}
       />
 
-      {/* Caption — dead center */}
+      {/* Caption Center */}
       <div
         style={{
           position: "absolute",
-          top: 0, left: 0, right: 0, bottom: 0,
+          inset: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           padding: "1.25rem",
+          zIndex: 10,
         }}
       >
         <div
           style={{
-            background: "rgba(0,0,0,0.55)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: "1rem",
-            padding: isFeatured ? "1.5rem 2rem" : "0.75rem 1rem",
             textAlign: "center",
-            maxWidth: "90%",
+            maxWidth: "85%",
           }}
         >
-          <div style={{ color: "#E8C840", fontSize: isFeatured ? "2rem" : "1.25rem", lineHeight: 1, marginBottom: "0.5rem", fontFamily: "serif" }}>
+          <div
+            style={{
+              color: "#E8C840",
+              fontSize: isFeatured ? "2rem" : "1.25rem",
+              marginBottom: "0.5rem",
+           
+            }}
+          >
             ❝
           </div>
-          <p style={{ color: "#fff", fontSize: isFeatured ? "0.9rem" : "0.7rem", lineHeight: 1.6, fontWeight: 500, margin: 0 }}>
+
+          <p
+            style={{
+              color: "#fff",
+              fontSize: isFeatured ? "1rem" : "0.8rem",
+              lineHeight: 1.7,
+              fontWeight: 500,
+              margin: 0,
+           
+            }}
+          >
             {item.caption.normalText}
-            <span style={{ fontWeight: 700, color: "#E8C840" }}>
+            <span
+              style={{
+                color: "#E8C840",
+                fontWeight: 700,
+              }}
+            >
               {item.caption.highlightText}
             </span>
           </p>
+
           <div
             style={{
               display: "inline-block",
-              marginTop: "0.6rem",
-              padding: "0.2rem 0.75rem",
-              borderRadius: "9999px",
-              fontSize: "0.65rem",
-              fontWeight: 600,
+              marginTop: "0.8rem",
+              fontSize: "0.7rem",
+              fontWeight: 700,
               letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              background: "rgba(232,200,64,0.15)",
               color: "#E8C840",
-              border: "1px solid rgba(232,200,64,0.3)",
+           
             }}
           >
             {item.name}
