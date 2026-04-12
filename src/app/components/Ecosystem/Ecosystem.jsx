@@ -16,52 +16,57 @@ const TAB_REGISTRY = {
 
 // ── Carousel Section Component ─────────────────────────────────────────────
 function CarouselSection({ tabKey }) {
-  const [activeIndex, setActiveIndex]   = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const containerRef = useRef(null);
-
-  // Touch / swipe state
-  const touchStartX = useRef(null);
-  const touchStartY = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const intervalRef = useRef(null);
 
   const currentData = TAB_REGISTRY[tabKey].data;
   const items = currentData.items;
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Auto-play
   useEffect(() => {
-    if (!isAutoPlaying) return;
-    const interval = setInterval(() => {
+    if (!isClient || isHovered) return;
+
+    intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % items.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, items.length]);
+    }, 5000);
 
-  const goToPrev = useCallback(() => {
-    setIsAutoPlaying(false);
-    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
-  }, [items.length]);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isClient, isHovered, items.length]);
 
-  const goToNext = useCallback(() => {
-    setIsAutoPlaying(false);
+  const handleNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % items.length);
   }, [items.length]);
 
-  const goToIndex = useCallback((index) => {
-    setIsAutoPlaying(false);
+  const handlePrevious = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + items.length) % items.length);
+  }, [items.length]);
+
+  const handleGoToIndex = useCallback((index) => {
     setActiveIndex(index);
   }, []);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft")  goToPrev();
-      if (e.key === "ArrowRight") goToNext();
+      if (e.key === "ArrowLeft") handlePrevious();
+      if (e.key === "ArrowRight") handleNext();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToPrev, goToNext]);
+  }, [handlePrevious, handleNext]);
 
   // Touch / swipe handlers
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
@@ -73,13 +78,25 @@ function CarouselSection({ tabKey }) {
       const dx = e.changedTouches[0].clientX - touchStartX.current;
       const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
       if (Math.abs(dx) > 50 && Math.abs(dx) > dy) {
-        dx < 0 ? goToNext() : goToPrev();
+        dx < 0 ? handleNext() : handlePrevious();
       }
       touchStartX.current = null;
       touchStartY.current = null;
     },
-    [goToNext, goToPrev],
+    [handleNext, handlePrevious],
   );
+
+  // Get visible cards: left, center, right
+  const getVisibleCards = () => {
+    const prevIndex = (activeIndex - 1 + items.length) % items.length;
+    const nextIndex = (activeIndex + 1) % items.length;
+
+    return [
+      { ...items[prevIndex], position: "left", key: `${tabKey}-${prevIndex}-left` },
+      { ...items[activeIndex], position: "center", key: `${tabKey}-${activeIndex}-center` },
+      { ...items[nextIndex], position: "right", key: `${tabKey}-${nextIndex}-right` },
+    ];
+  };
 
   // Dispatcher: picks the right Card for the active tab
   function ShowcaseCard({ item, isFeatured = false }) {
@@ -87,11 +104,28 @@ function CarouselSection({ tabKey }) {
     return <Card item={item} isFeatured={isFeatured} />;
   }
 
-  return (
-    <div className="relative" ref={containerRef}>
+  if (!isClient) {
+    return (
+      <div className="relative text-center">
+        <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
+          {currentData.title}
+        </h3>
+        <p className="text-white/60 text-sm md:text-base">
+          {currentData.subtitle}
+        </p>
+        <div className="flex justify-center items-center h-96">
+          <div className="text-gray-500">Loading carousel...</div>
+        </div>
+      </div>
+    );
+  }
 
+  const visibleCards = getVisibleCards();
+
+  return (
+    <div className="relative">
       {/* Dynamic Title */}
-      <div className="text-center mb-3 md:mb-4">
+      <div className="text-center mb-6 md:mb-8">
         <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
           {currentData.title}
         </h3>
@@ -101,91 +135,117 @@ function CarouselSection({ tabKey }) {
       </div>
 
       {/* Main Carousel */}
-      <div className="relative">
-
-        {/* Nav arrows */}
-        <button
-          onClick={goToPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-12 sm:h-12 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-black/80 hover:scale-110 transition-all duration-200"
+      <div className="relative w-full flex justify-center">
+        {/* Left Navigation Arrow */}
+        <motion.button
+          onClick={handlePrevious}
+          className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 z-40 w-10 h-10 md:w-14 md:h-14 bg-purple-600/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-600/60 transition-all"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
           aria-label="Previous"
         >
-          <ChevronLeft size={18} className="sm:hidden" />
-          <ChevronLeft size={24} className="hidden sm:block" />
-        </button>
+          <ChevronLeft size={24} className="md:size-28" />
+        </motion.button>
 
-        <button
-          onClick={goToNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-12 sm:h-12 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-black/80 hover:scale-110 transition-all duration-200"
+        {/* Right Navigation Arrow */}
+        <motion.button
+          onClick={handleNext}
+          className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-40 w-10 h-10 md:w-14 md:h-14 bg-purple-600/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-purple-600/60 transition-all"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
           aria-label="Next"
         >
-          <ChevronRight size={18} className="sm:hidden" />
-          <ChevronRight size={24} className="hidden sm:block" />
-        </button>
+          <ChevronRight size={24} className="md:size-28" />
+        </motion.button>
 
-        {/* Cards row */}
         <div
-          className="flex items-center justify-center gap-3 py-1 md:py-2 px-2 sm:px-3 md:px-4"
+          className="relative flex items-center justify-center px-4 md:px-20"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          style={{ height: "400px", minHeight: "400px" }}
         >
-          {/* Left preview — desktop only */}
-          <motion.div
-            className="hidden lg:block w-[340px] h-[340px] flex-shrink-0 opacity-40 scale-90"
-            initial={false}
-            animate={{ opacity: 0.4, scale: 0.9 }}
-          >
-            <ShowcaseCard
-              item={items[(activeIndex - 1 + items.length) % items.length]}
-            />
-          </motion.div>
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visibleCards.map((card) => {
+              const isCenter = card.position === "center";
+              const isLeft = card.position === "left";
+              const isRight = card.position === "right";
 
-          {/* Featured card */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${tabKey}-${activeIndex}`}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="w-full max-w-[500px] flex-shrink-0"
-              style={{ aspectRatio: "3/4" }}
-            >
-              <div className="h-full md:h-[500px] md:[aspect-ratio:unset]">
-                <ShowcaseCard
-                  item={items[activeIndex]}
-                  isFeatured
-                />
-              </div>
-            </motion.div>
+              const centerWidth =
+                typeof window !== "undefined"
+                  ? Math.min(window.innerWidth * 0.65, 700)
+                  : 700;
+              const sideWidth =
+                typeof window !== "undefined"
+                  ? Math.min(window.innerWidth * 0.3, 320)
+                  : 320;
+
+              const cardWidth = isCenter ? centerWidth : sideWidth;
+              const cardHeight = isCenter ? 380 : 280;
+
+              let xPosition = 0;
+              if (isLeft) {
+                xPosition = -centerWidth / 2 - sideWidth / 2 - 15;
+              } else if (isRight) {
+                xPosition = centerWidth / 2 + sideWidth / 2 + 15;
+              }
+
+              return (
+                <motion.div
+                  key={card.key}
+                  className="absolute flex-shrink-0"
+                  initial={{
+                    x: centerWidth / 2 + sideWidth / 2 + 200,
+                    opacity: 0,
+                    scale: 0.7,
+                  }}
+                  animate={{
+                    x: xPosition,
+                    opacity: isCenter ? 1 : 0.5,
+                    scale: isCenter ? 1 : 0.8,
+                    zIndex: isCenter ? 30 : 10,
+                  }}
+                  exit={{
+                    x: -centerWidth / 2 - sideWidth / 2 - 200,
+                    opacity: 0,
+                    scale: 0.7,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 30,
+                    mass: 0.8,
+                  }}
+                  style={{
+                    width: `${cardWidth}px`,
+                    height: `${cardHeight}px`,
+                  }}
+                >
+                  <ShowcaseCard item={card} isFeatured={isCenter} />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
-
-          {/* Right preview — desktop only */}
-          <motion.div
-            className="hidden lg:block w-[340px] h-[340px] flex-shrink-0 opacity-40 scale-90"
-            initial={false}
-            animate={{ opacity: 0.4, scale: 0.9 }}
-          >
-            <ShowcaseCard
-              item={items[(activeIndex + 1) % items.length]}
-            />
-          </motion.div>
         </div>
+      </div>
 
-        {/* Pagination Dots */}
-        <div className="flex justify-center gap-2 mt-2">
-          {items.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goToIndex(idx)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                idx === activeIndex
-                  ? "w-8 bg-gradient-to-r from-purple-500 to-pink-500"
-                  : "w-2 bg-white/30 hover:bg-white/50"
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
+      {/* Pagination Dots */}
+      <div className="flex justify-center gap-2 mt-8">
+        {items.map((_, idx) => (
+          <motion.button
+            key={idx}
+            onClick={() => handleGoToIndex(idx)}
+            className={`rounded-full transition-all ${
+              activeIndex === idx
+                ? "w-8 h-3 bg-gradient-to-r from-purple-500 to-pink-500"
+                : "w-3 h-3 bg-white/40 hover:bg-white/60"
+            }`}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
@@ -194,41 +254,32 @@ function CarouselSection({ tabKey }) {
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function ShowcaseCarousel() {
   return (
-    <section className="py-3 md:py-6 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
+    <section className="py-12 md:py-20 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
       <div className="container mx-auto px-4">
 
         {/* Section Header */}
-        <div className="text-center mb-3 md:mb-4">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
+        <div className="text-center mb-12 md:mb-20">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             Discover Our Ecosystem
           </h2>
           <div className="h-1 w-32 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 mx-auto rounded-full" />
         </div>
 
-
         {/* Partners Section */}
-        <div className="mb-16 md:mb-20">
+        <div className="mb-20 md:mb-32">
           <CarouselSection tabKey="partners" />
         </div>
 
         {/* Games Section */}
-        <div className="mb-16 md:mb-20">
+        <div className="mb-20 md:mb-32">
           <CarouselSection tabKey="games" />
         </div>
 
         {/* Community Section */}
-        <div className="mb-16 md:mb-20">
+        <div className="mb-8">
           <CarouselSection tabKey="community" />
         </div>
       </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        @media (min-width: 768px) {
-          .md\\:[aspect-ratio\\:unset] { aspect-ratio: unset !important; }
-        }
-      `}</style>
     </section>
   );
 }

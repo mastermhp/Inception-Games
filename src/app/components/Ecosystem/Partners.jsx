@@ -1,6 +1,3 @@
-
-
-// data
 export const partnersData = {
   title: "Our Partners",
   subtitle: "Trusted collaborations that power our ecosystem",
@@ -41,40 +38,51 @@ export const partnersData = {
   ],
 };
 
-// card component
 export function PartnerCard({ item, isFeatured = false }) {
   return (
     <div
       className={`relative h-full rounded-3xl overflow-hidden ${
         isFeatured ? "shadow-2xl shadow-purple-500/20" : ""
       }`}
+      style={{
+        backgroundImage: `url('${item.photo}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      {/* Full-bleed background photo */}
-      <img
-        src={item.photo}
-        alt={item.name}
-        className="absolute inset-0 w-full h-full object-cover object-top"
-      />
+      {/* Dark vignette — darkens center slightly, heavy at top & bottom */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
 
-      {/* Dark gradient — heavy at bottom, fades at top */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
+      {/* Caption block — centered vertically & horizontally */}
+      <div className="absolute inset-0 flex items-center justify-center px-5 md:px-8">
+        <div className="bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4 md:px-7 md:py-6 text-center max-w-[90%]">
+          {/* Yellow quote mark */}
+          <div
+            className="text-2xl md:text-3xl font-serif leading-none mb-2 select-none"
+            style={{ color: "#E8C840" }}
+          >
+            ❝
+          </div>
 
-      {/* Caption block pinned to bottom */}
-      <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 pt-3 md:px-6 md:pb-7">
-        {/* Yellow opening quote mark */}
-        <div
-          className="text-3xl md:text-4xl font-serif leading-none mb-1 select-none"
-          style={{ color: "#E8C840" }}
-        >
-          ❝❝
+          <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed font-medium drop-shadow-md">
+            {item.caption.normalText}
+            <span className="font-bold" style={{ color: "#E8C840" }}>
+              {item.caption.highlightText}
+            </span>
+          </p>
+
+          {/* Partner name pill */}
+          <div
+            className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase"
+            style={{
+              background: "rgba(232, 200, 64, 0.15)",
+              color: "#E8C840",
+              border: "1px solid rgba(232, 200, 64, 0.3)",
+            }}
+          >
+            {item.name}
+          </div>
         </div>
-
-        <p className="text-white text-xs sm:text-sm md:text-base leading-snug font-medium drop-shadow-md">
-          {item.caption.normalText}
-          <span className="font-bold" style={{ color: "#E8C840" }}>
-            {item.caption.highlightText}
-          </span>
-        </p>
       </div>
     </div>
   );

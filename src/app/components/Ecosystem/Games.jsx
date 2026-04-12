@@ -62,7 +62,7 @@ export function GameCard({ item, isFeatured = false }) {
         <img
           src={item.photo}
           alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          className="absolute inset-0 w-full h-full object-contain object-center"
         />
 
         {/* Overlay */}
