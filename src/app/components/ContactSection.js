@@ -82,13 +82,13 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-20 sm:py-32 lg:py-40 bg-black relative overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section id="contact" className="py-8  md:py-10 bg-black relative overflow-hidden">
+      <div className="container mx-auto px-2">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-12 sm:mb-16"
+          className="text-center mb-6 sm:mb-8"
         >
           <h3
             className="font-bold text-base sm:text-lg tracking-wider"
@@ -105,7 +105,7 @@ export default function ContactSection() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">STAY IN THE LOOP</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-center max-w-7xl mx-auto">
           {/* Left Side - Animated Icons (Hidden on mobile, shown on lg+) */}
           <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] hidden lg:block">
             {/* Floating Icons */}
@@ -152,7 +152,7 @@ export default function ContactSection() {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-md mx-auto lg:mx-0 bg-[#0D0D0D] p-6 sm:p-8 lg:p-10 rounded-2xl relative"
+            className="w-full max-w-md mx-auto lg:mx-0 bg-[#0D0D0D] p-4 sm:p-6 lg:p-8 rounded-2xl relative"
           >
             {/* Success State Overlay */}
             {success && (
@@ -207,7 +207,7 @@ export default function ContactSection() {
             )}
 
             {/* Form Content */}
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               {error && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}

@@ -8,6 +8,8 @@ import UpcomingEvents from "./components/UpcomingEvents"
 import LatestNews from "./components/LatestNews"
 import ContactSection from "./components/ContactSection"
 import Footer from "./components/Footer"
+import AllGamesLoop from "./components/AllGamesLoop"
+import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx"
 
 export default function Home() {
   return (
@@ -16,8 +18,10 @@ export default function Home() {
       <HeroSection />
       {/* <ComingSoon/> */}
       <TournamentCarousel />
+      <AllGamesLoop/>
       <TrustedBrands />
-      <ShowcaseCarousel />
+      <Ecosystem/>
+      {/* <ShowcaseCarousel /> */}
       {/* <UpcomingEvents /> */}
       <LatestNews />
       <ContactSection />

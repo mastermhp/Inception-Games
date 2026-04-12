@@ -14,7 +14,6 @@ const showcaseData = {
         id: 1,
         name: "Ifarmer",
         photo: "/Ecosystem/Partners/ifarmer2.jpeg",
-        smallLogo: "/Ecosystem/Partners/ifarmer2.jpeg",
         link: "#",
         caption: {
           normalText: "31,000+ Active Users powering ",
@@ -26,7 +25,6 @@ const showcaseData = {
         id: 2,
         name: "Mime",
         photo: "/Ecosystem/Partners/mime2.png",
-        smallLogo: "/Ecosystem/Partners/mime2.png",
         link: "#",
         caption: {
           normalText: "Mime is our official Internet Sponsor — ",
@@ -38,7 +36,6 @@ const showcaseData = {
         id: 3,
         name: "Moar",
         photo: "/Ecosystem/Partners/moar2.png",
-        smallLogo: "/Ecosystem/Partners/moar2.png",
         link: "#",
         caption: {
           normalText: "Moar fuels the competitive spirit — ",
@@ -56,42 +53,36 @@ const showcaseData = {
         id: 1,
         name: "Z Inception",
         photo: "/Ecosystem/Games/zinception.jpg",
-        smallLogo: "/Ecosystem/Games/zinception.jpg",
         link: "https://drive.google.com/file/d/1a0PfwyBeGXXJAvE5wRGG_7wey0y5JCzX/view",
       },
       {
         id: 2,
         name: "Beyblade",
         photo: "/Ecosystem/Games/Beyblade.png",
-        smallLogo: "/Ecosystem/Games/Beyblade.png",
         link: "https://gamejolt.com/games/bayblade_demo/274742",
       },
       {
         id: 3,
         name: "Dhaka Racing Sim",
         photo: "/Ecosystem/Games/DhakaRacingSim.jpg",
-        smallLogo: "/Ecosystem/Games/DhakaRacingSim.jpg",
         link: "https://www.facebook.com/reel/2260993467662799",
       },
       {
         id: 4,
         name: "Exo Discover",
         photo: "/Ecosystem/Games/discover.png",
-        smallLogo: "/Ecosystem/Games/discover.png",
         link: "https://imtiazahmeddipto.itch.io/exo-descover",
       },
       {
         id: 5,
         name: "Arcade Game",
         photo: "/Ecosystem/Games/ArcadeGame.jpeg",
-        smallLogo: "/Ecosystem/Games/ArcadeGame.jpeg",
         link: "https://play.google.com/store/apps/details?id=asia.ifarmer.farmers&pcampaignid=web_share",
       },
       {
         id: 6,
         name: "Unknown Surge",
         photo: "/Ecosystem/Games/unknownsurge.png",
-        smallLogo: "/Ecosystem/Games/unknownsurge.png",
         link: "https://store.steampowered.com/app/1132450/Unknown_Surge/",
       },
     ],
@@ -159,7 +150,7 @@ function PartnerCard({ item, isFeatured = false }) {
   );
 }
 
-// ── Shared ShowcaseCard dispatcher ───────────────────────────────────────────
+// ── Shared ShowcaseCard dispatcher
 function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
   if (type === "partners") {
     return <PartnerCard item={item} isFeatured={isFeatured} />;
@@ -218,76 +209,7 @@ function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
   return null;
 }
 
-// ── Small Bottom Thumbnail ───────────────────────────────────────────────────
-function SmallCard({ item, type, isActive }) {
-  if (type === "partners") {
-    return (
-      <div
-        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
-      >
-        <img
-          src={item.photo}
-          alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover "
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/10" />
-        <div className="relative h-full flex items-end justify-center pb-2">
-          <img
-            src={item.smallLogo}
-            alt={item.name}
-            className="h-6 sm:h-7 w-auto object-contain filter brightness-110 drop-shadow-lg"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "games") {
-    return (
-      <div
-        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
-      >
-        <img
-          src={item.photo}
-          alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover object-top"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/10" />
-        <div className="relative h-full flex items-end justify-center pb-2">
-          <img
-            src={item.smallLogo}
-            alt={item.name}
-            className="h-6 sm:h-7 w-auto object-contain filter brightness-110 drop-shadow-lg"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "community") {
-    return (
-      <div
-        className={`h-[80px] sm:h-[100px] rounded-xl overflow-hidden relative border transition-all ${isActive ? "border-purple-500" : "border-white/10"}`}
-      >
-        <img
-          src={item.photo}
-          alt={`Community member ${item.id}`}
-          className="absolute inset-0 w-full h-full object-cover object-top"
-        />
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute top-2 left-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black/60 border border-white/20 text-white text-xs font-bold">
-            {item.id}
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-}
-
-// ── Main Component ───────────────────────────────────────────────────────────
+// ── Main Component
 export default function ShowcaseCarousel() {
   const [activeTab, setActiveTab] = useState("partners");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -360,19 +282,19 @@ export default function ShowcaseCarousel() {
   );
 
   return (
-    <section className="py-12 md:py-20 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
+    <section className="py-3 md:py-6 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+        <div className="text-center mb-3 md:mb-4">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
             Discover Our Ecosystem
           </h2>
           <div className="h-1 w-32 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 mx-auto rounded-full" />
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-center mb-8 md:mb-12">
-          <div className="inline-flex bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10">
+        <div className="flex justify-center mb-3 md:mb-4">
+          <div className="inline-flex bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -404,9 +326,9 @@ export default function ShowcaseCarousel() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="text-center mb-6 md:mb-8"
+            className="text-center mb-3 md:mb-4"
           >
-            <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2">
+            <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
               {currentData.title}
             </h3>
             <p className="text-white/60 text-sm md:text-base">
@@ -438,7 +360,7 @@ export default function ShowcaseCarousel() {
 
           {/* Cards row */}
           <div
-            className="flex items-center justify-center gap-4 py-4 md:py-8 px-10 sm:px-14 md:px-16"
+            className="flex items-center justify-center gap-3 py-1 md:py-2 px-2 sm:px-3 md:px-4"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
@@ -497,7 +419,7 @@ export default function ShowcaseCarousel() {
           </div>
 
           {/* Pagination Dots */}
-          <div className="flex justify-center gap-2 mt-4 md:mt-6">
+          <div className="flex justify-center gap-2 mt-2">
             {items.map((_, idx) => (
               <button
                 key={idx}
@@ -509,28 +431,6 @@ export default function ShowcaseCarousel() {
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Thumbnail Strip */}
-        <div className="mt-8 md:mt-12 flex items-center justify-center">
-          {/* FIX: narrower thumbnails on mobile so more fit without cut-off */}
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 px-4 scrollbar-hide snap-x snap-mandatory w-full justify-start sm:justify-center">
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                onClick={() => goToIndex(idx)}
-                className="flex-shrink-0 w-[120px] sm:w-[150px] md:w-[180px] cursor-pointer snap-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <SmallCard
-                  item={item}
-                  type={activeTab}
-                  isActive={idx === activeIndex}
-                />
-              </motion.div>
             ))}
           </div>
         </div>

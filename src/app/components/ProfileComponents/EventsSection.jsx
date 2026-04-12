@@ -291,79 +291,34 @@ function EventCard({ event, onClick }) {
           </div>
         </div>
 
-        {/* Expandable Content */}
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              {/* Slots Progress */}
-              {/* {event.totalSlots > 0 && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-                    <span>Slots</span>
-                    <div className="flex items-center gap-1">
-                      <Users size={12} />
-                      <span>
-                        {event.status === "completed"
-                          ? "Slots Closed"
-                          : `${event.filledSlots || 0}/${event.totalSlots}`}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                      style={{ width: `${slotsPercentage}%` }}
-                    />
-                  </div>
-                </div>
-              )} */}
+{/* always-visible content  */}
+        {event.prizePool > 0 && (
+  <div className="flex items-center gap-2 text-sm mb-3">
+    <DollarSign size={14} className="text-amber-400" />
+    <span className="text-white font-semibold">
+      {event.currency || "BDT"} {event.prizePool.toLocaleString()} PrizePool
+    </span>
+  </div>
+)}
 
-              {/* Prize Pool */}
-              {event.prizePool > 0 && (
-                <div className="flex items-center gap-2 text-sm mb-3">
-                  <DollarSign size={14} className="text-amber-400" />
-                  <span className="text-white font-semibold">
-                    {event.currency || "BDT"} {event.prizePool.toLocaleString()}{" "}
-                    PrizePool
-                  </span>
-                </div>
-              )}
+{event.description && (
+  <p className="text-gray-400 text-sm mb-3 line-clamp-3">
+    {event.description}
+  </p>
+)}
 
-              {/* Description */}
-              {event.description && (
-                <p className="text-gray-400 text-sm mb-3 line-clamp-3">
-                  {event.description}
-                </p>
-              )}
+<div className="flex items-center gap-2">
+  <span className="px-3 py-1 text-xs font-medium text-gray-300 bg-gray-800 rounded-full border border-gray-700">
+    {eventType}
+  </span>
+  {event.organizer && (
+    <span className="px-3 py-1 text-xs font-medium text-purple-300 bg-purple-800/30 rounded-full border border-purple-700/30">
+      {event.organizer}
+    </span>
+  )}
+</div>
 
-              {/* Event Type Tag */}
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 text-xs font-medium text-gray-300 bg-gray-800 rounded-full border border-gray-700">
-                  {eventType}
-                </span>
-                {event.organizer && (
-                  <span className="px-3 py-1 text-xs font-medium text-purple-300 bg-purple-800/30 rounded-full border border-purple-700/30">
-                    {event.organizer}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Show More/Less */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-purple-400 text-sm font-medium mt-3 hover:text-purple-300 transition-colors ml-auto"
-        >
-          {expanded ? "Show Less" : "Show More"}
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
+        
       </div>
     </motion.div>
   );
