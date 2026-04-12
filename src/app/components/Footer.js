@@ -3,10 +3,11 @@ import { motion } from "framer-motion"
 
 export default function Footer() {
   return (
-    <footer className="py-20 sm:py-32 lg:py-18 bg-[#0D0D0D]">
+    <>
+      <footer className="py-8  md:py-12 bg-[#0D0D0D]">
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 mb-12 sm:mb-16 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8  max-w-6xl mx-auto">
           {/* Logo Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -27,7 +28,7 @@ export default function Footer() {
             className="text-center md:text-left"
           >
             <h3
-              className="font-bold text-base sm:text-lg mb-4 sm:mb-6 tracking-wider"
+              className="font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wider"
               style={{
                 backgroundImage:
                   "linear-gradient(300deg, var(--token-dc9856fd-0400-432f-8bac-dca82295da25, rgb(255, 0, 64)) 0%, rgb(255, 145, 173) 19.91370160204264%, rgb(182, 214, 241) 36.19087837837838%, rgb(254, 221, 194) 52.43997912726201%, rgb(255, 195, 161) 65.35754504504504%, rgb(252, 161, 43) 82.6090811186774%, var(--token-8a3f945e-7097-47e8-ae48-c03cf8e5cf8b, rgb(129, 23, 241)) 100%)",
@@ -38,7 +39,7 @@ export default function Footer() {
             >
               SOCIAL LINKS
             </h3>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-2 sm:space-y-3">
               <motion.a
                 href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
                 className="flex items-center justify-center md:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
@@ -87,7 +88,7 @@ export default function Footer() {
             className="text-center md:text-left"
           >
             <h3
-              className="font-bold text-base sm:text-lg mb-4 sm:mb-6 tracking-wider"
+              className="font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wider"
               style={{
                 backgroundImage:
                   "linear-gradient(300deg, var(--token-dc9856fd-0400-432f-8bac-dca82295da25, rgb(255, 0, 64)) 0%, rgb(255, 145, 173) 19.91370160204264%, rgb(182, 214, 241) 36.19087837837838%, rgb(254, 221, 194) 52.43997912726201%, rgb(255, 195, 161) 65.35754504504504%, rgb(252, 161, 43) 82.6090811186774%, var(--token-8a3f945e-7097-47e8-ae48-c03cf8e5cf8b, rgb(129, 23, 241)) 100%)",
@@ -144,17 +145,11 @@ export default function Footer() {
             </div>
           </motion.div>
         </div>
-
-        {/* Copyright */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-center border-t border-gray-800 pt-8"
-        >
-          <p className="text-gray-500 text-sm">Copyright © 2026. All Rights Reserved by Inception Games.</p>
-        </motion.div>
       </div>
     </footer>
+    <div className="bg-[#0D0D0D] pb-4">
+      <p className="text-gray-500 text-sm text-center">Copyright © 2026. All Rights Reserved by Inception Games.</p>
+    </div>
+    </>
   )
 }
