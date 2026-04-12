@@ -54,7 +54,7 @@ export default function AllGamesLoop() {
           position: relative;
           width: 100%;
           overflow: hidden;
-          background: linear-gradient(135deg, #12082a 0%, #1a0d3b 50%, #0e0620 100%);
+          background: linear-gradient(90deg, #0a0a14 0%, #0f0f1a 100%);
           padding: 18px 0;
         }
 
