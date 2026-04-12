@@ -26,6 +26,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTournamentCategory, setSelectedTournamentCategory] = useState(null);
 
   // Initialize auth state from storage on mount
   useEffect(() => {
@@ -469,6 +470,8 @@ export function AuthProvider({ children }) {
     loading,
     error,
     isAuthenticated: !!user,
+    selectedTournamentCategory,
+    setSelectedTournamentCategory,
 
     // Registration Flow (5 Steps)
     registerSendOTP,

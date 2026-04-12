@@ -325,13 +325,18 @@ function EventCard({ event, onClick }) {
 }
 
 // Main Events Section Component
-export default function EventsSection({ user }) {
+export default function EventsSection({ user, initialFilter = "all" }) {
   const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Update active filter if initialFilter prop changes
+  useEffect(() => {
+    setActiveFilter(initialFilter);
+  }, [initialFilter]);
 
   // Fetch events from API
   const fetchEvents = useCallback(async () => {

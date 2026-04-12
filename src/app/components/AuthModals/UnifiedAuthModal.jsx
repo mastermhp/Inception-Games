@@ -36,7 +36,7 @@ const RANKS = {
   'PUBG PC': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Conqueror'],
 }
 
-export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login' }) {
+export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login', tournamentCategory }) {
   const router = useRouter()
   const { 
     loginSendOTP, 
@@ -46,7 +46,8 @@ export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login
     registerPersonalInfo,
     registerGamingProfile,
     registerProfileImages,
-    error: authError
+    error: authError,
+    setSelectedTournamentCategory
   } = useAuth()
   
   const [mode, setMode] = useState(initialMode)
@@ -239,18 +240,29 @@ export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login
       // This endpoint returns tokens and authenticates the user
       await registerProfileImages(formData.email, null, null)
       setMessage('Registration successful! Redirecting...')
-      // The AuthContext will handle the redirect to /profile automatically
-      // Reset form state
-      setFormData({ email: '', otp: '', username: '', fullName: '', game: '', role: '', rank: '', phone: '', discord: '', bio: '' })
-      setSelectedContinent('')
-      setSelectedCountry('')
-      setSelectedCity('')
-      setStep(1)
-      setMode('login')
-      // Close modal after a brief delay
-      setTimeout(() => {
-        onClose()
-      }, 500)
+      
+      // Store the selected tournament category if it exists
+      if (tournamentCategory) {
+        setSelectedTournamentCategory(tournamentCategory)
+        // Redirect to events page filtered by category
+        setTimeout(() => {
+          router.push(`/profile/events?category=${tournamentCategory}`)
+          onClose()
+        }, 500)
+      } else {
+        // The AuthContext will handle the redirect to /profile automatically
+        // Reset form state
+        setFormData({ email: '', otp: '', username: '', fullName: '', game: '', role: '', rank: '', phone: '', discord: '', bio: '' })
+        setSelectedContinent('')
+        setSelectedCountry('')
+        setSelectedCity('')
+        setStep(1)
+        setMode('login')
+        // Close modal after a brief delay
+        setTimeout(() => {
+          onClose()
+        }, 500)
+      }
     } catch (err) {
       setLocalError(err.message)
     } finally {
