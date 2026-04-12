@@ -82,7 +82,7 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-8 sm:py-12 lg:py-16 bg-black relative overflow-hidden">
+    <section id="contact" className="py-8  md:py-10 bg-black relative overflow-hidden">
       <div className="container mx-auto px-2">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

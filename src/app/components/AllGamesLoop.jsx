@@ -81,7 +81,7 @@ export default function AllGamesLoop() {
           display: flex;
           gap: 16px;
           width: max-content;
-          animation: marquee-scroll 28s linear infinite;
+          animation: marquee-scroll 32s linear infinite;
         }
 
         .marquee-track:hover {
@@ -121,7 +121,7 @@ export default function AllGamesLoop() {
           max-height: 100%;
           object-fit: contain;
           filter: brightness(0.75) grayscale(0.2);
-          transition: filter 1s ease;
+          transition: filter 0.25s ease;
           user-select: none;
         }
 
