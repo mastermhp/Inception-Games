@@ -8,7 +8,7 @@ export const partnersData = {
       id: 1,
       name: "Ifarmer",
       photo: "/Ecosystem/Partners/ifarmer2.jpeg",
-      link: "https://ifarmer.asia",
+      link: "https://www.ifarmer.asia",
       imageStyle: {
         objectFit: "contain",
         // scale: 0.9,
@@ -23,7 +23,7 @@ export const partnersData = {
       id: 2,
       name: "Mime",
       photo: "/Ecosystem/Partners/mime2.png",
-      link: "https://mimebd.com",
+      link: "https://www.mimebd.com",
       imageStyle: {
         objectFit: "contain",
         // scale: 0.8,
@@ -38,7 +38,7 @@ export const partnersData = {
       id: 3,
       name: "Moar",
       photo: "/Ecosystem/Partners/moar2.png",
-      link: "https://moar.com",
+      link: "https://moarbd.com",
       imageStyle: {
         objectFit: "contain",
         // scale: 0.85,

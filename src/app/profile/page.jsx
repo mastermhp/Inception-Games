@@ -118,19 +118,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Back Button */}
-          <motion.button
-            onClick={() => router.back()}
-            className="mb-6 flex items-center gap-2 text-gray-500 hover:text-purple-400 transition duration-300 text-sm"
-            whileHover={{ x: -4 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </motion.button>
-
+      
           {/* Hero Banner */}
           <div className="mb-8">
             <ProfileHeroBanner user={mergedUser} onEditProfile={() => setEditProfileOpen(true)} />
