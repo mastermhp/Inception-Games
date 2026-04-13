@@ -3,9 +3,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { partnersData, PartnerCard } from "./partners";
-import { gamesData, GameCard } from "./games";
-import { communityData, CommunityCard } from "./community";
+import { partnersData, PartnerCard } from "./Partners";
+import { gamesData, GameCard } from "./Games";
+import { communityData, CommunityCard } from "./Community";
 
 // ── Registry: add new tabs here only ────────────────────────────────────────
 const TAB_REGISTRY = {

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/app/context/AuthContext"
 import UnifiedAuthModal from "./AuthModals/UnifiedAuthModal"
 
 const tournamentData = [
@@ -38,6 +40,8 @@ const tournamentData = [
 ]
 
 export default function TournamentCarousel() {
+  const router = useRouter()
+  const { isAuthenticated } = useAuth()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const [isHovered, setIsHovered] = useState(false)
@@ -222,15 +226,19 @@ export default function TournamentCarousel() {
                             >
                               <button
                                 onClick={() => {
-                                  setSelectedCard(card)
-                                  setSignupModalOpen(true)
+                                  if (isAuthenticated) {
+                                    router.push(`/profile/events?category=${card.flowType}`)
+                                  } else {
+                                    setSelectedCard(card)
+                                    setSignupModalOpen(true)
+                                  }
                                 }}
                                 className="px-6 md:px-8 py-2 md:py-3 rounded-full font-bold text-white text-sm transition hover:shadow-lg hover:shadow-purple-500/50 hover:scale-105"
                                 style={{
                                   backgroundColor: "#8117EE",
                                 }}
                               >
-                                Sign Up
+                                {isAuthenticated ? "Explore" : "Sign Up"}
                               </button>
                             </motion.div>
                           )}
@@ -270,6 +278,7 @@ export default function TournamentCarousel() {
       setSelectedCard(null)
         }}
         userType="player"
+        tournamentCategory={selectedCard?.flowType}
       />
     </>
   )
