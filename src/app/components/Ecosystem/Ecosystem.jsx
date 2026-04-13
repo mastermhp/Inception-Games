@@ -10,8 +10,8 @@ import { communityData, CommunityCard } from "./community";
 // ── Registry: add new tabs here only ────────────────────────────────────────
 const TAB_REGISTRY = {
   partners: { data: partnersData, Card: PartnerCard },
-  games:    { data: gamesData,    Card: GameCard },
-  community:{ data: communityData,Card: CommunityCard },
+  games: { data: gamesData, Card: GameCard },
+  community: { data: communityData, Card: CommunityCard },
 };
 
 // ── Carousel Section Component ─────────────────────────────────────────────
@@ -92,9 +92,21 @@ function CarouselSection({ tabKey }) {
     const nextIndex = (activeIndex + 1) % items.length;
 
     return [
-      { ...items[prevIndex], position: "left", key: `${tabKey}-${prevIndex}-left` },
-      { ...items[activeIndex], position: "center", key: `${tabKey}-${activeIndex}-center` },
-      { ...items[nextIndex], position: "right", key: `${tabKey}-${nextIndex}-right` },
+      {
+        ...items[prevIndex],
+        position: "left",
+        key: `${tabKey}-${prevIndex}-left`,
+      },
+      {
+        ...items[activeIndex],
+        position: "center",
+        key: `${tabKey}-${activeIndex}-center`,
+      },
+      {
+        ...items[nextIndex],
+        position: "right",
+        key: `${tabKey}-${nextIndex}-right`,
+      },
     ];
   };
 
@@ -164,7 +176,7 @@ function CarouselSection({ tabKey }) {
           onMouseLeave={() => setIsHovered(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ height: "420px", minHeight: "420px" }}
+          style={{ height: "600px", minHeight: "600px" }}
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {visibleCards.map((card) => {
@@ -182,7 +194,7 @@ function CarouselSection({ tabKey }) {
                   : 320;
 
               const cardWidth = isCenter ? centerWidth : sideWidth;
-              const cardHeight = isCenter ? 380 : 280;
+              const cardHeight = isCenter ? 400 : 280;
 
               let xPosition = 0;
               if (isLeft) {
@@ -192,76 +204,47 @@ function CarouselSection({ tabKey }) {
               }
 
               return (
-                // <motion.div
-                //   key={card.key}
-                //   className="absolute flex-shrink-0"
-                //   initial={{
-                //     x: centerWidth / 2 + sideWidth / 2 + 200,
-                //     opacity: 0,
-                //     scale: 0.7,
-                //   }}
-                //   animate={{
-                //     x: xPosition,
-                //     opacity: isCenter ? 1 : 0.5,
-                //     scale: isCenter ? 1 : 0.8,
-                //     zIndex: isCenter ? 30 : 10,
-                //   }}
-                //   exit={{
-                //     x: -centerWidth / 2 - sideWidth / 2 - 200,
-                //     opacity: 0,
-                //     scale: 0.7,
-                //   }}
-                //   transition={{
-                //     type: "spring",
-                //     stiffness: 260,
-                //     damping: 30,
-                //     mass: 0.8,
-                //   }}
-                //   style={{
-                //     width: `${cardWidth}px`,
-                //     height: `${cardHeight}px`,
-                //   }}
-                // >
-                //   <ShowcaseCard item={card} isFeatured={isCenter} />
-                // </motion.div>
-
-                // AFTER — let the card stretch to fill its motion wrapper naturally
-<motion.div
-  key={card.key}
-  className="absolute flex-shrink-0"
-  initial={{
-    x: centerWidth / 2 + sideWidth / 2 + 200,
-    opacity: 0,
-    scale: 0.7,
-  }}
-  animate={{
-    x: xPosition,
-    opacity: isCenter ? 1 : 0.5,
-    scale: isCenter ? 1 : 0.8,
-    zIndex: isCenter ? 30 : 10,
-  }}
-  exit={{
-    x: -centerWidth / 2 - sideWidth / 2 - 200,
-    opacity: 0,
-    scale: 0.7,
-  }}
-  transition={{
-    type: "spring",
-    stiffness: 260,
-    damping: 30,
-    mass: 0.8,
-  }}
-  style={{
-    width: `${cardWidth}px`,
-    height: `${cardHeight}px`,
-  }}
->
-  {/* Stretch inner div to fill motion wrapper 100% */}
-  <div style={{ width: "100%", height: "100%", position: "relative" }}>
-    <ShowcaseCard item={card} isFeatured={isCenter} />
-  </div>
-</motion.div>
-
+                <motion.div
+                  key={card.key}
+                  className="absolute flex-shrink-0"
+                  initial={{
+                    x: centerWidth / 2 + sideWidth / 2 + 200,
+                    opacity: 0,
+                    scale: 0.7,
+                  }}
+                  animate={{
+                    x: xPosition,
+                    opacity: isCenter ? 1 : 0.5,
+                    scale: isCenter ? 1 : 0.8,
+                    zIndex: isCenter ? 30 : 10,
+                  }}
+                  exit={{
+                    x: -centerWidth / 2 - sideWidth / 2 - 200,
+                    opacity: 0,
+                    scale: 0.7,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 30,
+                    mass: 0.8,
+                  }}
+                  style={{
+                    width: `${cardWidth}px`,
+                    height: `${cardHeight}px`,
+                  }}
+                >
+                  {/* Stretch inner div to fill motion wrapper 100% */}
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      position: "relative",
+                    }}
+                  >
+                    <ShowcaseCard item={card} isFeatured={isCenter} />
+                  </div>
+                </motion.div>
               );
             })}
           </AnimatePresence>
@@ -269,7 +252,7 @@ function CarouselSection({ tabKey }) {
       </div>
 
       {/* Pagination Dots */}
-      <div className="flex justify-center gap-2 mt-8">
+      <div className="flex justify-center gap-2 mt-4">
         {items.map((_, idx) => (
           <motion.button
             key={idx}
@@ -294,7 +277,6 @@ export default function ShowcaseCarousel() {
   return (
     <section className="py-12 md:py-20 overflow-hidden bg-gradient-to-b from-[#0a0a14] via-[#120820] to-[#0a0a14]">
       <div className="container mx-auto px-4">
-
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-20">
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
