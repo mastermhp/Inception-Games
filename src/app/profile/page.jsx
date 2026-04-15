@@ -124,20 +124,17 @@ export default function ProfilePage() {
             <ProfileHeroBanner user={mergedUser} onEditProfile={() => setEditProfileOpen(true)} />
           </div>
 
-          {/* Player Info (2/3) + Availability (1/3) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              <QuickInfo user={mergedUser} />
-            </div>
-            <div className="lg:col-span-1">
-              <Availability user={mergedUser} />
-            </div>
+          {/* Player Info - Full Width */}
+          <div className="mb-8">
+            <QuickInfo user={mergedUser} />
           </div>
 
           {/* Featured Carousel - Jobs, Career, Merch */}
           <div className="mb-8">
             <FeaturedCarousel />
           </div>
+
+    
 
           {/* Events Section */}
           <div className="space-y-6">

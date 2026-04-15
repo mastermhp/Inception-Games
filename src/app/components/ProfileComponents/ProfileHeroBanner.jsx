@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Share2, Edit3, Gamepad2, MapPin, Award, Check, Link2, Facebook, Twitter } from 'lucide-react'
+import { Share2, Edit3, Gamepad2, MapPin, Award, Check, Link2, Facebook, Twitter, Bell } from 'lucide-react'
 
 export default function ProfileHeroBanner({ user, onEditProfile }) {
   const [showShareMenu, setShowShareMenu] = useState(false)
@@ -202,6 +202,15 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                 )}
               </AnimatePresence>
             </div>
+            {/* Notification button */}
+            <motion.button
+              className="p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-gray-400 hover:text-white hover:bg-white/[0.08] transition"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Notifications"
+            >
+              <Bell size={18} />
+            </motion.button>
             {/* Edit Profile button */}
             {onEditProfile && (
               <motion.button
