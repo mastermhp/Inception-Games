@@ -16,7 +16,7 @@ export const partnersData = {
       caption: {
         normalText: "31,000+ Active Users powering ",
         highlightText:
-          '"ভাগ্যের ছক্কা" Ludo Arcade — in collaboration with iFarmer & Folon.',
+          '"ভাগ্যের ছক্কা" Ludo Arcade — in collaboration with iFarmer (Folon App).',
       },
     },
     {
