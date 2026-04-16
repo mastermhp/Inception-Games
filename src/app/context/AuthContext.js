@@ -28,30 +28,6 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [selectedTournamentCategory, setSelectedTournamentCategory] = useState(null);
 
-  // Initialize auth state from storage on mount
-  useEffect(() => {
-    const storedUser = getStoredUser();
-    const tokens = getTokens();
-    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
-    
-    if (storedUser) {
-      setUser(storedUser);
-      console.log("[v0] User restored from storage:", storedUser.email);
-      
-      // If we have tokens, fetch fresh profile in background
-      if (tokens?.accessToken) {
-        fetchProfile().catch((err) => {
-          console.log("[v0] Background profile fetch failed, keeping stored user:", err.message);
-        });
-      } else {
-        console.log("[v0] User restored but no access token available - user may need to re-login for authenticated actions");
-      }
-    } else {
-      console.log("[v0] No stored user found, app is not authenticated");
-    }
-    setLoading(false);
-  }, [fetchProfile]);
-
   /**
    * Fetch user profile from API (GET /api/v1/auth/profile/:userId)
    */
@@ -113,6 +89,30 @@ export function AuthProvider({ children }) {
     }
     return null;
   }, []);
+
+  // Initialize auth state from storage on mount
+  useEffect(() => {
+    const storedUser = getStoredUser();
+    const tokens = getTokens();
+    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
+    
+    if (storedUser) {
+      setUser(storedUser);
+      console.log("[v0] User restored from storage:", storedUser.email);
+      
+      // If we have tokens, fetch fresh profile in background
+      if (tokens?.accessToken) {
+        fetchProfile().catch((err) => {
+          console.log("[v0] Background profile fetch failed, keeping stored user:", err.message);
+        });
+      } else {
+        console.log("[v0] User restored but no access token available - user may need to re-login for authenticated actions");
+      }
+    } else {
+      console.log("[v0] No stored user found, app is not authenticated");
+    }
+    setLoading(false);
+  }, [fetchProfile]);
 
   // ============================================
   // EMAIL/OTP AUTH METHODS

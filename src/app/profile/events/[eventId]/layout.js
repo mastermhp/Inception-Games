@@ -1,7 +1,7 @@
 // Server-side metadata generation for social media sharing
 export async function generateMetadata({ params }) {
   try {
-    const { eventId } = params;
+    const { eventId } = await params;
     const apiBase = "https://inception-games.an.r.appspot.com/api/v1";
     
     const res = await fetch(`${apiBase}/tournaments/${eventId}`, {
