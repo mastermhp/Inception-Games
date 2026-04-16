@@ -153,6 +153,9 @@ const generateSampleEvents = () => {
         id: `event-${eventId}`,
         title: `SNS ${game.name} ${eventType} ${eventType === "Brand Deal" ? "Opportunity" : "Championship"}`,
         game: game,
+        gameImage: game.image,
+        banner_image: game.image,
+        absoluteBannerUrl: game.image,
         eventType: eventType,
         status: status,
         date: baseDate.toISOString(),
@@ -460,50 +463,51 @@ export default function EventDetailPage() {
       const host = typeof window !== "undefined" ? window.location.host : "localhost:3001";
       const baseUrl = `${protocol}//${host}`;
 
-      // Get the banner image with fallback strategy
-      let bannerImage = event.banner_image;
+      // Get the banner image with fallback strategy - prioritize the absolute URL we created
+      let absoluteImageUrl = event.absoluteBannerUrl;
       
-      // Log what we got from API
-      console.log("[v0] Banner image from API:", bannerImage);
+      // Log what we got
+      console.log("[v0] Absolute banner URL from event:", absoluteImageUrl);
       
-      // If no banner, try alternative fields
-      if (!bannerImage) {
-        bannerImage = event.gameImage || event.game?.image;
-      }
-      
-      // If still no banner, get from game name
-      if (!bannerImage) {
-        const gameImg = getGameImage(event.title, event.gameName);
-        console.log("[v0] Using fallback game image:", gameImg);
-        bannerImage = gameImg;
-      }
+      // If absoluteBannerUrl doesn't exist, build it from available sources
+      if (!absoluteImageUrl) {
+        let bannerImage = event.banner_image;
+        
+        // Log what we got from API
+        console.log("[v0] Banner image from API:", bannerImage);
+        
+        // If no banner, try alternative fields
+        if (!bannerImage) {
+          bannerImage = event.gameImage || event.game?.image;
+        }
+        
+        // If still no banner, get from game name
+        if (!bannerImage) {
+          const gameImg = getGameImage(event.title, event.gameName);
+          console.log("[v0] Using fallback game image:", gameImg);
+          bannerImage = gameImg;
+        }
 
-      // Make sure the image URL is absolute and accessible to social crawlers
-      let absoluteImageUrl;
-      
-      // Priority 1: Use banner image if it's a complete external URL
-      if (bannerImage && bannerImage.startsWith('http')) {
-        absoluteImageUrl = bannerImage;
-        console.log("[v0] Using external banner URL:", absoluteImageUrl);
-      } 
-      // Priority 2: Use internal asset paths (they'll be accessible to crawler)
-      else if (bannerImage && bannerImage.startsWith('/')) {
-        absoluteImageUrl = `${baseUrl}${bannerImage}`;
-        console.log("[v0] Using internal banner URL:", absoluteImageUrl);
-      }
-      // Priority 3: Use relative path from assets
-      else if (bannerImage) {
-        absoluteImageUrl = `${baseUrl}/${bannerImage}`;
-        console.log("[v0] Using relative banner URL:", absoluteImageUrl);
-      }
-      // Priority 4: Fallback to the API route that fetches from backend
-      else {
-        absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
-        console.log("[v0] Using OG image API route:", absoluteImageUrl);
+        // Make sure the image URL is absolute and accessible to social crawlers
+        if (bannerImage && bannerImage.startsWith('http')) {
+          absoluteImageUrl = bannerImage;
+          console.log("[v0] Using external banner URL:", absoluteImageUrl);
+        } 
+        else if (bannerImage && bannerImage.startsWith('/')) {
+          absoluteImageUrl = `${baseUrl}${bannerImage}`;
+          console.log("[v0] Using internal banner URL:", absoluteImageUrl);
+        }
+        else if (bannerImage) {
+          absoluteImageUrl = `${baseUrl}/${bannerImage}`;
+          console.log("[v0] Using relative banner URL:", absoluteImageUrl);
+        }
+        else {
+          absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
+          console.log("[v0] Using OG image API route:", absoluteImageUrl);
+        }
       }
       
-      console.log("[v0] Final absolute image URL for social sharing:", absoluteImageUrl);
-      console.log("[v0] Image URL is accessible:", absoluteImageUrl.startsWith('http'));
+      console.log("[v0] FINAL image URL for OG meta tags:", absoluteImageUrl);
       
       const eventUrl =
         typeof window !== "undefined" ? window.location.href : "";
@@ -608,6 +612,24 @@ export default function EventDetailPage() {
           console.log("[v0] Unwrapped event data:", eventData);
 
           // Transform API data to component format
+          // Ensure banner_image is always an absolute URL for social media sharing
+          let bannerImage = eventData.banner_image;
+          let absoluteBannerUrl = bannerImage;
+          
+          if (bannerImage) {
+            // If it's already an absolute URL, keep it
+            if (bannerImage.startsWith('http')) {
+              absoluteBannerUrl = bannerImage;
+            } 
+            // If it's a relative path, make it absolute using the API base URL
+            else {
+              const apiBase = 'https://inception-games.an.r.appspot.com/api/v1';
+              absoluteBannerUrl = bannerImage.startsWith('/') 
+                ? `${apiBase}${bannerImage}` 
+                : `${apiBase}/${bannerImage}`;
+            }
+          }
+
           const transformedEvent = {
             ...eventData,
             id: eventData.id,
@@ -636,6 +658,7 @@ export default function EventDetailPage() {
             host: eventData.hosted_by || "Inception Games",
             organizer: eventData.hosted_by || "Inception Games",
             banner_image: eventData.banner_image,
+            absoluteBannerUrl: absoluteBannerUrl,
           };
 
           console.log("[v0] Setting transformed event:", transformedEvent);
