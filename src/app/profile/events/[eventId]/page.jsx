@@ -465,49 +465,40 @@ export default function EventDetailPage() {
 
       // Get the banner image with fallback strategy - prioritize the absolute URL we created
       let absoluteImageUrl = event.absoluteBannerUrl;
-      
-      // Log what we got
-      console.log("[v0] Absolute banner URL from event:", absoluteImageUrl);
+      let bannerImagePath = event.banner_image;
       
       // If absoluteBannerUrl doesn't exist, build it from available sources
       if (!absoluteImageUrl) {
         let bannerImage = event.banner_image;
-        
-        // Log what we got from API
-        console.log("[v0] Banner image from API:", bannerImage);
+        bannerImagePath = bannerImage;
         
         // If no banner, try alternative fields
         if (!bannerImage) {
           bannerImage = event.gameImage || event.game?.image;
+          bannerImagePath = bannerImage;
         }
         
         // If still no banner, get from game name
         if (!bannerImage) {
           const gameImg = getGameImage(event.title, event.gameName);
-          console.log("[v0] Using fallback game image:", gameImg);
           bannerImage = gameImg;
+          bannerImagePath = bannerImage;
         }
 
         // Make sure the image URL is absolute and accessible to social crawlers
         if (bannerImage && bannerImage.startsWith('http')) {
           absoluteImageUrl = bannerImage;
-          console.log("[v0] Using external banner URL:", absoluteImageUrl);
         } 
         else if (bannerImage && bannerImage.startsWith('/')) {
           absoluteImageUrl = `${baseUrl}${bannerImage}`;
-          console.log("[v0] Using internal banner URL:", absoluteImageUrl);
         }
         else if (bannerImage) {
           absoluteImageUrl = `${baseUrl}/${bannerImage}`;
-          console.log("[v0] Using relative banner URL:", absoluteImageUrl);
         }
         else {
           absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
-          console.log("[v0] Using OG image API route:", absoluteImageUrl);
         }
       }
-      
-      console.log("[v0] FINAL image URL for OG meta tags:", absoluteImageUrl);
       
       const eventUrl =
         typeof window !== "undefined" ? window.location.href : "";
@@ -535,12 +526,12 @@ export default function EventDetailPage() {
       }
       description += `. Join the competition on Inception Games platform!`;
 
-      // Determine image type
+      // Determine image type from the banner image path
       let imageType = "image/jpeg"; // Default
-      if (bannerImage) {
-        if (bannerImage.includes('.webp')) imageType = "image/webp";
-        else if (bannerImage.includes('.png')) imageType = "image/png";
-        else if (bannerImage.includes('.gif')) imageType = "image/gif";
+      if (bannerImagePath) {
+        if (bannerImagePath.includes('.webp')) imageType = "image/webp";
+        else if (bannerImagePath.includes('.png')) imageType = "image/png";
+        else if (bannerImagePath.includes('.gif')) imageType = "image/gif";
       }
       
       // Ensure image URL is HTTPS for security and social media compatibility
@@ -583,13 +574,6 @@ export default function EventDetailPage() {
       // Additional meta tags for better SEO and sharing
       updateNameMetaTag("description", description);
       updateMetaTag("og:locale", "en_US");
-      
-      // Verify the image is set in meta tags
-      console.log("[v0] Meta tags updated:")
-      console.log("  og:title:", event.title);
-      console.log("  og:description:", description);
-      console.log("  og:image:", absoluteImageUrl);
-      console.log("  og:type: website");
     }
   }, [event, params]);
 
@@ -877,12 +861,9 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
   const handleFacebookShare = () => {
     const currentUrl =
       typeof window !== "undefined" ? window.location.href : "";
-
-    console.log("[v0] Sharing to Facebook:", currentUrl);
     
     // Use Facebook SDK Share Dialog if available
     if (window.FB) {
-      console.log("[v0] Using Facebook SDK dialog");
       FB.ui(
         {
           method: "share",
@@ -891,21 +872,16 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
           quote: generateShareMessage(),
           display: "popup",
         },
-        function (response) {
-          console.log("[v0] Facebook share response:", response);
-        },
+        function (response) {},
       );
     } else {
       // Fallback to basic share - will use Open Graph meta tags
-      console.log("[v0] Using Facebook share dialog fallback");
-      // Force Facebook to scrape the page again for fresh OG tags
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(generateShareMessage())}`;
       window.open(facebookUrl, "facebook-share", "width=600,height=400");
       
       // Also trigger Facebook's link scraper in the background to update the cache
       if (window.FB) {
         setTimeout(() => {
-          console.log("[v0] Triggering Facebook link scraper");
           FB.AppEvents.logEvent('Share', null, {url: currentUrl});
         }, 500);
       }
