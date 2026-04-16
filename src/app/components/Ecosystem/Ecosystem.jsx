@@ -4,13 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { partnersData, PartnerCard } from "./Partners";
-import { gamesData, GameCard } from "./Games";
+import { gamesData, GameCard, GamesMarquee } from "./Games";
 import { communityData, CommunityCard } from "./Community";
 
 // ── Registry: add new tabs here only ────────────────────────────────────────
 const TAB_REGISTRY = {
   partners: { data: partnersData, Card: PartnerCard },
-  games: { data: gamesData, Card: GameCard },
   community: { data: communityData, Card: CommunityCard },
 };
 
@@ -292,7 +291,15 @@ export default function ShowcaseCarousel() {
 
         {/* Games Section */}
         <div className="mb-20 md:mb-32">
-          <CarouselSection tabKey="games" />
+          <div className="text-center mb-6 md:mb-8">
+            <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
+              {gamesData.title}
+            </h3>
+            <p className="text-white/60 text-sm md:text-base">
+              {gamesData.subtitle}
+            </p>
+          </div>
+          <GamesMarquee />
         </div>
 
         {/* Community Section */}
