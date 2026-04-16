@@ -124,10 +124,16 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
       }
       // Remove undefined fields
       Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key])
+      
+      console.log("[v0] Submitting profile update for user:", user.id, "with updates:", updates);
       await updateProfile(user.id, updates)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
-    } catch (err) { setError(err.message || 'Failed to update profile') }
+    } catch (err) { 
+      console.error("[v0] Profile update error:", err);
+      const errorMsg = err.message || 'Failed to update profile';
+      setError(errorMsg)
+    }
     finally { setLoading(false) }
   }
 

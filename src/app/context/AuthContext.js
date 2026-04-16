@@ -32,16 +32,25 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = getStoredUser();
     const tokens = getTokens();
-    console.log("AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
-    if (storedUser && tokens?.accessToken) {
+    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
+    
+    if (storedUser) {
       setUser(storedUser);
-      // Fetch fresh profile in background
-      fetchProfile().catch((err) => {
-        console.log("Background profile fetch failed, keeping stored user:", err.message);
-      });
+      console.log("[v0] User restored from storage:", storedUser.email);
+      
+      // If we have tokens, fetch fresh profile in background
+      if (tokens?.accessToken) {
+        fetchProfile().catch((err) => {
+          console.log("[v0] Background profile fetch failed, keeping stored user:", err.message);
+        });
+      } else {
+        console.log("[v0] User restored but no access token available - user may need to re-login for authenticated actions");
+      }
+    } else {
+      console.log("[v0] No stored user found, app is not authenticated");
     }
     setLoading(false);
-  }, []);
+  }, [fetchProfile]);
 
   /**
    * Fetch user profile from API (GET /api/v1/auth/profile/:userId)
@@ -151,12 +160,21 @@ export function AuthProvider({ children }) {
       throw new Error(msg);
     }
 
-    // Extract tokens
+    // Extract tokens from various possible response formats
+    const accessToken = data.accessToken || data.access_token || data.token || data.user?.token;
+    const refreshToken = data.refreshToken || data.refresh_token || data.refreshToken || "";
+    
+    // If no token found in response, log the structure for debugging
+    if (!accessToken) {
+      console.log("[v0] WARNING: No access token found in login response. Response keys:", Object.keys(data));
+      console.log("[v0] Full response:", JSON.stringify(data));
+    }
+    
     const tokens = {
-      accessToken: data.accessToken || data.token,
-      refreshToken: data.refreshToken || ""
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
-    console.log("Login tokens received - accessToken:", tokens.accessToken?.substring(0, 20) + "...");
+    console.log("[v0] Login tokens received - accessToken:", tokens.accessToken ? tokens.accessToken.substring(0, 20) + "..." : "MISSING");
     setTokens(tokens);
 
     // Build user object with all available data from login response
@@ -337,12 +355,16 @@ export function AuthProvider({ children }) {
     }
 
     // After successful registration, store tokens and user
-    if (data.accessToken) {
+    const accessToken = data.accessToken || data.access_token || data.token;
+    if (accessToken) {
       const tokens = {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken || ""
+        accessToken: accessToken,
+        refreshToken: data.refreshToken || data.refresh_token || ""
       };
       setTokens(tokens);
+      console.log("[v0] Tokens stored after registration");
+    } else {
+      console.log("[v0] No tokens returned after registration. Response keys:", Object.keys(data));
     }
 
     // Retrieve personal info from sessionStorage including gaming profile
