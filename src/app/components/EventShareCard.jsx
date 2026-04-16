@@ -87,24 +87,32 @@ export default function EventShareCard({ event, forceRender = false }) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Load and draw banner image
-    if (event.banner_image || event.game?.image) {
+    if (event.banner_image || event.game?.image || event.gameImage) {
       const img = new window.Image();
       img.crossOrigin = "anonymous";
 
       img.onload = () => {
-        // Draw banner with gradient overlay
-        ctx.drawImage(img, 0, 0, canvas.width, 280);
+        // Draw banner image, maintaining aspect ratio
+        const imgAspect = img.width / img.height;
+        let drawWidth = canvas.width;
+        let drawHeight = canvas.width / imgAspect;
+        
+        if (drawHeight < 280) {
+          drawHeight = 280;
+          drawWidth = drawHeight * imgAspect;
+        }
+        
+        const offsetX = (canvas.width - drawWidth) / 2;
+        const offsetY = (280 - drawHeight) / 2;
+        
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
-        // Add gradient overlay
-        const gradient = ctx.createLinearGradient(
-          0,
-          0,
-          0,
-          canvas.height
-        );
-        gradient.addColorStop(0, "rgba(10, 10, 20, 0)");
-        gradient.addColorStop(0.4, "rgba(10, 10, 20, 0.3)");
-        gradient.addColorStop(1, "rgba(10, 10, 20, 0.95)");
+        // Add gradient overlay - darker at bottom
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, "rgba(10, 10, 20, 0.1)");
+        gradient.addColorStop(0.3, "rgba(10, 10, 20, 0.2)");
+        gradient.addColorStop(0.6, "rgba(10, 10, 20, 0.6)");
+        gradient.addColorStop(1, "rgba(10, 10, 20, 0.98)");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -112,17 +120,27 @@ export default function EventShareCard({ event, forceRender = false }) {
       };
 
       img.onerror = () => {
-        // Fallback if image fails to load
-        ctx.fillStyle = "#1a1a2e";
+        // Fallback if image fails to load - draw gradient background
+        const fallbackGradient = ctx.createLinearGradient(0, 0, canvas.width, 280);
+        fallbackGradient.addColorStop(0, "#1a1a3f");
+        fallbackGradient.addColorStop(1, "#2d1b4e");
+        ctx.fillStyle = fallbackGradient;
         ctx.fillRect(0, 0, canvas.width, 280);
         drawCardContent(ctx);
       };
 
       img.src =
         event.banner_image ||
+        event.gameImage ||
         event.game?.image ||
         "/games/pubg.png";
     } else {
+      // Draw gradient background if no image
+      const fallbackGradient = ctx.createLinearGradient(0, 0, canvas.width, 280);
+      fallbackGradient.addColorStop(0, "#1a1a3f");
+      fallbackGradient.addColorStop(1, "#2d1b4e");
+      ctx.fillStyle = fallbackGradient;
+      ctx.fillRect(0, 0, canvas.width, 280);
       drawCardContent(ctx);
     }
   };
@@ -130,114 +148,117 @@ export default function EventShareCard({ event, forceRender = false }) {
   const drawCardContent = (ctx) => {
     const statusColor = getStatusColor(event.status);
 
-    // Draw date badge (top left, over banner)
+    // Draw date badge (top left, over banner) - matching event card design
     const dateX = 40;
     const dateY = 160;
-    const dateWidth = 180;
-    const dateHeight = 70;
+    const dateWidth = 160;
+    const dateHeight = 60;
 
-    ctx.fillStyle = "rgba(129, 23, 238, 0.9)";
+    // Dark background for date badge
+    ctx.fillStyle = "rgba(70, 25, 80, 0.95)";
     ctx.beginPath();
-    ctx.roundRect(dateX, dateY, dateWidth, dateHeight, 12);
+    ctx.roundRect(dateX, dateY, dateWidth, dateHeight, 8);
     ctx.fill();
 
+    // Date text
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 28px Arial";
+    ctx.font = "bold 24px Arial";
     ctx.textAlign = "left";
 
     const dateText = new Date(event.start_date || event.date);
     const monthStr = dateText.toLocaleDateString("en-GB", {
       month: "short",
-    });
-    const dayStr = dateText.getDate();
+    }).toUpperCase();
+    const dayStr = String(dateText.getDate()).padStart(2, "0");
 
-    ctx.fillText(
-      dayStr,
-      dateX + 15,
-      dateY + 35
-    );
-    ctx.font = "bold 18px Arial";
-    ctx.fillText(
-      monthStr.toUpperCase(),
-      dateX + 15,
-      dateY + 58
-    );
+    ctx.fillText(dayStr, dateX + 15, dateY + 32);
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(monthStr, dateX + 15, dateY + 50);
 
     // Draw content area (bottom)
     const contentY = 280;
-    ctx.fillStyle = "rgba(17, 17, 21, 0.95)";
+    ctx.fillStyle = "rgba(10, 10, 20, 0.98)";
     ctx.fillRect(0, contentY, ctx.canvas.width, ctx.canvas.height - contentY);
 
     // Draw status badge (top right)
-    const statusX = ctx.canvas.width - 200;
-    const statusY = 320;
+    const statusX = ctx.canvas.width - 180;
+    const statusY = 310;
 
     ctx.fillStyle = statusColor.bg;
     ctx.beginPath();
-    ctx.roundRect(statusX, statusY, 160, 50, 8);
+    ctx.roundRect(statusX, statusY, 150, 45, 8);
     ctx.fill();
 
     ctx.fillStyle = statusColor.text;
-    ctx.font = "bold 18px Arial";
+    ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(getStatusText(event.status), statusX + 80, statusY + 35);
+    ctx.fillText(getStatusText(event.status), statusX + 75, statusY + 30);
 
     // Draw title
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 32px Arial";
+    ctx.font = "bold 36px Arial";
     ctx.textAlign = "left";
 
     const title = event.title || "";
     const maxTitleWidth = ctx.canvas.width - 80;
     const lines = wrapText(ctx, title, maxTitleWidth);
 
-    let currentY = 350;
+    let currentY = 360;
     lines.slice(0, 2).forEach((line) => {
       ctx.fillText(line, 40, currentY);
-      currentY += 40;
+      currentY += 42;
     });
 
-    // Draw date and status info
-    currentY += 10;
+    // Draw date and registration info
+    currentY += 15;
     ctx.fillStyle = "#f87171";
-    ctx.font = "20px Arial";
+    ctx.font = "18px Arial";
+    ctx.textAlign = "left";
     ctx.fillText(
-      `${formatDate(event.start_date)} · ${getStatusText(event.status)}`,
+      `${formatDate(event.start_date || event.date)} · ${getStatusText(event.status)}`,
       40,
       currentY
     );
 
-    // Draw meta info
-    currentY += 50;
+    // Draw meta info (location, platform, mode)
+    currentY += 45;
     ctx.fillStyle = "#d1d5db";
-    ctx.font = "18px Arial";
+    ctx.font = "16px Arial";
 
-    const metaItems = [
-      { icon: "📍", text: event.location || event.venue || "Online" },
-      { icon: "🖥️", text: event.platform || "All Platforms" },
-      { icon: "👥", text: event.teamType || "Open" },
-    ];
+    const location = event.location || event.venue || "Online";
+    const platform = event.platform || "All Platforms";
+    const teamType = event.teamType || "Open";
 
-    let metaX = 40;
-    metaItems.forEach((item) => {
-      ctx.fillText(`${item.icon} ${item.text}`, metaX, currentY);
-      metaX += 350;
-    });
+    ctx.fillText(`📍 ${location}`, 40, currentY);
+    ctx.fillText(`🖥️  ${platform}`, 350, currentY);
+    ctx.fillText(`👥 ${teamType}`, 750, currentY);
 
-    // Draw tags at bottom
-    currentY += 60;
-    ctx.fillStyle = "#6b7280";
-    ctx.fillRect(40, currentY, 140, 50);
+    // Draw category tags at bottom
+    currentY += 55;
+    
+    // Tournament tag
+    ctx.fillStyle = "rgba(100, 90, 130, 0.6)";
+    ctx.beginPath();
+    ctx.roundRect(40, currentY, 130, 40, 8);
+    ctx.fill();
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 16px Arial";
+    ctx.font = "bold 14px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Tournament", 110, currentY + 35);
+    ctx.fillText("Tournament", 105, currentY + 27);
 
+    // Organizer tag
     const organizerTag = event.organizer || event.host || "Inception Games";
-    ctx.fillStyle = "#a78bfa";
-    ctx.fillRect(200, currentY, 200, 50);
+    ctx.fillStyle = "rgba(128, 60, 200, 0.6)";
+    ctx.beginPath();
+    ctx.roundRect(190, currentY, 220, 40, 8);
+    ctx.fill();
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(organizerTag.substring(0, 20), 300, currentY + 35);
+    ctx.font = "bold 14px Arial";
+    ctx.textAlign = "center";
+    const displayOrganizerTag = organizerTag.length > 25 
+      ? organizerTag.substring(0, 22) + "..." 
+      : organizerTag;
+    ctx.fillText(displayOrganizerTag, 300, currentY + 27);
   };
 
   // Helper to wrap text

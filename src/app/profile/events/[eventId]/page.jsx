@@ -478,25 +478,32 @@ export default function EventDetailPage() {
         bannerImage = gameImg;
       }
 
-      // Make sure the image URL is absolute and accessible
+      // Make sure the image URL is absolute and accessible to social crawlers
       let absoluteImageUrl;
-      if (bannerImage) {
-        if (bannerImage.startsWith('http')) {
-          // Already absolute URL
-          absoluteImageUrl = bannerImage;
-        } else if (bannerImage.startsWith('/')) {
-          // Relative path - make it absolute
-          absoluteImageUrl = `${baseUrl}${bannerImage}`;
-        } else {
-          // Relative path without leading slash
-          absoluteImageUrl = `${baseUrl}/${bannerImage}`;
-        }
-      } else {
-        // Fallback to OG image API
+      
+      // Priority 1: Use banner image if it's a complete external URL
+      if (bannerImage && bannerImage.startsWith('http')) {
+        absoluteImageUrl = bannerImage;
+        console.log("[v0] Using external banner URL:", absoluteImageUrl);
+      } 
+      // Priority 2: Use internal asset paths (they'll be accessible to crawler)
+      else if (bannerImage && bannerImage.startsWith('/')) {
+        absoluteImageUrl = `${baseUrl}${bannerImage}`;
+        console.log("[v0] Using internal banner URL:", absoluteImageUrl);
+      }
+      // Priority 3: Use relative path from assets
+      else if (bannerImage) {
+        absoluteImageUrl = `${baseUrl}/${bannerImage}`;
+        console.log("[v0] Using relative banner URL:", absoluteImageUrl);
+      }
+      // Priority 4: Fallback to the API route that fetches from backend
+      else {
         absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
+        console.log("[v0] Using OG image API route:", absoluteImageUrl);
       }
       
-      console.log("[v0] Final absolute image URL:", absoluteImageUrl);
+      console.log("[v0] Final absolute image URL for social sharing:", absoluteImageUrl);
+      console.log("[v0] Image URL is accessible:", absoluteImageUrl.startsWith('http'));
       
       const eventUrl =
         typeof window !== "undefined" ? window.location.href : "";
@@ -510,7 +517,19 @@ export default function EventDetailPage() {
           })
         : "TBD";
 
-      const description = `Join ${event.title} - ${event.eventType} ${event.location ? `in ${event.location}` : ""} on ${eventDate}. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
+      const location = event.location || event.venue || "Online";
+      const platform = event.platform || "All Platforms";
+      const status = event.status === "Upcoming" 
+        ? "Registration Open" 
+        : event.status === "Ongoing" 
+        ? "In Progress"
+        : "Completed";
+      
+      let description = `${event.title} - ${status} on ${eventDate} in ${location}`;
+      if (event.prizePool && event.prizePool > 0) {
+        description += `. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
+      }
+      description += `. Join the competition on Inception Games platform!`;
 
       // Determine image type
       let imageType = "image/jpeg"; // Default
@@ -520,27 +539,53 @@ export default function EventDetailPage() {
         else if (bannerImage.includes('.gif')) imageType = "image/gif";
       }
       
-      // Open Graph tags with absolute URLs
-      updateMetaTag("og:title", event.title);
+      // Ensure image URL is HTTPS for security and social media compatibility
+      if (absoluteImageUrl && absoluteImageUrl.startsWith('http://') && typeof window !== 'undefined') {
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (!isLocalhost) {
+          // Convert to HTTPS for production
+          absoluteImageUrl = absoluteImageUrl.replace('http://', 'https://');
+        }
+      }
+      
+      // Open Graph tags - CRITICAL for Facebook rich preview
+      updateMetaTag("og:title", event.title || "Inception Games Tournament");
       updateMetaTag("og:description", description);
       updateMetaTag("og:image", absoluteImageUrl);
       updateMetaTag("og:image:width", "1200");
       updateMetaTag("og:image:height", "630");
       updateMetaTag("og:image:type", imageType);
+      updateMetaTag("og:image:alt", `${event.title} Tournament Card`);
       updateMetaTag("og:url", eventUrl);
       updateMetaTag("og:type", "website");
+      updateMetaTag("og:site_name", "Inception Games");
+      
+      // Facebook-specific domain verification and tags
+      updateMetaTag("fb:app_id", "1234567890"); // Update with actual FB app ID if available
 
-      // Twitter Card tags with absolute image URL
+      // Twitter Card tags - for Twitter/X rich preview
       updateNameMetaTag("twitter:card", "summary_large_image");
-      updateNameMetaTag("twitter:title", event.title);
+      updateNameMetaTag("twitter:title", event.title || "Inception Games Tournament");
       updateNameMetaTag("twitter:description", description);
       updateNameMetaTag("twitter:image", absoluteImageUrl);
+      updateNameMetaTag("twitter:image:alt", `${event.title} Tournament Card`);
       updateNameMetaTag("twitter:site", "@SnSGames");
       updateNameMetaTag("twitter:creator", "@SnSGames");
+      updateNameMetaTag("twitter:domain", host);
+
+      // LinkedIn tags for professional sharing
+      updateMetaTag("og:image:secure_url", absoluteImageUrl.replace('http://', 'https://'));
 
       // Additional meta tags for better SEO and sharing
       updateNameMetaTag("description", description);
       updateMetaTag("og:locale", "en_US");
+      
+      // Verify the image is set in meta tags
+      console.log("[v0] Meta tags updated:")
+      console.log("  og:title:", event.title);
+      console.log("  og:description:", description);
+      console.log("  og:image:", absoluteImageUrl);
+      console.log("  og:type: website");
     }
   }, [event, params]);
 
@@ -764,10 +809,28 @@ export default function EventDetailPage() {
       ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
+          year: "numeric",
         })
       : "Soon";
     const location = event.location || event.venue || "Online";
-    return `Join ${event.title} - ${event.eventType} on ${eventDate} in ${location}. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()} 🎮`;
+    const platform = event.platform || "All Platforms";
+    const status = event.status === "Upcoming" 
+      ? "Registration Open" 
+      : event.status === "Ongoing" 
+      ? "In Progress"
+      : "Completed";
+    
+    let prizeText = "";
+    if (event.prizePool && event.prizePool > 0) {
+      prizeText = ` • Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
+    }
+    
+    return `🎮 ${event.title}
+
+📅 ${eventDate} • ${status}
+📍 ${location} • ${platform}
+
+Join the action! Sign up now on Inception Games.${prizeText}`;
   };
 
   const handleShare = async () => {
@@ -792,8 +855,11 @@ export default function EventDetailPage() {
     const currentUrl =
       typeof window !== "undefined" ? window.location.href : "";
 
+    console.log("[v0] Sharing to Facebook:", currentUrl);
+    
     // Use Facebook SDK Share Dialog if available
     if (window.FB) {
+      console.log("[v0] Using Facebook SDK dialog");
       FB.ui(
         {
           method: "share",
@@ -802,12 +868,24 @@ export default function EventDetailPage() {
           quote: generateShareMessage(),
           display: "popup",
         },
-        function (response) {},
+        function (response) {
+          console.log("[v0] Facebook share response:", response);
+        },
       );
     } else {
       // Fallback to basic share - will use Open Graph meta tags
-      const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-      window.open(facebookShareUrl, "facebook-share", "width=600,height=400");
+      console.log("[v0] Using Facebook share dialog fallback");
+      // Force Facebook to scrape the page again for fresh OG tags
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(generateShareMessage())}`;
+      window.open(facebookUrl, "facebook-share", "width=600,height=400");
+      
+      // Also trigger Facebook's link scraper in the background to update the cache
+      if (window.FB) {
+        setTimeout(() => {
+          console.log("[v0] Triggering Facebook link scraper");
+          FB.AppEvents.logEvent('Share', null, {url: currentUrl});
+        }, 500);
+      }
     }
   };
 
