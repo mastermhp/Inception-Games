@@ -13,33 +13,78 @@ import game10 from "../../assets/AllGames/brand-9.webp"
 import game11 from "../../assets/AllGames/brand-pubg.webp"
 
 const games = [
-  { src: game1?.src  ?? game1,  alt: "Brand 1" },
-  { src: game2?.src  ?? game2,  alt: "Brand 10" },
-  { src: game3?.src  ?? game3,  alt: "Brand 11" },
-  { src: game4?.src  ?? game4,  alt: "Brand 2" },
-  { src: game5?.src  ?? game5,  alt: "Brand 3" },
-  { src: game6?.src  ?? game6,  alt: "Brand 4" },
-  { src: game7?.src  ?? game7,  alt: "Brand 5" },
-  { src: game8?.src  ?? game8,  alt: "Brand 7" },
-  { src: game9?.src  ?? game9,  alt: "Brand 8" },
-  { src: game10?.src ?? game10, alt: "Brand 9" },
-  { src: game11?.src ?? game11, alt: "PUBG" },
+  {
+    src: game1?.src ?? game1,
+    alt: "Dota 2",
+    color: "#E2231A",
+  },
+  {
+    src: game2?.src ?? game2,
+    alt: "Street Fighter",
+    color: "#FFD400",
+  },
+  {
+    src: game3?.src ?? game3,
+    alt: "Tekken",
+    color: "#FF5A00",
+  },
+  {
+    src: game4?.src ?? game4,
+    alt: "Fortnite",
+    color: "#00B7FF",
+  },
+  {
+    src: game5?.src ?? game5,
+    alt: "Counter Strike 2",
+    color: "#F59E0B",
+  },
+  {
+    src: game6?.src ?? game6,
+    alt: "Free Fire",
+    color: "#FF6B00",
+  },
+  {
+    src: game7?.src ?? game7,
+    alt: "eFootball",
+    color: "#005CFF",
+  },
+  {
+    src: game8?.src ?? game8,
+    alt: "Valorant",
+    color: "#FF4655",
+  },
+  {
+    src: game9?.src ?? game9,
+    alt: "EA Sports",
+    color: "#00A3FF",
+  },
+  {
+    src: game10?.src ?? game10,
+    alt: "League of Legends",
+    color: "#C89B3C",
+  },
+  {
+    src: game11?.src ?? game11,
+    alt: "PUBG Mobile",
+    color: "#F2A900",
+  },
 ]
 
 export default function AllGamesLoop() {
-  // Duplicate for seamless infinite loop
   const loop = [...games, ...games]
 
   return (
     <section className="all-games-marquee">
-      {/* Left fade */}
       <div className="fade fade--left" />
-      {/* Right fade */}
       <div className="fade fade--right" />
 
       <div className="marquee-track">
         {loop.map((game, i) => (
-          <div className="game-pill" key={i}>
+          <div
+            className="game-pill"
+            key={i}
+            style={{ "--hover-color": game.color }}
+          >
             <img
               src={game.src}
               alt={game.alt}
@@ -58,7 +103,6 @@ export default function AllGamesLoop() {
           padding: 18px 0;
         }
 
-        /* Fade overlays */
         .fade {
           position: absolute;
           top: 0;
@@ -67,16 +111,17 @@ export default function AllGamesLoop() {
           z-index: 10;
           pointer-events: none;
         }
+
         .fade--left {
           left: 0;
           background: linear-gradient(to right, #12082a, transparent);
         }
+
         .fade--right {
           right: 0;
           background: linear-gradient(to left, #12082a, transparent);
         }
 
-        /* Scrolling track */
         .marquee-track {
           display: flex;
           gap: 16px;
@@ -89,11 +134,14 @@ export default function AllGamesLoop() {
         }
 
         @keyframes marquee-scroll {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
 
-        /* Individual pill card — matches the rounded dark cards in the image */
         .game-pill {
           flex-shrink: 0;
           display: flex;
@@ -101,32 +149,51 @@ export default function AllGamesLoop() {
           justify-content: center;
           width: 200px;
           height: 80px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.07);
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.07);
           border-radius: 20px;
           backdrop-filter: blur(6px);
-          transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+          transition: all 0.3s ease;
           cursor: pointer;
           padding: 14px 24px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .game-pill::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: var(--hover-color);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 0;
+        }
+
+        .game-pill:hover::before {
+          opacity: 0.18;
         }
 
         .game-pill:hover {
-          background: rgba(255, 255, 255, 0.09);
-          border-color: rgba(160, 100, 255, 0.35);
-          transform: translateY(-2px);
+          border-color: var(--hover-color);
+          box-shadow: 0 0 20px var(--hover-color);
+          transform: translateY(-4px) scale(1.03);
         }
 
         .game-pill img {
+          position: relative;
+          z-index: 2;
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
           filter: brightness(0.75) grayscale(0.2);
-          transition: filter 0.25s ease;
+          transition: filter 0.3s ease, transform 0.3s ease;
           user-select: none;
         }
 
         .game-pill:hover img {
           filter: brightness(1) grayscale(0);
+          transform: scale(1.06);
         }
       `}</style>
     </section>

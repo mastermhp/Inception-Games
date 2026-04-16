@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
-import { X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { X } from "lucide-react";
 
 const ANIMATION_DELAYS = {
   logo: 0.5,
   title: 0.7,
   subtitle: 0.9,
-}
+};
 
-const ANIMATION_DURATION = 1
+const ANIMATION_DURATION = 1;
 
 // Hiring Form Modal Component
 function HiringFormModal({ isOpen, onClose }) {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -35,13 +35,24 @@ function HiringFormModal({ isOpen, onClose }) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+            transition={{
+              duration: 0.3,
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-gradient-to-r from-purple-900/30 to-transparent">
               <div className="flex items-center gap-3">
-                <img src="/Logo/SNS_Logo.svg" alt="SNS Logo" className="w-8 h-8" />
-                <h2 className="text-xl font-bold text-white">SliceNShare Hiring</h2>
+                <img
+                  src="/Logo/SNS_Logo.svg"
+                  alt="SNS Logo"
+                  className="w-8 h-8"
+                />
+                <h2 className="text-xl font-bold text-white">
+                  SliceNShare Hiring
+                </h2>
               </div>
               <button
                 onClick={onClose}
@@ -72,11 +83,11 @@ function HiringFormModal({ isOpen, onClose }) {
         </>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 export default function HeroSection() {
-  const [hiringModalOpen, setHiringModalOpen] = useState(false)
+  const [hiringModalOpen, setHiringModalOpen] = useState(false);
 
   return (
     <>
@@ -100,7 +111,8 @@ export default function HeroSection() {
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(90deg, rgba(23, 3, 43, 0.2) 2%, rgba(13, 2, 26, 1) 96%)",
+            background:
+              "linear-gradient(90deg, rgba(23, 3, 43, 0.2) 2%, rgba(13, 2, 26, 1) 96%)",
             zIndex: 1,
           }}
         />
@@ -111,11 +123,18 @@ export default function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: ANIMATION_DURATION, delay: ANIMATION_DELAYS.logo }}
-            className="mb-1"
+            transition={{
+              duration: ANIMATION_DURATION,
+              delay: ANIMATION_DELAYS.logo,
+            }}
+            className="mb-0"
           >
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <img src="/Logo/fullLogo.png" alt="SNS Logo" className="hero-logo" />
+            <div className="flex items-center justify-center">
+              <img
+                src="/Logo/fullLogo.png"
+                alt="SNS Logo"
+                className="w-60  h-auto"
+              />
             </div>
           </motion.div>
 
@@ -123,9 +142,15 @@ export default function HeroSection() {
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: ANIMATION_DURATION, delay: ANIMATION_DELAYS.title }}
-            className="text-3xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight"
-            style={{ fontFamily: "Bebas Neue, sans-serif", letterSpacing: "-0.02em" }}
+            transition={{
+              duration: ANIMATION_DURATION,
+              delay: ANIMATION_DELAYS.title,
+            }}
+            className="text-3xl md:text-6xl  font-bold text-white mb-4 leading-tight"
+            style={{
+              fontFamily: "Bebas Neue, sans-serif",
+              letterSpacing: "-0.02em",
+            }}
           >
             EMPOWERING THE NEXT
             <br />
@@ -149,7 +174,10 @@ export default function HeroSection() {
       </section>
 
       {/* Hiring Form Modal */}
-      <HiringFormModal isOpen={hiringModalOpen} onClose={() => setHiringModalOpen(false)} />
+      <HiringFormModal
+        isOpen={hiringModalOpen}
+        onClose={() => setHiringModalOpen(false)}
+      />
     </>
-  )
+  );
 }
