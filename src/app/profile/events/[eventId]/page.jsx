@@ -28,6 +28,7 @@ import {
 import Image from "next/image";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
+import EventShareCard from "@/app/components/EventShareCard";
 import { API } from "@/lib/api";
 import { AuthContext } from "@/app/context/AuthContext";
 
@@ -444,32 +445,104 @@ export default function EventDetailPage() {
         tag.setAttribute("content", content);
       };
 
-      const bannerImage =
-        event.banner_image ||
-        event.game?.image ||
-        event.gameImage ||
-        getGameImage(event.title, event.gameName) ||
-        "/images/default-game.jpg";
+      const updateNameMetaTag = (name, content) => {
+        let tag = document.querySelector(`meta[name="${name}"]`);
+        if (!tag) {
+          tag = document.createElement("meta");
+          tag.setAttribute("name", name);
+          document.head.appendChild(tag);
+        }
+        tag.setAttribute("content", content);
+      };
+
+      // Get absolute base URL
+      const protocol = typeof window !== "undefined" ? window.location.protocol : "http:";
+      const host = typeof window !== "undefined" ? window.location.host : "localhost:3001";
+      const baseUrl = `${protocol}//${host}`;
+
+      // Get the banner image with fallback strategy
+      let bannerImage = event.banner_image;
+      
+      // Log what we got from API
+      console.log("[v0] Banner image from API:", bannerImage);
+      
+      // If no banner, try alternative fields
+      if (!bannerImage) {
+        bannerImage = event.gameImage || event.game?.image;
+      }
+      
+      // If still no banner, get from game name
+      if (!bannerImage) {
+        const gameImg = getGameImage(event.title, event.gameName);
+        console.log("[v0] Using fallback game image:", gameImg);
+        bannerImage = gameImg;
+      }
+
+      // Make sure the image URL is absolute and accessible
+      let absoluteImageUrl;
+      if (bannerImage) {
+        if (bannerImage.startsWith('http')) {
+          // Already absolute URL
+          absoluteImageUrl = bannerImage;
+        } else if (bannerImage.startsWith('/')) {
+          // Relative path - make it absolute
+          absoluteImageUrl = `${baseUrl}${bannerImage}`;
+        } else {
+          // Relative path without leading slash
+          absoluteImageUrl = `${baseUrl}/${bannerImage}`;
+        }
+      } else {
+        // Fallback to OG image API
+        absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
+      }
+      
+      console.log("[v0] Final absolute image URL:", absoluteImageUrl);
+      
       const eventUrl =
         typeof window !== "undefined" ? window.location.href : "";
 
+      // Format description with location and date info
+      const eventDate = event.start_date || event.date
+        ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "TBD";
+
+      const description = `Join ${event.title} - ${event.eventType} ${event.location ? `in ${event.location}` : ""} on ${eventDate}. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
+
+      // Determine image type
+      let imageType = "image/jpeg"; // Default
+      if (bannerImage) {
+        if (bannerImage.includes('.webp')) imageType = "image/webp";
+        else if (bannerImage.includes('.png')) imageType = "image/png";
+        else if (bannerImage.includes('.gif')) imageType = "image/gif";
+      }
+      
+      // Open Graph tags with absolute URLs
       updateMetaTag("og:title", event.title);
-      updateMetaTag(
-        "og:description",
-        `Join the ${event.title} - ${event.eventType}. Prize Pool: ${event.currency} ${event.prizePool}`,
-      );
-      updateMetaTag("og:image", bannerImage);
+      updateMetaTag("og:description", description);
+      updateMetaTag("og:image", absoluteImageUrl);
+      updateMetaTag("og:image:width", "1200");
+      updateMetaTag("og:image:height", "630");
+      updateMetaTag("og:image:type", imageType);
       updateMetaTag("og:url", eventUrl);
       updateMetaTag("og:type", "website");
-      updateMetaTag("twitter:card", "summary_large_image");
-      updateMetaTag("twitter:title", event.title);
-      updateMetaTag(
-        "twitter:description",
-        `Join the ${event.title} - ${event.eventType}`,
-      );
-      updateMetaTag("twitter:image", bannerImage);
+
+      // Twitter Card tags with absolute image URL
+      updateNameMetaTag("twitter:card", "summary_large_image");
+      updateNameMetaTag("twitter:title", event.title);
+      updateNameMetaTag("twitter:description", description);
+      updateNameMetaTag("twitter:image", absoluteImageUrl);
+      updateNameMetaTag("twitter:site", "@SnSGames");
+      updateNameMetaTag("twitter:creator", "@SnSGames");
+
+      // Additional meta tags for better SEO and sharing
+      updateNameMetaTag("description", description);
+      updateMetaTag("og:locale", "en_US");
     }
-  }, [event]);
+  }, [event, params]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -686,17 +759,31 @@ export default function EventDetailPage() {
     setTimeout(() => setOtpError(""), 3000);
   };
 
+  const generateShareMessage = () => {
+    const eventDate = event.start_date || event.date
+      ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+        })
+      : "Soon";
+    const location = event.location || event.venue || "Online";
+    return `Join ${event.title} - ${event.eventType} on ${eventDate} in ${location}. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()} 🎮`;
+  };
+
   const handleShare = async () => {
+    const shareMessage = generateShareMessage();
+    const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: event.title,
-          text: `Check out this ${event.eventType}: ${event.title}`,
-          url: window.location.href,
+          text: shareMessage,
+          url: currentUrl,
         });
       } catch (err) {}
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(currentUrl);
       showNotificationMessage("success", "Link copied to clipboard!");
     }
   };
@@ -711,8 +798,8 @@ export default function EventDetailPage() {
         {
           method: "share",
           href: currentUrl,
-          hashtag: "#SNS",
-          quote: `Check out: ${event.title}`,
+          hashtag: "#SnSGames",
+          quote: generateShareMessage(),
           display: "popup",
         },
         function (response) {},
@@ -727,14 +814,16 @@ export default function EventDetailPage() {
   const handleTwitterShare = () => {
     const currentUrl =
       typeof window !== "undefined" ? window.location.href : "";
-    const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(`Check out this ${event.eventType}: ${event.title}`)}`;
+    const twitterText = `${generateShareMessage()} 🏆`;
+    const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(twitterText)}`;
     window.open(twitterShareUrl, "twitter-share", "width=600,height=400");
   };
 
   const handleWhatsappShare = () => {
     const currentUrl =
       typeof window !== "undefined" ? window.location.href : "";
-    const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`Check out this ${event.eventType}: ${event.title} ${currentUrl}`)}`;
+    const whatsappMessage = `${generateShareMessage()} Check it out: ${currentUrl}`;
+    const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappShareUrl, "whatsapp-share");
   };
 
@@ -787,6 +876,9 @@ export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-[#030305]">
       <Header />
+      
+      {/* Event Share Card for social media preview */}
+      <EventShareCard event={event} forceRender={true} />
 
       <main className="pt-20">
         {/* Notification */}
