@@ -1,7 +1,10 @@
 "use client"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 export default function Footer() {
+  const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
   return (
     <>
       <footer className="py-8  md:py-12 bg-[#0D0D0D]">
@@ -100,27 +103,63 @@ export default function Footer() {
               WEBSITE
             </h3>
             <div className="space-y-3">
-              <motion.a
-                href="#home"
-                className="block text-white hover:text-gray-300 transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                Home
-              </motion.a>
-              <motion.a
-                href="#esports"
-                className="block text-white hover:text-gray-300 transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                E-Sports
-              </motion.a>
-              {/* <motion.a
-                href="#events"
-                className="block text-white hover:text-gray-300 transition-colors"
-                whileHover={{ x: 5 }}
-              >
-                Events
-              </motion.a> */}
+              {/* Ecosystem Dropdown for Footer */}
+              <div className="relative">
+                <button
+                  onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
+                  className="flex items-center justify-center md:justify-start gap-2 text-white hover:text-gray-300 transition-colors group"
+                >
+                  <span>Ecosystem</span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`transition-transform duration-200 ${ecosystemDropdownOpen ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {ecosystemDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.15 }}
+                      className="mt-2 space-y-2 text-center md:text-left"
+                    >
+                      <a
+                        href="#ecosystem-partners"
+                        onClick={() => {
+                          setEcosystemDropdownOpen(false)
+                          document.getElementById('ecosystem-partners')?.scrollIntoView({ behavior: 'smooth' })
+                        }}
+                        className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                      >
+                        Partners
+                      </a>
+                      <a
+                        href="#ecosystem-games"
+                        onClick={() => {
+                          setEcosystemDropdownOpen(false)
+                          document.getElementById('ecosystem-games')?.scrollIntoView({ behavior: 'smooth' })
+                        }}
+                        className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                      >
+                        Games
+                      </a>
+                      <a
+                        href="#ecosystem-community"
+                        onClick={() => {
+                          setEcosystemDropdownOpen(false)
+                          document.getElementById('ecosystem-community')?.scrollIntoView({ behavior: 'smooth' })
+                        }}
+                        className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                      >
+                        Community
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <motion.a
                 href="#news"
                 className="block text-white hover:text-gray-300 transition-colors"

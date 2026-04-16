@@ -47,6 +47,7 @@ export default function TournamentCarousel() {
   const [isClient, setIsClient] = useState(false)
   const [signupModalOpen, setSignupModalOpen] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
+  const [signedUpCardId, setSignedUpCardId] = useState(null)
 
   const intervalRef = useRef(null)
 
@@ -225,7 +226,7 @@ export default function TournamentCarousel() {
                             >
                               <button
                                 onClick={() => {
-                                  if (isAuthenticated) {
+                                  if (isAuthenticated || signedUpCardId === card.id) {
                                     router.push(`/profile/events?category=${card.flowType}`)
                                   } else {
                                     setSelectedCard(card)
@@ -237,7 +238,7 @@ export default function TournamentCarousel() {
                                   backgroundColor: "#8117EE",
                                 }}
                               >
-                                {isAuthenticated ? "Explore" : "Sign Up"}
+                                {isAuthenticated || signedUpCardId === card.id ? "Explore" : "Sign Up"}
                               </button>
                             </motion.div>
                           )}
@@ -274,6 +275,10 @@ export default function TournamentCarousel() {
     isOpen={signupModalOpen}
     onClose={() => {
       setSignupModalOpen(false)
+      // Track that user signed up from this card
+      if (selectedCard) {
+        setSignedUpCardId(selectedCard.id)
+      }
       setSelectedCard(null)
         }}
         userType="player"

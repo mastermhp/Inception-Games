@@ -43,6 +43,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const [esportsDropdownOpen, setEsportsDropdownOpen] = useState(false)
+  const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,16 +54,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileDropdownOpen && !e.target.closest('.profile-dropdown-container')) {
         setProfileDropdownOpen(false)
       }
+      if (esportsDropdownOpen && !e.target.closest('.esports-dropdown-container')) {
+        setEsportsDropdownOpen(false)
+      }
+      if (ecosystemDropdownOpen && !e.target.closest('.ecosystem-dropdown-container')) {
+        setEcosystemDropdownOpen(false)
+      }
     }
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
-  }, [profileDropdownOpen])
+  }, [profileDropdownOpen, esportsDropdownOpen, ecosystemDropdownOpen])
 
   const handleLinkClick = () => {
     setMobileMenuOpen(false)
@@ -94,15 +102,113 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-            <Link href="/" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
-              Home
-            </Link>
-            <Link href="#e-sports" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
-              E-Sports
-            </Link>
-            {/* <Link href="#events" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
-              Events
-            </Link> */}
+            {/* E-Sports Dropdown - Only visible when authenticated */}
+            {isAuthenticated && (
+              <div className="relative esports-dropdown-container">
+                <button
+                  onClick={() => setEsportsDropdownOpen(!esportsDropdownOpen)}
+                  className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors flex items-center gap-1"
+                >
+                  E-Sports
+                  <ChevronDown 
+                    size={16} 
+                    className={`transition-transform duration-200 ${esportsDropdownOpen ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {esportsDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 top-full mt-2 w-56 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                    >
+                      <Link
+                        href="/profile/events?category=tournament"
+                        onClick={() => setEsportsDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10"
+                      >
+                        <span>Tournaments</span>
+                      </Link>
+                      <Link
+                        href="/profile/events?category=scrims"
+                        onClick={() => setEsportsDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10"
+                      >
+                        <span>Scrims</span>
+                      </Link>
+                      <Link
+                        href="/profile/events?category=brand-deal"
+                        onClick={() => setEsportsDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span>Brand Deals</span>
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* Ecosystem Dropdown */}
+            <div className="relative ecosystem-dropdown-container">
+              <button
+                onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
+                className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors flex items-center gap-1"
+              >
+                Ecosystem
+                <ChevronDown 
+                  size={16} 
+                  className={`transition-transform duration-200 ${ecosystemDropdownOpen ? 'rotate-180' : ''}`} 
+                />
+              </button>
+
+              <AnimatePresence>
+                {ecosystemDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 top-full mt-2 w-56 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                  >
+                    <a
+                      href="#ecosystem-partners"
+                      onClick={() => {
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-partners')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10 cursor-pointer"
+                    >
+                      <span>Partners</span>
+                    </a>
+                    <a
+                      href="#ecosystem-games"
+                      onClick={() => {
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-games')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10 cursor-pointer"
+                    >
+                      <span>Games</span>
+                    </a>
+                    <a
+                      href="#ecosystem-community"
+                      onClick={() => {
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-community')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                    >
+                      <span>Community</span>
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               News
             </Link>
@@ -260,15 +366,112 @@ export default function Header() {
             transition={{ duration: 0.2 }}
           >
             <nav className="flex flex-col p-4 sm:p-6">
-              <Link href="#home" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
-                Home
-              </Link>
-              <Link href="#e-sports" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
-                E-Sports
-              </Link>
-              <Link href="#events" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
-                Events
-              </Link>
+              {/* E-Sports Mobile - Only visible when authenticated */}
+              {isAuthenticated && (
+                <>
+                  <button
+                    onClick={() => setEsportsDropdownOpen(!esportsDropdownOpen)}
+                    className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors flex items-center justify-between w-full"
+                  >
+                    E-Sports
+                    <ChevronDown 
+                      size={16} 
+                      className={`transition-transform duration-200 ${esportsDropdownOpen ? 'rotate-180' : ''}`} 
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {esportsDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <Link
+                          href="/profile/events?category=tournament"
+                          onClick={handleLinkClick}
+                          className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
+                        >
+                          Tournaments
+                        </Link>
+                        <Link
+                          href="/profile/events?category=scrims"
+                          onClick={handleLinkClick}
+                          className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
+                        >
+                          Scrims
+                        </Link>
+                        <Link
+                          href="/profile/events?category=brand-deal"
+                          onClick={handleLinkClick}
+                          className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
+                        >
+                          Brand Deals
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
+
+              {/* Ecosystem Mobile */}
+              <button
+                onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
+                className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors flex items-center justify-between w-full"
+              >
+                Ecosystem
+                <ChevronDown 
+                  size={16} 
+                  className={`transition-transform duration-200 ${ecosystemDropdownOpen ? 'rotate-180' : ''}`} 
+                />
+              </button>
+              <AnimatePresence>
+                {ecosystemDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <a
+                      href="#ecosystem-partners"
+                      onClick={() => {
+                        handleLinkClick()
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-partners')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                    >
+                      Partners
+                    </a>
+                    <a
+                      href="#ecosystem-games"
+                      onClick={() => {
+                        handleLinkClick()
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-games')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                    >
+                      Games
+                    </a>
+                    <a
+                      href="#ecosystem-community"
+                      onClick={() => {
+                        handleLinkClick()
+                        setEcosystemDropdownOpen(false)
+                        document.getElementById('ecosystem-community')?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                    >
+                      Community
+                    </a>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <Link href="#news" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
                 News
               </Link>

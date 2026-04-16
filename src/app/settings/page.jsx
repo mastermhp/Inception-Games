@@ -67,7 +67,7 @@ export default function SettingsPage() {
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
-          <motion.button
+          {/* <motion.button
             onClick={() => router.back()}
             className="mb-8 flex items-center gap-2 text-gray-400 hover:text-white transition duration-300"
             whileHover={{ x: -5 }}
@@ -77,7 +77,7 @@ export default function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back
-          </motion.button>
+          </motion.button> */}
 
           {/* Header */}
           <motion.div
@@ -172,12 +172,12 @@ export default function SettingsPage() {
                           <Shield size={14} className="text-purple-400" />
                           <span>Auth: {user.authMethod === 'firebase' ? 'Google (Firebase)' : 'Email / OTP'}</span>
                         </div>
-                        {user.id && (
+                        {/* {user.id && (
                           <div className="flex items-center gap-2 text-gray-400">
                             <User size={14} className="text-purple-400" />
                             <span className="font-mono text-xs">ID: {user.id}</span>
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
 
@@ -306,7 +306,7 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+8801XXXXXXXXX"
         />
-        <SettingField label="Auth Method" value={user.authMethod === 'firebase' ? 'Google (Firebase)' : 'Email / OTP'} disabled />
+        {/* <SettingField label="Auth Method" value={user.authMethod === 'firebase' ? 'Google (Firebase)' : 'Email / OTP'} disabled /> */}
 
         <motion.button
           type="submit"

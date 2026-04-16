@@ -285,12 +285,12 @@ export default function ShowcaseCarousel() {
         </div>
 
         {/* Partners Section */}
-        <div className="mb-20 md:mb-32">
+        <div id="ecosystem-partners" className="mb-20 md:mb-32">
           <CarouselSection tabKey="partners" />
         </div>
 
         {/* Games Section */}
-        <div className="mb-20 md:mb-32">
+        <div id="ecosystem-games" className="mb-20 md:mb-32">
           <div className="text-center mb-6 md:mb-8">
             <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
               {gamesData.title}
@@ -303,7 +303,7 @@ export default function ShowcaseCarousel() {
         </div>
 
         {/* Community Section */}
-        <div className="mb-8">
+        <div id="ecosystem-community" className="mb-8">
           <CarouselSection tabKey="community" />
         </div>
       </div>
