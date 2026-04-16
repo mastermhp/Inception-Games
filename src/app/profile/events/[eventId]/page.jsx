@@ -1,4 +1,6 @@
-// Server-side metadata generation for social media sharing (must be before "use client")
+"use client";
+
+// Server-side metadata generation for social media sharing
 export async function generateMetadata({ params }) {
   try {
     const { eventId } = params;
@@ -88,8 +90,6 @@ export async function generateMetadata({ params }) {
     };
   }
 }
-
-"use client";
 
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useRouter } from "next/navigation";
