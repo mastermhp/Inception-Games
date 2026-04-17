@@ -1181,6 +1181,215 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
 
               </div>
 
+              {/* Signup Form */}
+              <AnimatePresence>
+                {showSignupForm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-6"
+                  >
+                    <div className="bg-gray-900 rounded-xl border border-purple-500/30 p-6">
+                      {/* OTP Verification */}
+                      {otpStep && (
+                        <div className="text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            {otpStep === "success" ? (
+                              <CheckCircle size={32} className="text-white" />
+                            ) : (
+                              <Shield size={32} className="text-white" />
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-2">
+                            {otpStep === "success"
+                              ? "Registration Complete!"
+                              : otpStep === "sending" || otpStep === "verifying"
+                                ? "Please Wait..."
+                                : "Verify Your Email"}
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            {otpStep === "success"
+                              ? "You have been registered successfully"
+                              : otpStep === "sending"
+                                ? "Sending verification code..."
+                                : otpStep === "verifying"
+                                  ? "Verifying your code..."
+                                  : `We sent a code to ${formData.email}`}
+                          </p>
+
+                          {(otpStep === "sending" || otpStep === "verifying") && (
+                            <div className="py-8">
+                              <Loader2 className="animate-spin text-purple-400 mx-auto" size={40} />
+                            </div>
+                          )}
+
+                          {otpStep === "success" && (
+                            <div className="py-6">
+                              <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
+                                <CheckCircle className="text-green-400" size={40} />
+                              </div>
+                            </div>
+                          )}
+
+                          {otpStep === "input" && (
+                            <div className="space-y-4">
+                              <div className="flex justify-center gap-2">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                  <input
+                                    key={i}
+                                    ref={(el) => { otpInputRefs.current[i] = el; }}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    className="w-10 h-12 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 outline-none transition-all"
+                                    value={otpValue[i] || ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(/\D/g, "");
+                                      const newOtp = otpValue.slice(0, i) + val + otpValue.slice(i + 1);
+                                      setOtpValue(newOtp.slice(0, 6));
+                                      if (val && i < 5) otpInputRefs.current[i + 1]?.focus();
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Backspace" && !otpValue[i] && i > 0) {
+                                        otpInputRefs.current[i - 1]?.focus();
+                                      }
+                                    }}
+                                  />
+                                ))}
+                              </div>
+
+                              {otpError && (
+                                <p className={`text-sm ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}>
+                                  {otpError}
+                                </p>
+                              )}
+
+                              <button
+                                onClick={handleOtpVerify}
+                                disabled={otpValue.length < 4}
+                                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                              >
+                                Verify & Complete <ArrowRight size={16} />
+                              </button>
+
+                              <div className="flex items-center justify-between text-sm">
+                                <button onClick={handleResendOtp} className="text-purple-400 hover:text-purple-300 transition">
+                                  Resend OTP
+                                </button>
+                                <button
+                                  onClick={() => { setOtpStep(null); setShowSignupForm(false); }}
+                                  className="text-gray-500 hover:text-gray-300 transition"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Registration Form */}
+                      {!otpStep && (
+                        <>
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-white">
+                              {event.eventType} Registration
+                            </h3>
+                            <button
+                              onClick={() => setShowSignupForm(false)}
+                              className="text-gray-400 hover:text-white transition-colors"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
+                            <Image src={gameImage} alt={gameName} width={48} height={48} className="rounded-lg" />
+                            <div>
+                              <p className="text-white font-semibold">{gameName}</p>
+                              <p className="text-gray-400 text-sm">{event.eventType}</p>
+                            </div>
+                          </div>
+
+                          {price > 0 && (
+                            <div className="mb-4 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
+                              <p className="text-gray-400 text-sm">Registration Fee</p>
+                              <p className="text-2xl font-bold text-white">BDT {price}</p>
+                            </div>
+                          )}
+
+                          {event.eventType === "Brand Deal" && (
+                            <div className="mb-4 grid grid-cols-2 gap-3">
+                              <button
+                                type="button"
+                                onClick={() => setFormData((prev) => ({ ...prev, brandDealType: "solo" }))}
+                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "solo" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                              >
+                                <p className="text-white font-semibold">Solo</p>
+                                <p className="text-gray-400 text-xs">BDT 499</p>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setFormData((prev) => ({ ...prev, brandDealType: "team" }))}
+                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "team" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                              >
+                                <p className="text-white font-semibold">Team</p>
+                                <p className="text-gray-400 text-xs">BDT 999</p>
+                              </button>
+                            </div>
+                          )}
+
+                          <form onSubmit={handleSubmit} className="space-y-3">
+                            <AnimatedInput label="Full Name" name="fullName" value={formData.fullName} onChange={handleInputChange} required />
+                            <AnimatedInput label="Email Address" type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                            <AnimatedInput label="Phone Number" name="phone" value={formData.phone} onChange={handleInputChange} required />
+
+                            {(event.eventType === "Tournament" || event.eventType === "Scrims") && (
+                              <>
+                                <AnimatedInput label="In-Game Name" name="inGameName" value={formData.inGameName} onChange={handleInputChange} required />
+                                <AnimatedInput label="In-Game ID" name="inGameId" value={formData.inGameId} onChange={handleInputChange} required />
+                                {event.teamType !== "Solo" && (
+                                  <AnimatedInput label="Team Name" name="teamName" value={formData.teamName} onChange={handleInputChange} required />
+                                )}
+                                <AnimatedInput label="Discord ID (optional)" name="discordId" value={formData.discordId} onChange={handleInputChange} />
+                              </>
+                            )}
+
+                            {event.eventType === "Brand Deal" && (
+                              <>
+                                <AnimatedInput label="Social Media Links" name="socialMedia" value={formData.socialMedia} onChange={handleInputChange} required />
+                                <AnimatedInput label="Portfolio/Content Links" name="portfolio" value={formData.portfolio} onChange={handleInputChange} />
+                                {formData.brandDealType === "team" && (
+                                  <AnimatedInput label="Team Members" type="textarea" name="teamMembers" value={formData.teamMembers} onChange={handleInputChange} />
+                                )}
+                              </>
+                            )}
+
+                            <motion.button
+                              type="submit"
+                              disabled={isSubmitting}
+                              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              {isSubmitting ? (
+                                <><Loader2 className="animate-spin" size={20} /> Processing...</>
+                              ) : (
+                                <>Submit Registration <ArrowRight size={16} /></>
+                              )}
+                            </motion.button>
+                          </form>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Host + Status */}
+              <div className="flex items-center gap-2 text-sm text-gray-400 mb-3"></div>
+
               {/* Host + Status */}
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
                 <Trophy size={16} />
@@ -1196,6 +1405,8 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   {event.status === "Completed" ? "Past" : event.status}
                 </span>
               </div>
+
+              
 
               {/* Date + Status */}
               <div className="flex items-center gap-2 text-red-400 mb-4">
@@ -1493,354 +1704,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   </motion.button>
                 )} */}
 
-                {/* Signup Form */}
-                <AnimatePresence>
-                  {showSignupForm && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="bg-gray-900 rounded-xl border border-purple-500/30 p-6">
-                        {/* OTP Verification */}
-                        {otpStep && (
-                          <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                              {otpStep === "success" ? (
-                                <CheckCircle size={32} className="text-white" />
-                              ) : (
-                                <Shield size={32} className="text-white" />
-                              )}
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-2">
-                              {otpStep === "success"
-                                ? "Registration Complete!"
-                                : otpStep === "sending" ||
-                                    otpStep === "verifying"
-                                  ? "Please Wait..."
-                                  : "Verify Your Email"}
-                            </h3>
-                            <p className="text-gray-400 text-sm mb-4">
-                              {otpStep === "success"
-                                ? "You have been registered successfully"
-                                : otpStep === "sending"
-                                  ? "Sending verification code..."
-                                  : otpStep === "verifying"
-                                    ? "Verifying your code..."
-                                    : `We sent a code to ${formData.email}`}
-                            </p>
-
-                            {(otpStep === "sending" ||
-                              otpStep === "verifying") && (
-                              <div className="py-8">
-                                <Loader2
-                                  className="animate-spin text-purple-400 mx-auto"
-                                  size={40}
-                                />
-                              </div>
-                            )}
-
-                            {otpStep === "success" && (
-                              <div className="py-6">
-                                <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
-                                  <CheckCircle
-                                    className="text-green-400"
-                                    size={40}
-                                  />
-                                </div>
-                              </div>
-                            )}
-
-                            {otpStep === "input" && (
-                              <div className="space-y-4">
-                                <div className="flex justify-center gap-2">
-                                  {Array.from({ length: 6 }).map((_, i) => (
-                                    <input
-                                      key={i}
-                                      ref={(el) => {
-                                        otpInputRefs.current[i] = el;
-                                      }}
-                                      type="text"
-                                      inputMode="numeric"
-                                      maxLength={1}
-                                      className="w-10 h-12 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 outline-none transition-all"
-                                      value={otpValue[i] || ""}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(
-                                          /\D/g,
-                                          "",
-                                        );
-                                        const newOtp =
-                                          otpValue.slice(0, i) +
-                                          val +
-                                          otpValue.slice(i + 1);
-                                        setOtpValue(newOtp.slice(0, 6));
-                                        if (val && i < 5)
-                                          otpInputRefs.current[i + 1]?.focus();
-                                      }}
-                                      onKeyDown={(e) => {
-                                        if (
-                                          e.key === "Backspace" &&
-                                          !otpValue[i] &&
-                                          i > 0
-                                        ) {
-                                          otpInputRefs.current[i - 1]?.focus();
-                                        }
-                                      }}
-                                    />
-                                  ))}
-                                </div>
-
-                                {otpError && (
-                                  <p
-                                    className={`text-sm ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}
-                                  >
-                                    {otpError}
-                                  </p>
-                                )}
-
-                                <button
-                                  onClick={handleOtpVerify}
-                                  disabled={otpValue.length < 4}
-                                  className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                                >
-                                  Verify & Complete <ArrowRight size={16} />
-                                </button>
-
-                                <div className="flex items-center justify-between text-sm">
-                                  <button
-                                    onClick={handleResendOtp}
-                                    className="text-purple-400 hover:text-purple-300 transition"
-                                  >
-                                    Resend OTP
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setOtpStep(null);
-                                      setShowSignupForm(false);
-                                    }}
-                                    className="text-gray-500 hover:text-gray-300 transition"
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Registration Form */}
-                        {!otpStep && (
-                          <>
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-bold text-white">
-                                {event.eventType} Registration
-                              </h3>
-                              <button
-                                onClick={() => setShowSignupForm(false)}
-                                className="text-gray-400 hover:text-white transition-colors"
-                              >
-                                <X size={20} />
-                              </button>
-                            </div>
-
-                            {/* Game Info */}
-                            <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
-                              <Image
-                                src={gameImage}
-                                alt={gameName}
-                                width={48}
-                                height={48}
-                                className="rounded-lg"
-                              />
-                              <div>
-                                <p className="text-white font-semibold">
-                                  {gameName}
-                                </p>
-                                <p className="text-gray-400 text-sm">
-                                  {event.eventType}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Price Badge */}
-                            {price > 0 && (
-                              <div className="mb-4 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
-                                <p className="text-gray-400 text-sm">
-                                  Registration Fee
-                                </p>
-                                <p className="text-2xl font-bold text-white">
-                                  BDT {price}
-                                </p>
-                              </div>
-                            )}
-
-                            {/* Brand Deal Type Selection */}
-                            {event.eventType === "Brand Deal" && (
-                              <div className="mb-4 grid grid-cols-2 gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      brandDealType: "solo",
-                                    }))
-                                  }
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    formData.brandDealType === "solo"
-                                      ? "border-purple-500 bg-purple-500/10"
-                                      : "border-gray-700 hover:border-gray-600"
-                                  }`}
-                                >
-                                  <p className="text-white font-semibold">
-                                    Solo
-                                  </p>
-                                  <p className="text-gray-400 text-xs">
-                                    BDT 499
-                                  </p>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      brandDealType: "team",
-                                    }))
-                                  }
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    formData.brandDealType === "team"
-                                      ? "border-purple-500 bg-purple-500/10"
-                                      : "border-gray-700 hover:border-gray-600"
-                                  }`}
-                                >
-                                  <p className="text-white font-semibold">
-                                    Team
-                                  </p>
-                                  <p className="text-gray-400 text-xs">
-                                    BDT 999
-                                  </p>
-                                </button>
-                              </div>
-                            )}
-
-                            <form onSubmit={handleSubmit} className="space-y-3">
-                              <AnimatedInput
-                                label="Full Name"
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleInputChange}
-                                required
-                              />
-                              <AnimatedInput
-                                label="Email Address"
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                              />
-                              <AnimatedInput
-                                label="Phone Number"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                required
-                              />
-
-                              {/* Tournament/Scrims specific fields */}
-                              {(event.eventType === "Tournament" ||
-                                event.eventType === "Scrims") && (
-                                <>
-                                  <AnimatedInput
-                                    label="In-Game Name"
-                                    name="inGameName"
-                                    value={formData.inGameName}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  <AnimatedInput
-                                    label="In-Game ID"
-                                    name="inGameId"
-                                    value={formData.inGameId}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  {event.teamType !== "Solo" && (
-                                    <AnimatedInput
-                                      label="Team Name"
-                                      name="teamName"
-                                      value={formData.teamName}
-                                      onChange={handleInputChange}
-                                      required
-                                    />
-                                  )}
-                                  <AnimatedInput
-                                    label="Discord ID (optional)"
-                                    name="discordId"
-                                    value={formData.discordId}
-                                    onChange={handleInputChange}
-                                  />
-                                </>
-                              )}
-
-                              {/* Brand Deal specific fields */}
-                              {event.eventType === "Brand Deal" && (
-                                <>
-                                  <AnimatedInput
-                                    label="Social Media Links"
-                                    name="socialMedia"
-                                    value={formData.socialMedia}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  <AnimatedInput
-                                    label="Portfolio/Content Links"
-                                    name="portfolio"
-                                    value={formData.portfolio}
-                                    onChange={handleInputChange}
-                                  />
-                                  {formData.brandDealType === "team" && (
-                                    <AnimatedInput
-                                      label="Team Members"
-                                      type="textarea"
-                                      name="teamMembers"
-                                      value={formData.teamMembers}
-                                      onChange={handleInputChange}
-                                    />
-                                  )}
-                                </>
-                              )}
-
-                              <motion.button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                {isSubmitting ? (
-                                  <>
-                                    <Loader2
-                                      className="animate-spin"
-                                      size={20}
-                                    />
-                                    Processing...
-                                  </>
-                                ) : (
-                                  <>
-                                    Submit Registration
-                                    <ArrowRight size={16} />
-                                  </>
-                                )}
-                              </motion.button>
-                            </form>
-                          </>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+            
 
                 {/* Prize Pool Card */}
                 {event.prizePool > 0 && (
