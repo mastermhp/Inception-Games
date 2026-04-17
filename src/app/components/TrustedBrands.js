@@ -28,12 +28,12 @@ export default function TrustedBrands() {
             <div
               key={`brand-1-${index}`}
               className="flex-shrink-0 mx-8 flex items-center justify-center"
-              style={{ width: "300px", height: "120px" }}
+              style={{ width: "220px", height: "90px" }}
             >
               <img
                 src={brand.logo || "/placeholder.svg"}
                 alt={brand.name}
-                className="max-w-full max-h-full object-contain filter brightness-90 hover:brightness-110 transition-all duration-300"
+                className="max-w-full max-h-full object-contain filter brightness-90 hover:brightness-110 transition-all duration-300 rounded-lg"
               />
             </div>
           ))}
@@ -42,12 +42,12 @@ export default function TrustedBrands() {
             <div
               key={`brand-2-${index}`}
               className="flex-shrink-0 mx-8 flex items-center justify-center"
-              style={{ width: "300px", height: "120px" }}
+              style={{ width: "220px", height: "90px" }}
             >
               <img
                 src={brand.logo || "/placeholder.svg"}
                 alt={brand.name}
-                className="max-w-full max-h-full object-contain filter brightness-90 hover:brightness-110 transition-all duration-300"
+                className="max-w-full max-h-full object-contain filter brightness-90 hover:brightness-110 transition-all duration-300 rounded-lg"
               />
             </div>
           ))}

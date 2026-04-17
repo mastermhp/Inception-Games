@@ -15,6 +15,7 @@ import Availability from '../components/ProfileComponents/Availability'
 import FeaturedCarousel from '../components/ProfileComponents/FeaturedCarousel'
 import EditProfileModal from '../components/ProfileComponents/EditProfileModal'
 import { useAuth } from '../context/AuthContext'
+import NotificationsPanel from '../components/ProfileComponents/NotificationsPanel'
 
 export default function ProfilePage() {
   const { user, isAuthenticated, loading, fetchProfile } = useAuth()
@@ -124,11 +125,17 @@ export default function ProfilePage() {
             <ProfileHeroBanner user={mergedUser} onEditProfile={() => setEditProfileOpen(true)} />
           </div>
 
-          {/* Player Info - Full Width */}
-          <div className="mb-8">
-            <QuickInfo user={mergedUser} />
-          </div>
+          {/* Player Info + Notifications */}
+<div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div className="col-span-2">
+    <QuickInfo user={mergedUser} />
+  </div>
+  <div className="col-span-1">
+    <NotificationsPanel />
+  </div>
+</div>
 
+   
           {/* Featured Carousel - Jobs, Career, Merch */}
           <div className="mb-8">
             <FeaturedCarousel />
