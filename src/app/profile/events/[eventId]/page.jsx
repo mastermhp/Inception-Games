@@ -1031,28 +1031,79 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#030305] via-black/50 to-transparent" />
 
-                {/* Date Badge */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="px-6 py-3 bg-amber-500 text-black font-bold rounded-lg flex items-center gap-2 shadow-lg">
-                    <Calendar size={18} />
-                    {new Date(event.date)
-                      .toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
-                      .toUpperCase()}
+                {/* Bottom Overlay — full width bar */}
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between">
+                  {/* Bottom Left — Registration dates */}
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs w-20">
+                        Reg Starts :
+                      </span>
+                      <span className="text-white text-xs font-semibold">
+                        {event.registrationStart
+                          ? new Date(
+                              event.registrationStart,
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "TBD"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs w-20">
+                        Reg End :
+                      </span>
+                      <span className="text-white text-xs font-semibold">
+                        {event.registrationEnd
+                          ? new Date(event.registrationEnd).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )
+                          : "TBD"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Address */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                  <p className="text-red-400 text-sm font-medium mb-1">
-                    Address
-                  </p>
-                  <p className="text-white text-sm max-w-md px-4">
-                    {event.address}
-                  </p>
+                  {/* Bottom Right — Game name aligned with Reg Start, badges aligned with Reg End */}
+                  <div className="flex flex-col items-end gap-1">
+                    {/* Game Name — same visual row as Reg Starts */}
+                    <span className="text-white text-xl font-bold">
+                      {gameName}
+                    </span>
+                    {/* Circular badges — same visual row as Reg End */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Flag size={10} className="text-amber-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.location || "—"}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Monitor size={10} className="text-blue-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.platform || "—"}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Users size={10} className="text-emerald-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.teamType || "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
