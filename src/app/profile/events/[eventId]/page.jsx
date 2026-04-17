@@ -1057,12 +1057,11 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   <span className="text-white font-semibold text-lg">
                     {gameName}
                   </span>
-                  {/* <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
-                    <Users size={14} />
-                    Follow
-                  </button> */}
                 </div>
+
                 <div className="flex items-center gap-2 relative">
+
+
                   <div ref={shareMenuRef} className="relative">
                     <button
                       onClick={() => setShowShareMenu(!showShareMenu)}
@@ -1159,7 +1158,27 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       )}
                     </AnimatePresence>
                   </div>
+
+
+                  {/* Sign Up Button — now sits under Share */}
+  {event.status !== "Completed" && !showSignupForm && (
+    <motion.button
+      onClick={() => setShowSignupForm(true)}
+      className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-purple-500/20 text-sm"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Users size={16} />
+      Sign Up
+    </motion.button>
+  )}
+
+
+
                 </div>
+
+
+
               </div>
 
               {/* Host + Status */}
@@ -1462,7 +1481,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                 </div>
 
                 {/* Sign Up Button */}
-                {event.status !== "Completed" && !showSignupForm && (
+                {/* {event.status !== "Completed" && !showSignupForm && (
                   <motion.button
                     onClick={() => setShowSignupForm(true)}
                     className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"
@@ -1472,7 +1491,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                     <Users size={20} />
                     Sign Up
                   </motion.button>
-                )}
+                )} */}
 
                 {/* Signup Form */}
                 <AnimatePresence>
