@@ -77,35 +77,65 @@ export function GameCard({ item, isFeatured = false }) {
       className="block w-full h-full"
     >
       <div
-        className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-900"
+        className="relative w-full h-full rounded-3xl overflow-hidden group"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        style={{
+          background: "linear-gradient(135deg, rgba(129, 23, 241, 0.1) 0%, rgba(255, 0, 64, 0.05) 100%)",
+          border: "1px solid rgba(129, 23, 241, 0.2)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+          transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          transform: hovered ? "translateY(-8px)" : "translateY(0)",
+        }}
       >
-        {/* Game Image */}
+        {/* Game Image - Full cover */}
         <img
           src={item.photo}
           alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500"
-          style={{ transform: hovered ? "scale(1.04)" : "scale(1)" }}
-        />
-
-        {/* Dark overlay - only on hover */}
-        <div
-          className="absolute inset-0 transition-all duration-500 ease-in-out"
+          className="absolute inset-0 w-full h-full object-cover object-center"
           style={{
-            background: hovered
-              ? "linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 100%)"
-              : "transparent",
+            transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            transform: hovered ? "scale(1.08) rotate(1deg)" : "scale(1) rotate(0deg)",
           }}
         />
 
-        {/* Top-right badge */}
+        {/* Enhanced gradient overlay */}
         <div
-          className="absolute top-3 right-3 text-white/80 tracking-widest"
+          className="absolute inset-0"
+          style={{
+            background: hovered
+              ? "linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(129,23,241,0.2) 50%, rgba(0,0,0,0.4) 100%)"
+              : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)",
+            transition: "all 0.5s ease-in-out",
+          }}
+        />
+
+        {/* Animated border glow on hover */}
+        <div
+          className="absolute inset-0 rounded-3xl"
+          style={{
+            background: hovered
+              ? "linear-gradient(90deg, transparent, rgba(129,23,241,0.3), transparent)"
+              : "transparent",
+            transition: "all 0.5s ease-in-out",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Top-right badge with enhancement */}
+        <div
+          className="absolute top-4 right-4 text-white/90 tracking-widest font-bold z-20"
           style={{
             fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: "9px",
-            fontWeight: 600,
+            fontSize: "10px",
+            background: "rgba(129, 23, 241, 0.4)",
+            padding: "6px 12px",
+            borderRadius: "20px",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            transition: "all 0.3s ease",
+            opacity: hovered ? 1 : 0.8,
+            transform: hovered ? "scale(1.1)" : "scale(1)",
           }}
         >
           ● PLAY
@@ -113,55 +143,70 @@ export function GameCard({ item, isFeatured = false }) {
 
         {/* Play now button - appears on hover */}
         {hovered && (
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 rounded-full text-black font-medium whitespace-nowrap select-none z-10"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.7 }}
+            transition={{ duration: 0.3 }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
             style={{
-              fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: "12px",
-              background: "rgba(255,255,255,0.95)",
-              padding: "8px 18px",
-              animation: "popIn 0.3s ease-out",
               pointerEvents: "none",
             }}
           >
-            <PlayIcon size={14} />
-            <span>Play now</span>
-          </div>
+            <div
+              className="flex items-center gap-2 rounded-full text-black font-bold whitespace-nowrap select-none"
+              style={{
+                fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontSize: "13px",
+                background: "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,240,240,0.95) 100%)",
+                padding: "10px 22px",
+                boxShadow: "0 12px 40px rgba(129, 23, 241, 0.3)",
+                backdropFilter: "blur(4px)",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+              }}
+            >
+              <PlayIcon size={16} />
+              <span>Play now</span>
+            </div>
+          </motion.div>
         )}
-        
-        <style jsx>{`
-          @keyframes popIn {
-            from {
-              opacity: 0;
-              transform: scale(0.8);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-        `}</style>
 
         {/* Footer: name + genre */}
         <div
           className="absolute bottom-0 left-0 right-0"
-          style={{ padding: "8px 12px 10px" }}
+          style={{
+            padding: "16px 18px 18px",
+            background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)",
+            transition: "all 0.3s ease",
+          }}
         >
           <p
-            className="text-white font-medium leading-tight"
             style={{
+              background: "linear-gradient(135deg, rgb(129, 23, 241) 0%, rgb(255, 0, 64) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
               fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: "12px",
+              fontSize: "16px",
+              fontWeight: 900,
+              letterSpacing: "0.8px",
+              margin: 0,
+              lineHeight: 1.2,
             }}
           >
             {item.name}
           </p>
           {item.genre && (
             <p
-              className="text-white/55 leading-tight mt-0.5"
+              className="leading-tight"
               style={{
                 fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-                fontSize: "11px",
+                fontSize: "12px",
+                color: "rgba(255, 255, 255, 0.7)",
+                fontWeight: 600,
+                letterSpacing: "0.3px",
+                marginTop: "8px",
+                transition: "all 0.3s ease",
               }}
             >
               {item.genre}
