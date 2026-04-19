@@ -166,7 +166,18 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 <AnimatePresence mode="wait">
                   {message && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-300 text-sm">{message}</motion.div>}
-                  {error && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-sm">{error}</motion.div>}
+                  {error && (
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-sm">
+                      {error.includes('access token') ? (
+                        <div>
+                          <p className="font-semibold mb-1">Authentication Required</p>
+                          <p className="text-xs opacity-90">Your session has expired. Please log out and log back in to update your profile.</p>
+                        </div>
+                      ) : (
+                        error
+                      )}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
 
                 {/* Images Section */}
@@ -277,11 +288,20 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
                 </div>
 
                 {/* Submit */}
-                <motion.button type="submit" disabled={loading}
-                  className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                  {loading ? <><Loader size={16} className="animate-spin" /> Saving...</> : <><Check size={16} /> Save Changes</>}
-                </motion.button>
+                <div className="flex gap-3 pt-2">
+                  <motion.button type="submit" disabled={loading}
+                    className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                    whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                    {loading ? <><Loader size={16} className="animate-spin" /> Saving...</> : <><Check size={16} /> Save Changes</>}
+                  </motion.button>
+                  {error?.includes('access token') && (
+                    <motion.button type="button" onClick={onClose}
+                      className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 text-sm"
+                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                      Close & Re-login
+                    </motion.button>
+                  )}
+                </div>
               </form>
             </div>
           </motion.div>
