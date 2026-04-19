@@ -459,25 +459,27 @@ export default function EventDetailPage() {
       };
 
       // Get absolute base URL
-      const protocol = typeof window !== "undefined" ? window.location.protocol : "http:";
-      const host = typeof window !== "undefined" ? window.location.host : "localhost:3001";
+      const protocol =
+        typeof window !== "undefined" ? window.location.protocol : "http:";
+      const host =
+        typeof window !== "undefined" ? window.location.host : "localhost:3001";
       const baseUrl = `${protocol}//${host}`;
 
       // Get the banner image with fallback strategy - prioritize the absolute URL we created
       let absoluteImageUrl = event.absoluteBannerUrl;
       let bannerImagePath = event.banner_image;
-      
+
       // If absoluteBannerUrl doesn't exist, build it from available sources
       if (!absoluteImageUrl) {
         let bannerImage = event.banner_image;
         bannerImagePath = bannerImage;
-        
+
         // If no banner, try alternative fields
         if (!bannerImage) {
           bannerImage = event.gameImage || event.game?.image;
           bannerImagePath = bannerImage;
         }
-        
+
         // If still no banner, get from game name
         if (!bannerImage) {
           const gameImg = getGameImage(event.title, event.gameName);
@@ -486,40 +488,42 @@ export default function EventDetailPage() {
         }
 
         // Make sure the image URL is absolute and accessible to social crawlers
-        if (bannerImage && bannerImage.startsWith('http')) {
+        if (bannerImage && bannerImage.startsWith("http")) {
           absoluteImageUrl = bannerImage;
-        } 
-        else if (bannerImage && bannerImage.startsWith('/')) {
+        } else if (bannerImage && bannerImage.startsWith("/")) {
           absoluteImageUrl = `${baseUrl}${bannerImage}`;
-        }
-        else if (bannerImage) {
+        } else if (bannerImage) {
           absoluteImageUrl = `${baseUrl}/${bannerImage}`;
-        }
-        else {
+        } else {
           absoluteImageUrl = `${baseUrl}/api/og-image/${event.id || params.eventId}`;
         }
       }
-      
+
       const eventUrl =
         typeof window !== "undefined" ? window.location.href : "";
 
       // Format description with location and date info
-      const eventDate = event.start_date || event.date
-        ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "TBD";
+      const eventDate =
+        event.start_date || event.date
+          ? new Date(event.start_date || event.date).toLocaleDateString(
+              "en-GB",
+              {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              },
+            )
+          : "TBD";
 
       const location = event.location || event.venue || "Online";
       const platform = event.platform || "All Platforms";
-      const status = event.status === "Upcoming" 
-        ? "Registration Open" 
-        : event.status === "Ongoing" 
-        ? "In Progress"
-        : "Completed";
-      
+      const status =
+        event.status === "Upcoming"
+          ? "Registration Open"
+          : event.status === "Ongoing"
+            ? "In Progress"
+            : "Completed";
+
       let description = `${event.title} - ${status} on ${eventDate} in ${location}`;
       if (event.prizePool && event.prizePool > 0) {
         description += `. Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
@@ -529,20 +533,26 @@ export default function EventDetailPage() {
       // Determine image type from the banner image path
       let imageType = "image/jpeg"; // Default
       if (bannerImagePath) {
-        if (bannerImagePath.includes('.webp')) imageType = "image/webp";
-        else if (bannerImagePath.includes('.png')) imageType = "image/png";
-        else if (bannerImagePath.includes('.gif')) imageType = "image/gif";
+        if (bannerImagePath.includes(".webp")) imageType = "image/webp";
+        else if (bannerImagePath.includes(".png")) imageType = "image/png";
+        else if (bannerImagePath.includes(".gif")) imageType = "image/gif";
       }
-      
+
       // Ensure image URL is HTTPS for security and social media compatibility
-      if (absoluteImageUrl && absoluteImageUrl.startsWith('http://') && typeof window !== 'undefined') {
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (
+        absoluteImageUrl &&
+        absoluteImageUrl.startsWith("http://") &&
+        typeof window !== "undefined"
+      ) {
+        const isLocalhost =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1";
         if (!isLocalhost) {
           // Convert to HTTPS for production
-          absoluteImageUrl = absoluteImageUrl.replace('http://', 'https://');
+          absoluteImageUrl = absoluteImageUrl.replace("http://", "https://");
         }
       }
-      
+
       // Open Graph tags - CRITICAL for Facebook rich preview
       updateMetaTag("og:title", event.title || "Inception Games Tournament");
       updateMetaTag("og:description", description);
@@ -554,13 +564,16 @@ export default function EventDetailPage() {
       updateMetaTag("og:url", eventUrl);
       updateMetaTag("og:type", "website");
       updateMetaTag("og:site_name", "Inception Games");
-      
+
       // Facebook-specific domain verification and tags
       updateMetaTag("fb:app_id", "1234567890"); // Update with actual FB app ID if available
 
       // Twitter Card tags - for Twitter/X rich preview
       updateNameMetaTag("twitter:card", "summary_large_image");
-      updateNameMetaTag("twitter:title", event.title || "Inception Games Tournament");
+      updateNameMetaTag(
+        "twitter:title",
+        event.title || "Inception Games Tournament",
+      );
       updateNameMetaTag("twitter:description", description);
       updateNameMetaTag("twitter:image", absoluteImageUrl);
       updateNameMetaTag("twitter:image:alt", `${event.title} Tournament Card`);
@@ -569,7 +582,10 @@ export default function EventDetailPage() {
       updateNameMetaTag("twitter:domain", host);
 
       // LinkedIn tags for professional sharing
-      updateMetaTag("og:image:secure_url", absoluteImageUrl.replace('http://', 'https://'));
+      updateMetaTag(
+        "og:image:secure_url",
+        absoluteImageUrl.replace("http://", "https://"),
+      );
 
       // Additional meta tags for better SEO and sharing
       updateNameMetaTag("description", description);
@@ -599,17 +615,17 @@ export default function EventDetailPage() {
           // Ensure banner_image is always an absolute URL for social media sharing
           let bannerImage = eventData.banner_image;
           let absoluteBannerUrl = bannerImage;
-          
+
           if (bannerImage) {
             // If it's already an absolute URL, keep it
-            if (bannerImage.startsWith('http')) {
+            if (bannerImage.startsWith("http")) {
               absoluteBannerUrl = bannerImage;
-            } 
+            }
             // If it's a relative path, make it absolute using the API base URL
             else {
-              const apiBase = 'https://inception-games.an.r.appspot.com/api/v1';
-              absoluteBannerUrl = bannerImage.startsWith('/') 
-                ? `${apiBase}${bannerImage}` 
+              const apiBase = "https://inception-games.an.r.appspot.com/api/v1";
+              absoluteBannerUrl = bannerImage.startsWith("/")
+                ? `${apiBase}${bannerImage}`
                 : `${apiBase}/${bannerImage}`;
             }
           }
@@ -812,26 +828,28 @@ export default function EventDetailPage() {
   };
 
   const generateShareMessage = () => {
-    const eventDate = event.start_date || event.date
-      ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
-      : "Soon";
+    const eventDate =
+      event.start_date || event.date
+        ? new Date(event.start_date || event.date).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "Soon";
     const location = event.location || event.venue || "Online";
     const platform = event.platform || "All Platforms";
-    const status = event.status === "Upcoming" 
-      ? "Registration Open" 
-      : event.status === "Ongoing" 
-      ? "In Progress"
-      : "Completed";
-    
+    const status =
+      event.status === "Upcoming"
+        ? "Registration Open"
+        : event.status === "Ongoing"
+          ? "In Progress"
+          : "Completed";
+
     let prizeText = "";
     if (event.prizePool && event.prizePool > 0) {
       prizeText = ` • Prize Pool: ${event.currency} ${event.prizePool.toLocaleString()}`;
     }
-    
+
     return `🎮 ${event.title}
 
 📅 ${eventDate} • ${status}
@@ -842,7 +860,8 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
 
   const handleShare = async () => {
     const shareMessage = generateShareMessage();
-    const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+    const currentUrl =
+      typeof window !== "undefined" ? window.location.href : "";
 
     if (navigator.share) {
       try {
@@ -861,7 +880,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
   const handleFacebookShare = () => {
     const currentUrl =
       typeof window !== "undefined" ? window.location.href : "";
-    
+
     // Use Facebook SDK Share Dialog if available
     if (window.FB) {
       FB.ui(
@@ -878,11 +897,11 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
       // Fallback to basic share - will use Open Graph meta tags
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(generateShareMessage())}`;
       window.open(facebookUrl, "facebook-share", "width=600,height=400");
-      
+
       // Also trigger Facebook's link scraper in the background to update the cache
       if (window.FB) {
         setTimeout(() => {
-          FB.AppEvents.logEvent('Share', null, {url: currentUrl});
+          FB.AppEvents.logEvent("Share", null, { url: currentUrl });
         }, 500);
       }
     }
@@ -953,7 +972,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
   return (
     <div className="min-h-screen bg-[#030305]">
       <Header />
-      
+
       {/* Event Share Card for social media preview */}
       <EventShareCard event={event} forceRender={true} />
 
@@ -1012,28 +1031,79 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#030305] via-black/50 to-transparent" />
 
-                {/* Date Badge */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="px-6 py-3 bg-amber-500 text-black font-bold rounded-lg flex items-center gap-2 shadow-lg">
-                    <Calendar size={18} />
-                    {new Date(event.date)
-                      .toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })
-                      .toUpperCase()}
+                {/* Bottom Overlay — full width bar */}
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between">
+                  {/* Bottom Left — Registration dates */}
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs w-20">
+                        Reg Starts :
+                      </span>
+                      <span className="text-white text-xs font-semibold">
+                        {event.registrationStart
+                          ? new Date(
+                              event.registrationStart,
+                            ).toLocaleDateString("en-GB", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "TBD"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-400 text-xs w-20">
+                        Reg End :
+                      </span>
+                      <span className="text-white text-xs font-semibold">
+                        {event.registrationEnd
+                          ? new Date(event.registrationEnd).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )
+                          : "TBD"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Address */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                  <p className="text-red-400 text-sm font-medium mb-1">
-                    Address
-                  </p>
-                  <p className="text-white text-sm max-w-md px-4">
-                    {event.address}
-                  </p>
+                  {/* Bottom Right — Game name aligned with Reg Start, badges aligned with Reg End */}
+                  <div className="flex flex-col items-end gap-1">
+                    {/* Game Name — same visual row as Reg Starts */}
+                    <span className="text-white text-xl font-bold">
+                      {gameName}
+                    </span>
+                    {/* Circular badges — same visual row as Reg End */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Flag size={10} className="text-amber-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.location || "—"}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Monitor size={10} className="text-blue-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.platform || "—"}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center backdrop-blur-sm">
+                          <Users size={10} className="text-emerald-400" />
+                        </div>
+                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                          {event.teamType || "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1057,11 +1127,8 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   <span className="text-white font-semibold text-lg">
                     {gameName}
                   </span>
-                  {/* <button className="px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors">
-                    <Users size={14} />
-                    Follow
-                  </button> */}
                 </div>
+
                 <div className="flex items-center gap-2 relative">
                   <div ref={shareMenuRef} className="relative">
                     <button
@@ -1159,8 +1226,347 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       )}
                     </AnimatePresence>
                   </div>
+
+                  {/* Sign Up Button — now sits under Share */}
+                  {event.status !== "Completed" && !showSignupForm && (
+                    <motion.button
+                      onClick={() => setShowSignupForm(true)}
+                      className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-purple-500/20 text-sm"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Users size={16} />
+                      Sign Up
+                    </motion.button>
+                  )}
                 </div>
               </div>
+
+              {/* Signup Form */}
+              <AnimatePresence>
+                {showSignupForm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-6"
+                  >
+                    <div className="bg-gray-900 rounded-xl border border-purple-500/30 p-6">
+                      {/* OTP Verification */}
+                      {otpStep && (
+                        <div className="text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            {otpStep === "success" ? (
+                              <CheckCircle size={32} className="text-white" />
+                            ) : (
+                              <Shield size={32} className="text-white" />
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-2">
+                            {otpStep === "success"
+                              ? "Registration Complete!"
+                              : otpStep === "sending" || otpStep === "verifying"
+                                ? "Please Wait..."
+                                : "Verify Your Email"}
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-4">
+                            {otpStep === "success"
+                              ? "You have been registered successfully"
+                              : otpStep === "sending"
+                                ? "Sending verification code..."
+                                : otpStep === "verifying"
+                                  ? "Verifying your code..."
+                                  : `We sent a code to ${formData.email}`}
+                          </p>
+
+                          {(otpStep === "sending" ||
+                            otpStep === "verifying") && (
+                            <div className="py-8">
+                              <Loader2
+                                className="animate-spin text-purple-400 mx-auto"
+                                size={40}
+                              />
+                            </div>
+                          )}
+
+                          {otpStep === "success" && (
+                            <div className="py-6">
+                              <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
+                                <CheckCircle
+                                  className="text-green-400"
+                                  size={40}
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {otpStep === "input" && (
+                            <div className="space-y-4">
+                              <div className="flex justify-center gap-2">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                  <input
+                                    key={i}
+                                    ref={(el) => {
+                                      otpInputRefs.current[i] = el;
+                                    }}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    className="w-10 h-12 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 outline-none transition-all"
+                                    value={otpValue[i] || ""}
+                                    onChange={(e) => {
+                                      const val = e.target.value.replace(
+                                        /\D/g,
+                                        "",
+                                      );
+                                      const newOtp =
+                                        otpValue.slice(0, i) +
+                                        val +
+                                        otpValue.slice(i + 1);
+                                      setOtpValue(newOtp.slice(0, 6));
+                                      if (val && i < 5)
+                                        otpInputRefs.current[i + 1]?.focus();
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (
+                                        e.key === "Backspace" &&
+                                        !otpValue[i] &&
+                                        i > 0
+                                      ) {
+                                        otpInputRefs.current[i - 1]?.focus();
+                                      }
+                                    }}
+                                  />
+                                ))}
+                              </div>
+
+                              {otpError && (
+                                <p
+                                  className={`text-sm ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}
+                                >
+                                  {otpError}
+                                </p>
+                              )}
+
+                              <button
+                                onClick={handleOtpVerify}
+                                disabled={otpValue.length < 4}
+                                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                              >
+                                Verify & Complete <ArrowRight size={16} />
+                              </button>
+
+                              <div className="flex items-center justify-between text-sm">
+                                <button
+                                  onClick={handleResendOtp}
+                                  className="text-purple-400 hover:text-purple-300 transition"
+                                >
+                                  Resend OTP
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setOtpStep(null);
+                                    setShowSignupForm(false);
+                                  }}
+                                  className="text-gray-500 hover:text-gray-300 transition"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Registration Form */}
+                      {!otpStep && (
+                        <>
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-white">
+                              {event.eventType} Registration
+                            </h3>
+                            <button
+                              onClick={() => setShowSignupForm(false)}
+                              className="text-gray-400 hover:text-white transition-colors"
+                            >
+                              <X size={20} />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
+                            <Image
+                              src={gameImage}
+                              alt={gameName}
+                              width={48}
+                              height={48}
+                              className="rounded-lg"
+                            />
+                            <div>
+                              <p className="text-white font-semibold">
+                                {gameName}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {event.eventType}
+                              </p>
+                            </div>
+                          </div>
+
+                          {price > 0 && (
+                            <div className="mb-4 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
+                              <p className="text-gray-400 text-sm">
+                                Registration Fee
+                              </p>
+                              <p className="text-2xl font-bold text-white">
+                                BDT {price}
+                              </p>
+                            </div>
+                          )}
+
+                          {event.eventType === "Brand Deal" && (
+                            <div className="mb-4 grid grid-cols-2 gap-3">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    brandDealType: "solo",
+                                  }))
+                                }
+                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "solo" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                              >
+                                <p className="text-white font-semibold">Solo</p>
+                                <p className="text-gray-400 text-xs">BDT 499</p>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    brandDealType: "team",
+                                  }))
+                                }
+                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "team" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                              >
+                                <p className="text-white font-semibold">Team</p>
+                                <p className="text-gray-400 text-xs">BDT 999</p>
+                              </button>
+                            </div>
+                          )}
+
+                          <form onSubmit={handleSubmit} className="space-y-3">
+                            <AnimatedInput
+                              label="Full Name"
+                              name="fullName"
+                              value={formData.fullName}
+                              onChange={handleInputChange}
+                              required
+                            />
+                            <AnimatedInput
+                              label="Email Address"
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              required
+                            />
+                            <AnimatedInput
+                              label="Phone Number"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              required
+                            />
+
+                            {(event.eventType === "Tournament" ||
+                              event.eventType === "Scrims") && (
+                              <>
+                                <AnimatedInput
+                                  label="In-Game Name"
+                                  name="inGameName"
+                                  value={formData.inGameName}
+                                  onChange={handleInputChange}
+                                  required
+                                />
+                                <AnimatedInput
+                                  label="In-Game ID"
+                                  name="inGameId"
+                                  value={formData.inGameId}
+                                  onChange={handleInputChange}
+                                  required
+                                />
+                                {event.teamType !== "Solo" && (
+                                  <AnimatedInput
+                                    label="Team Name"
+                                    name="teamName"
+                                    value={formData.teamName}
+                                    onChange={handleInputChange}
+                                    required
+                                  />
+                                )}
+                                <AnimatedInput
+                                  label="Discord ID (optional)"
+                                  name="discordId"
+                                  value={formData.discordId}
+                                  onChange={handleInputChange}
+                                />
+                              </>
+                            )}
+
+                            {event.eventType === "Brand Deal" && (
+                              <>
+                                <AnimatedInput
+                                  label="Social Media Links"
+                                  name="socialMedia"
+                                  value={formData.socialMedia}
+                                  onChange={handleInputChange}
+                                  required
+                                />
+                                <AnimatedInput
+                                  label="Portfolio/Content Links"
+                                  name="portfolio"
+                                  value={formData.portfolio}
+                                  onChange={handleInputChange}
+                                />
+                                {formData.brandDealType === "team" && (
+                                  <AnimatedInput
+                                    label="Team Members"
+                                    type="textarea"
+                                    name="teamMembers"
+                                    value={formData.teamMembers}
+                                    onChange={handleInputChange}
+                                  />
+                                )}
+                              </>
+                            )}
+
+                            <motion.button
+                              type="submit"
+                              disabled={isSubmitting}
+                              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              {isSubmitting ? (
+                                <>
+                                  <Loader2 className="animate-spin" size={20} />{" "}
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  Submit Registration <ArrowRight size={16} />
+                                </>
+                              )}
+                            </motion.button>
+                          </form>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Host + Status */}
+              <div className="flex items-center gap-2 text-sm text-gray-400 mb-3"></div>
 
               {/* Host + Status */}
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
@@ -1450,6 +1856,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       Notifications
                     </button>
                   </div>
+
                   <div className="p-8 text-center">
                     <Bell size={32} className="mx-auto text-gray-600 mb-3" />
                     <p className="text-gray-400 text-sm">
@@ -1459,369 +1866,24 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       Stay sharp, action's coming.
                     </p>
                   </div>
-                </div>
-
-                {/* Sign Up Button */}
-                {event.status !== "Completed" && !showSignupForm && (
-                  <motion.button
-                    onClick={() => setShowSignupForm(true)}
-                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Users size={20} />
-                    Sign Up
-                  </motion.button>
-                )}
-
-                {/* Signup Form */}
-                <AnimatePresence>
-                  {showSignupForm && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
+                  <div className="p-4 border-t border-white/[0.06]">
+                    <a
+                      href="https://discord.gg/shohan0365_70592"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3 rounded-xl font-semibold text-white bg-[#5865F2] hover:bg-[#4752C4] transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      <div className="bg-gray-900 rounded-xl border border-purple-500/30 p-6">
-                        {/* OTP Verification */}
-                        {otpStep && (
-                          <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                              {otpStep === "success" ? (
-                                <CheckCircle size={32} className="text-white" />
-                              ) : (
-                                <Shield size={32} className="text-white" />
-                              )}
-                            </div>
-                            <h3 className="text-xl font-bold text-white mb-2">
-                              {otpStep === "success"
-                                ? "Registration Complete!"
-                                : otpStep === "sending" ||
-                                    otpStep === "verifying"
-                                  ? "Please Wait..."
-                                  : "Verify Your Email"}
-                            </h3>
-                            <p className="text-gray-400 text-sm mb-4">
-                              {otpStep === "success"
-                                ? "You have been registered successfully"
-                                : otpStep === "sending"
-                                  ? "Sending verification code..."
-                                  : otpStep === "verifying"
-                                    ? "Verifying your code..."
-                                    : `We sent a code to ${formData.email}`}
-                            </p>
-
-                            {(otpStep === "sending" ||
-                              otpStep === "verifying") && (
-                              <div className="py-8">
-                                <Loader2
-                                  className="animate-spin text-purple-400 mx-auto"
-                                  size={40}
-                                />
-                              </div>
-                            )}
-
-                            {otpStep === "success" && (
-                              <div className="py-6">
-                                <div className="w-20 h-20 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
-                                  <CheckCircle
-                                    className="text-green-400"
-                                    size={40}
-                                  />
-                                </div>
-                              </div>
-                            )}
-
-                            {otpStep === "input" && (
-                              <div className="space-y-4">
-                                <div className="flex justify-center gap-2">
-                                  {Array.from({ length: 6 }).map((_, i) => (
-                                    <input
-                                      key={i}
-                                      ref={(el) => {
-                                        otpInputRefs.current[i] = el;
-                                      }}
-                                      type="text"
-                                      inputMode="numeric"
-                                      maxLength={1}
-                                      className="w-10 h-12 rounded-lg bg-gray-800 border border-gray-700 text-center text-xl font-bold text-white focus:border-purple-500 outline-none transition-all"
-                                      value={otpValue[i] || ""}
-                                      onChange={(e) => {
-                                        const val = e.target.value.replace(
-                                          /\D/g,
-                                          "",
-                                        );
-                                        const newOtp =
-                                          otpValue.slice(0, i) +
-                                          val +
-                                          otpValue.slice(i + 1);
-                                        setOtpValue(newOtp.slice(0, 6));
-                                        if (val && i < 5)
-                                          otpInputRefs.current[i + 1]?.focus();
-                                      }}
-                                      onKeyDown={(e) => {
-                                        if (
-                                          e.key === "Backspace" &&
-                                          !otpValue[i] &&
-                                          i > 0
-                                        ) {
-                                          otpInputRefs.current[i - 1]?.focus();
-                                        }
-                                      }}
-                                    />
-                                  ))}
-                                </div>
-
-                                {otpError && (
-                                  <p
-                                    className={`text-sm ${otpError.includes("resent") ? "text-green-400" : "text-red-400"}`}
-                                  >
-                                    {otpError}
-                                  </p>
-                                )}
-
-                                <button
-                                  onClick={handleOtpVerify}
-                                  disabled={otpValue.length < 4}
-                                  className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                                >
-                                  Verify & Complete <ArrowRight size={16} />
-                                </button>
-
-                                <div className="flex items-center justify-between text-sm">
-                                  <button
-                                    onClick={handleResendOtp}
-                                    className="text-purple-400 hover:text-purple-300 transition"
-                                  >
-                                    Resend OTP
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setOtpStep(null);
-                                      setShowSignupForm(false);
-                                    }}
-                                    className="text-gray-500 hover:text-gray-300 transition"
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Registration Form */}
-                        {!otpStep && (
-                          <>
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-xl font-bold text-white">
-                                {event.eventType} Registration
-                              </h3>
-                              <button
-                                onClick={() => setShowSignupForm(false)}
-                                className="text-gray-400 hover:text-white transition-colors"
-                              >
-                                <X size={20} />
-                              </button>
-                            </div>
-
-                            {/* Game Info */}
-                            <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
-                              <Image
-                                src={gameImage}
-                                alt={gameName}
-                                width={48}
-                                height={48}
-                                className="rounded-lg"
-                              />
-                              <div>
-                                <p className="text-white font-semibold">
-                                  {gameName}
-                                </p>
-                                <p className="text-gray-400 text-sm">
-                                  {event.eventType}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Price Badge */}
-                            {price > 0 && (
-                              <div className="mb-4 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
-                                <p className="text-gray-400 text-sm">
-                                  Registration Fee
-                                </p>
-                                <p className="text-2xl font-bold text-white">
-                                  BDT {price}
-                                </p>
-                              </div>
-                            )}
-
-                            {/* Brand Deal Type Selection */}
-                            {event.eventType === "Brand Deal" && (
-                              <div className="mb-4 grid grid-cols-2 gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      brandDealType: "solo",
-                                    }))
-                                  }
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    formData.brandDealType === "solo"
-                                      ? "border-purple-500 bg-purple-500/10"
-                                      : "border-gray-700 hover:border-gray-600"
-                                  }`}
-                                >
-                                  <p className="text-white font-semibold">
-                                    Solo
-                                  </p>
-                                  <p className="text-gray-400 text-xs">
-                                    BDT 499
-                                  </p>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      brandDealType: "team",
-                                    }))
-                                  }
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    formData.brandDealType === "team"
-                                      ? "border-purple-500 bg-purple-500/10"
-                                      : "border-gray-700 hover:border-gray-600"
-                                  }`}
-                                >
-                                  <p className="text-white font-semibold">
-                                    Team
-                                  </p>
-                                  <p className="text-gray-400 text-xs">
-                                    BDT 999
-                                  </p>
-                                </button>
-                              </div>
-                            )}
-
-                            <form onSubmit={handleSubmit} className="space-y-3">
-                              <AnimatedInput
-                                label="Full Name"
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleInputChange}
-                                required
-                              />
-                              <AnimatedInput
-                                label="Email Address"
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                              />
-                              <AnimatedInput
-                                label="Phone Number"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                required
-                              />
-
-                              {/* Tournament/Scrims specific fields */}
-                              {(event.eventType === "Tournament" ||
-                                event.eventType === "Scrims") && (
-                                <>
-                                  <AnimatedInput
-                                    label="In-Game Name"
-                                    name="inGameName"
-                                    value={formData.inGameName}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  <AnimatedInput
-                                    label="In-Game ID"
-                                    name="inGameId"
-                                    value={formData.inGameId}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  {event.teamType !== "Solo" && (
-                                    <AnimatedInput
-                                      label="Team Name"
-                                      name="teamName"
-                                      value={formData.teamName}
-                                      onChange={handleInputChange}
-                                      required
-                                    />
-                                  )}
-                                  <AnimatedInput
-                                    label="Discord ID (optional)"
-                                    name="discordId"
-                                    value={formData.discordId}
-                                    onChange={handleInputChange}
-                                  />
-                                </>
-                              )}
-
-                              {/* Brand Deal specific fields */}
-                              {event.eventType === "Brand Deal" && (
-                                <>
-                                  <AnimatedInput
-                                    label="Social Media Links"
-                                    name="socialMedia"
-                                    value={formData.socialMedia}
-                                    onChange={handleInputChange}
-                                    required
-                                  />
-                                  <AnimatedInput
-                                    label="Portfolio/Content Links"
-                                    name="portfolio"
-                                    value={formData.portfolio}
-                                    onChange={handleInputChange}
-                                  />
-                                  {formData.brandDealType === "team" && (
-                                    <AnimatedInput
-                                      label="Team Members"
-                                      type="textarea"
-                                      name="teamMembers"
-                                      value={formData.teamMembers}
-                                      onChange={handleInputChange}
-                                    />
-                                  )}
-                                </>
-                              )}
-
-                              <motion.button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                {isSubmitting ? (
-                                  <>
-                                    <Loader2
-                                      className="animate-spin"
-                                      size={20}
-                                    />
-                                    Processing...
-                                  </>
-                                ) : (
-                                  <>
-                                    Submit Registration
-                                    <ArrowRight size={16} />
-                                  </>
-                                )}
-                              </motion.button>
-                            </form>
-                          </>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.036.055a19.926 19.926 0 0 0 5.993 3.03.077.077 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
+                      </svg>
+                      Join Discord
+                    </a>
+                  </div>
+                </div>
 
                 {/* Prize Pool Card */}
                 {event.prizePool > 0 && (
@@ -1835,32 +1897,6 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                     </p>
                   </div>
                 )}
-
-                {/* Slots Info */}
-                {/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-sm">Registration Slots</span>
-                    <span className="text-white font-semibold">
-                      {event.filledSlots}/{event.totalSlots}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                      style={{ width: `${(event.filledSlots / event.totalSlots) * 100}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {event.totalSlots - event.filledSlots} slots remaining
-                  </p>
-                </div> */}
-
-                {/* Event Type Badge */}
-                {/* <div className="bg-white/[0.02] rounded-xl border border-white/[0.06] p-4 text-center">
-                  <span className={`inline-flex px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(event.status)}`}>
-                    {event.eventType}
-                  </span>
-                </div> */}
               </div>
             </div>
           </div>
