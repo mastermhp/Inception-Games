@@ -99,7 +99,7 @@ export default function LatestNews() {
             className="text-2xl md:text-6xl font-bold text-white mb-4 md:mb-0"
             style={{ fontFamily: "Bebas Neue, sans-serif" }}
           >
-            Inception News
+            Latest News
           </h2>
           <a
             href="#"
