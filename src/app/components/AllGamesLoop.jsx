@@ -175,10 +175,15 @@ export default function AllGamesLoop() {
   transform: translateY(-4px) scale(1.03);     
 }
 
-/* Also update img — remove grayscale/dim, always full brightness */
 .game-pill img {
-  filter: brightness(1) grayscale(0);           
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
   transition: transform 0.3s ease;
+  user-select: none;
 }
 
 .game-pill:hover img {
