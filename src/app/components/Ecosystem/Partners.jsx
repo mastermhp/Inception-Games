@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 
 export const partnersData = {
@@ -55,6 +56,8 @@ export const partnersData = {
 
 
 export function PartnerCard({ item, isFeatured = false }) {
+  const [hovered, setHovered] = React.useState(false);
+
   return (
     <div
       style={{
@@ -62,9 +65,13 @@ export function PartnerCard({ item, isFeatured = false }) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        borderRadius: "1.5rem",
+        borderRadius: "2rem",
         overflow: "hidden",
+        transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        transform: hovered ? "translateY(-12px)" : "translateY(0)",
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       {/* Image Container */}
       <a
@@ -72,49 +79,98 @@ export function PartnerCard({ item, isFeatured = false }) {
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          height: isFeatured ? "380px" : "200px",
-          borderRadius: "1.5rem",
+          height: isFeatured ? "420px" : "240px",
+          borderRadius: "2rem 2rem 0 0",
           overflow: "hidden",
           position: "relative",
-          backgroundColor: "#1a1a2e",
-          display: "block",
+          background: "linear-gradient(135deg, rgba(129, 23, 241, 0.1) 0%, rgba(255, 0, 64, 0.05) 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "1px solid rgba(129, 23, 241, 0.2)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+          transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
-        <Image
-          src={item.photo}
-          alt={item.name}
-          fill
-          unoptimized
-          sizes="100vw"
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+          <Image
+            src={item.photo}
+            alt={item.name}
+            fill
+            unoptimized
+            sizes="100vw"
+            style={{
+              objectFit: "cover",
+              objectPosition: "center",
+              transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              transform: hovered ? "scale(1.08)" : "scale(1)",
+              filter: hovered ? "brightness(1.15)" : "brightness(1)",
+            }}
+          />
+        </div>
+
+        {/* Gradient overlay */}
+        <div
           style={{
-            objectFit: item.imageStyle?.objectFit || "cover",
-            objectPosition: "center",
-            transform: `scale(${item.imageStyle?.scale || 1})`,
+            position: "absolute",
+            inset: 0,
+            background: hovered
+              ? "linear-gradient(135deg, rgba(129,23,241,0.15) 0%, rgba(255,0,64,0.1) 100%)"
+              : "linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%)",
+            transition: "all 0.5s ease-in-out",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Glow border effect */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "2rem 2rem 0 0",
+            background: hovered
+              ? "linear-gradient(90deg, transparent, rgba(129,23,241,0.3), transparent)"
+              : "transparent",
+            transition: "all 0.5s ease-in-out",
+            pointerEvents: "none",
           }}
         />
       </a>
 
-      {/* Caption */}
+      {/* Caption with enhanced styling */}
       <div
         style={{
-          padding: "0.75rem",
+          padding: "1.25rem 1rem",
           textAlign: "center",
+          background: "linear-gradient(to bottom, rgba(10,10,10,0.8) 0%, rgba(10,10,10,0.95) 100%)",
+          borderTop: "1px solid rgba(129, 23, 241, 0.15)",
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
         }}
       >
         <p
           style={{
             color: "#fff",
-            fontSize: isFeatured ? "1rem" : "0.8rem",
-            lineHeight: 1.7,
+            fontSize: isFeatured ? "1rem" : "0.85rem",
+            lineHeight: 1.6,
             fontWeight: 500,
             margin: 0,
+            transition: "all 0.3s ease",
           }}
         >
           {item.caption.normalText}
           <span
             style={{
-              color: "#E8C840",
+              color: "#FFD700",
               fontWeight: 700,
+              display: "block",
+              marginTop: "4px",
+              textShadow: "0 2px 8px rgba(255, 215, 0, 0.2)",
+              transition: "all 0.3s ease",
+              transform: hovered ? "scale(1.02)" : "scale(1)",
             }}
           >
             {item.caption.highlightText}
