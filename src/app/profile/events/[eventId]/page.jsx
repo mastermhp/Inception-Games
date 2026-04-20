@@ -1075,7 +1075,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
 <div className="flex flex-col gap-1.5">
   <div className="flex items-center gap-2">
     <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
-      Reg Start:
+      Reg Starting:
     </span>
 
     <span className="text-white text-[15px] font-semibold font-mono">
@@ -1091,7 +1091,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
 
   <div className="flex items-center gap-2">
     <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
-      Reg End:
+      Reg Ending:
     </span>
 
     <span className="text-white text-[15px] font-semibold font-mono">
@@ -1270,7 +1270,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       whileTap={{ scale: 0.98 }}
                     >
                       <Users size={16} />
-                      Registration
+                      Join
                     </motion.button>
                   )}
                 </div>
