@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 
@@ -9,11 +10,8 @@ export const partnersData = {
       id: 1,
       name: "Ifarmer",
       photo: "/Ecosystem/Partners/ifarmer2.jpeg",
+      type: "image",
       link: "https://www.ifarmer.asia",
-      imageStyle: {
-        objectFit: "contain",
-        // scale: 0.9,
-      },
       caption: {
         normalText: "31,000+ Active Users powering ",
         highlightText:
@@ -23,12 +21,9 @@ export const partnersData = {
     {
       id: 2,
       name: "Mime",
-      photo: "/Ecosystem/Partners/mime2.png",
+      photo: "/Ecosystem/Partners/mime2.jpeg",
+      type: "image",
       link: "https://www.mimebd.com",
-      imageStyle: {
-        objectFit: "contain",
-        // scale: 0.8,
-      },
       caption: {
         normalText: "Mime is our official Internet Sponsor — ",
         highlightText:
@@ -38,12 +33,9 @@ export const partnersData = {
     {
       id: 3,
       name: "Moar",
-      photo: "/Ecosystem/Partners/moar2.png",
+      photo: "/Ecosystem/Partners/moar2.mp4",
+      type: "video",
       link: "https://moarbd.com",
-      imageStyle: {
-        objectFit: "contain",
-        // scale: 0.85,
-      },
       caption: {
         normalText: "Moar fuels the competitive spirit — ",
         highlightText:
@@ -53,10 +45,12 @@ export const partnersData = {
   ],
 };
 
-
-
 export function PartnerCard({ item, isFeatured = false }) {
   const [hovered, setHovered] = React.useState(false);
+
+  const handleClick = () => {
+    window.open(item.link, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div
@@ -66,111 +60,78 @@ export function PartnerCard({ item, isFeatured = false }) {
         width: "100%",
         height: "100%",
         borderRadius: "2rem",
-        overflow: "hidden",
-        transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        overflow: "visible",
         transform: hovered ? "translateY(-12px)" : "translateY(0)",
+        transition: "0.4s ease",
+        cursor: "pointer",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
     >
-      {/* Image Container */}
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
+      {/* Media Section */}
+      <div
         style={{
-          height: isFeatured ? "420px" : "240px",
-          borderRadius: "2rem 2rem 0 0",
-          overflow: "hidden",
+          // height: isFeatured ? "420px" : "240px",
+          flex: 1,
+          flexShrink: 0,
           position: "relative",
-          background: "linear-gradient(135deg, rgba(129, 23, 241, 0.1) 0%, rgba(255, 0, 64, 0.05) 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          border: "1px solid rgba(129, 23, 241, 0.2)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-          transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          overflow: "hidden",
+          borderRadius: "2rem 2rem 0 0",
+          background: "#111",
+          // flexShrink: 0,
         }}
       >
-        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+        {item.type === "video" ? (
+          <video
+            src={item.photo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
           <Image
             src={item.photo}
             alt={item.name}
             fill
             unoptimized
-            sizes="100vw"
             style={{
               objectFit: "cover",
-              objectPosition: "center",
-              transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-              transform: hovered ? "scale(1.08)" : "scale(1)",
-              filter: hovered ? "brightness(1.15)" : "brightness(1)",
             }}
           />
-        </div>
+        )}
+      </div>
 
-        {/* Gradient overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: hovered
-              ? "linear-gradient(135deg, rgba(129,23,241,0.15) 0%, rgba(255,0,64,0.1) 100%)"
-              : "linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%)",
-            transition: "all 0.5s ease-in-out",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Glow border effect */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "2rem 2rem 0 0",
-            background: hovered
-              ? "linear-gradient(90deg, transparent, rgba(129,23,241,0.3), transparent)"
-              : "transparent",
-            transition: "all 0.5s ease-in-out",
-            pointerEvents: "none",
-          }}
-        />
-      </a>
-
-      {/* Caption with enhanced styling */}
+      {/* Caption */}
       <div
         style={{
-          padding: "1.25rem 1rem",
+          padding: "0.875rem 1rem",
+          background: "#0a0a0a",
+          borderRadius: "0 0 2rem 2rem",
+          color: "white",
           textAlign: "center",
-          background: "linear-gradient(to bottom, rgba(10,10,10,0.8) 0%, rgba(10,10,10,0.95) 100%)",
-          borderTop: "1px solid rgba(129, 23, 241, 0.15)",
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "all 0.3s ease",
         }}
       >
         <p
           style={{
-            color: "#fff",
             fontSize: isFeatured ? "1rem" : "0.85rem",
             lineHeight: 1.6,
-            fontWeight: 500,
             margin: 0,
-            transition: "all 0.3s ease",
           }}
         >
           {item.caption.normalText}
           <span
             style={{
+              display: "block",
               color: "#FFD700",
               fontWeight: 700,
-              display: "block",
               marginTop: "4px",
-              textShadow: "0 2px 8px rgba(255, 215, 0, 0.2)",
-              transition: "all 0.3s ease",
-              transform: hovered ? "scale(1.02)" : "scale(1)",
             }}
           >
             {item.caption.highlightText}

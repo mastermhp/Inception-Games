@@ -199,25 +199,22 @@ const generateSampleEvents = () => {
 
 const SAMPLE_EVENTS = generateSampleEvents();
 
-function formatDate(dateStr) {
+
+
+const getOrdinal = (n) => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "TBD";
   const date = new Date(dateStr);
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${days[date.getDay()]} ${date.getDate()}${getOrdinalSuffix(date.getDate())} ${months[date.getMonth()]} ${date.getFullYear()}`;
-}
+  const day = getOrdinal(date.getDate());
+  const month = date.toLocaleDateString("en-GB", { month: "short" });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+};
 
 function formatDateTime(dateStr) {
   const date = new Date(dateStr);
@@ -1034,78 +1031,25 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                 {/* Bottom Overlay — full width bar */}
                 <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between">
                   {/* Bottom Left — Registration dates */}
-                  {/* <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-xs w-20">
-                        Reg Starts :
+                      <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
+                        Reg Starting:
                       </span>
-                      <span className="text-white text-xs font-semibold">
-                        {event.registrationStart
-                          ? new Date(
-                              event.registrationStart,
-                            ).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "TBD"}
+                      <span className="text-white text-[15px] font-semibold font-mono">
+                        {formatDate(event.registrationStart)}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-xs w-20">
-                        Reg End :
+                      <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
+                        Reg Ending:
                       </span>
-                      <span className="text-white text-xs font-semibold">
-                        {event.registrationEnd
-                          ? new Date(event.registrationEnd).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              },
-                            )
-                          : "TBD"}
+                      <span className="text-white text-[15px] font-semibold font-mono">
+                        {formatDate(event.registrationEnd)}
                       </span>
                     </div>
-
-                  </div> */}
-{/* Bottom Left — Registration dates */}
-<div className="flex flex-col gap-1.5">
-  <div className="flex items-center gap-2">
-    <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
-      Reg Starting:
-    </span>
-
-    <span className="text-white text-[15px] font-semibold font-mono">
-      {event.registrationStart
-        ? new Date(event.registrationStart).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "TBD"}
-    </span>
-  </div>
-
-  <div className="flex items-center gap-2">
-    <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
-      Reg Ending:
-    </span>
-
-    <span className="text-white text-[15px] font-semibold font-mono">
-      {event.registrationEnd
-        ? new Date(event.registrationEnd).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "TBD"}
-    </span>
-  </div>
-</div>
-                  
+                  </div>
 
                   {/* Bottom Right — Game name aligned with Reg Start, badges aligned with Reg End */}
                   <div className="flex flex-col items-end gap-1">
