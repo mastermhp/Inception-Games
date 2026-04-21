@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 
@@ -9,11 +10,8 @@ export const partnersData = {
       id: 1,
       name: "Ifarmer",
       photo: "/Ecosystem/Partners/ifarmer2.jpeg",
+      type: "image",
       link: "https://www.ifarmer.asia",
-      imageStyle: {
-        objectFit: "contain",
-        // scale: 0.9,
-      },
       caption: {
         normalText: "31,000+ Active Users powering ",
         highlightText:
@@ -25,10 +23,6 @@ export const partnersData = {
       name: "Mime",
       photo: "/Ecosystem/Partners/MIME.jpeg",
       link: "https://www.mimebd.com",
-      imageStyle: {
-        objectFit: "contain",
-        // scale: 0.8,
-      },
       caption: {
         normalText: "Mime is our official Internet Sponsor — ",
         highlightText:
@@ -75,6 +69,10 @@ export function PartnerCard({
     }
   }, [isActive, item.isVideo]);
 
+  const handleClick = () => {
+    window.open(item.link, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div
       style={{
@@ -86,18 +84,21 @@ export function PartnerCard({
         overflow: "hidden",
         transition: "all 0.4s",
         transform: hovered ? "translateY(-12px)" : "translateY(0)",
+        transition: "0.4s ease",
+        cursor: "pointer",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
     >
       <a
         href={item.link}
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          height: isFeatured ? "420px" : "240px",
-          borderRadius: "2rem 2rem 0 0",
-          overflow: "hidden",
+          // height: isFeatured ? "420px" : "240px",
+          flex: 1,
+          flexShrink: 0,
           position: "relative",
         }}
       >

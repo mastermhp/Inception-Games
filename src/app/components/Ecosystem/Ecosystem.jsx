@@ -175,7 +175,7 @@ function CarouselSection({ tabKey }) {
           onMouseLeave={() => setIsHovered(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          style={{ height: "600px", minHeight: "600px" }}
+          style={{ height: "520px", minHeight: "520px" }}
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {visibleCards.map((card) => {
@@ -193,7 +193,7 @@ function CarouselSection({ tabKey }) {
                   : 320;
 
               const cardWidth = isCenter ? centerWidth : sideWidth;
-              const cardHeight = isCenter ? 400 : 280;
+              const cardHeight = isCenter ? 540 : 320;
 
               let xPosition = 0;
               if (isLeft) {

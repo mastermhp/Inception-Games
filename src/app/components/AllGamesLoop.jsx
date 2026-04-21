@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import game1 from "../../assets/AllGames/brand-1.webp"
-import game2 from "../../assets/AllGames/brand-10.webp"
-import game3 from "../../assets/AllGames/brand-11.webp"
-import game4 from "../../assets/AllGames/brand-2.webp"
-import game5 from "../../assets/AllGames/brand-3.webp"
-import game6 from "../../assets/AllGames/brand-4.webp"
-import game7 from "../../assets/AllGames/brand-5.webp"
-import game8 from "../../assets/AllGames/brand-7.webp"
-import game9 from "../../assets/AllGames/brand-8.webp"
-import game10 from "../../assets/AllGames/brand-9.webp"
-import game11 from "../../assets/AllGames/brand-pubg.webp"
+import game1 from "../../assets/AllGames/brand-1.webp";
+import game2 from "../../assets/AllGames/brand-10.webp";
+import game3 from "../../assets/AllGames/brand-11.webp";
+import game4 from "../../assets/AllGames/brand-2.webp";
+import game5 from "../../assets/AllGames/brand-3.webp";
+import game6 from "../../assets/AllGames/brand-4.webp";
+import game7 from "../../assets/AllGames/brand-5.webp";
+import game8 from "../../assets/AllGames/brand-7.webp";
+import game9 from "../../assets/AllGames/brand-8.webp";
+import game10 from "../../assets/AllGames/brand-9.webp";
+import game11 from "../../assets/AllGames/brand-pubg.webp";
 
 const games = [
   {
@@ -68,10 +68,10 @@ const games = [
     alt: "PUBG Mobile",
     color: "#F2A900",
   },
-]
+];
 
 export default function AllGamesLoop() {
-  const loop = [...games, ...games]
+  const loop = [...games, ...games];
 
   return (
     <section className="all-games-marquee">
@@ -85,11 +85,7 @@ export default function AllGamesLoop() {
             key={i}
             style={{ "--hover-color": game.color }}
           >
-            <img
-              src={game.src}
-              alt={game.alt}
-              draggable={false}
-            />
+            <img src={game.src} alt={game.alt} draggable={false} />
           </div>
         ))}
       </div>
@@ -160,26 +156,39 @@ export default function AllGamesLoop() {
           overflow: hidden;
         }
 
-        .game-pill::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: var(--hover-color);
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          z-index: 0;
-        }
+      .game-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hover-color);
+  opacity: 0.18;          /* always visible */
+  z-index: 0;
+}
 
-        .game-pill:hover::before {
-          opacity: 0.18;
-        }
+.game-pill {
+  /* ... existing styles ... */
+  border-color: var(--hover-color);               /* always on */
+  box-shadow: 0 0 20px var(--hover-color);        /* always on */
+}
 
-        .game-pill:hover {
-          border-color: var(--hover-color);
-          box-shadow: 0 0 20px var(--hover-color);
-          transform: translateY(-4px) scale(1.03);
-        }
+.game-pill:hover {
+  transform: translateY(-4px) scale(1.03);     
+}
 
+.game-pill img {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+  user-select: none;
+}
+
+.game-pill:hover img {
+  transform: scale(1.06);
+}
         .game-pill img {
           position: relative;
           z-index: 2;
@@ -197,5 +206,5 @@ export default function AllGamesLoop() {
         }
       `}</style>
     </section>
-  )
+  );
 }
