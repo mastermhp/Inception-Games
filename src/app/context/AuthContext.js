@@ -25,6 +25,7 @@ export function AuthProvider({ children }) {
 
 
   const [user, setUser] = useState(null);
+  const [tokens, setTokensState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTournamentCategory, setSelectedTournamentCategory] = useState(null);
@@ -164,7 +165,7 @@ export function AuthProvider({ children }) {
     // Extract tokens from various possible response formats
     // Try all possible token property names and nested paths
     let accessToken = data.accessToken || data.access_token || data.token || data.user?.token || data.data?.token || data.data?.accessToken || data.data?.access_token;
-    let refreshToken = data.refreshToken || data.refresh_token || data.user?.refreshToken || data.user?.refresh_token || data.data?.refreshToken || data.data?.refresh_token || "";
+    let refreshToken = data.refreshToken || data.refresh_token || data.user?.refreshToken || data.user?.refresh_token || data.data?.refreshToken || data.data?.refresh_token;
     
     // Log all available data for debugging
     console.log("[v0] FULL LOGIN RESPONSE:", JSON.stringify(data, null, 2));
@@ -179,12 +180,26 @@ export function AuthProvider({ children }) {
       console.log("[v0] Found tokens in authentication object");
     }
     
+    // IMPORTANT: Only store tokens if we found them, don't store empty strings
+    if (!accessToken) {
+      console.error("[v0] CRITICAL: No access token found in login response!");
+      console.error("[v0] This is a backend API issue - the login endpoint is not returning tokens");
+      console.error("[v0] Expected tokens in one of these locations:");
+      console.error("[v0]   - data.accessToken / data.access_token");
+      console.error("[v0]   - data.token");
+      console.error("[v0]   - data.user.token / data.user.accessToken / data.user.access_token");
+      console.error("[v0]   - data.data.token / data.data.accessToken / data.data.access_token");
+      console.error("[v0]   - data.authentication.accessToken / data.authentication.access_token");
+      throw new Error("Backend error: Login response missing access token");
+    }
+    
     const tokens = {
-      accessToken: accessToken || "",
+      accessToken: accessToken,
       refreshToken: refreshToken || ""
     };
-    console.log("[v0] Final tokens to store - accessToken:", accessToken ? accessToken.substring(0, 20) + "..." : "EMPTY", "refreshToken:", refreshToken ? refreshToken.substring(0, 20) + "..." : "EMPTY");
+    console.log("[v0] Tokens extracted - accessToken:", accessToken.substring(0, 20) + "...", "refreshToken:", refreshToken ? refreshToken.substring(0, 20) + "..." : "NOT_PROVIDED");
     setTokens(tokens);
+    setTokensState(tokens);
 
     // Build user object with all available data from login response
     const userData = data.user || data.data || data;
@@ -371,6 +386,7 @@ export function AuthProvider({ children }) {
         refreshToken: data.refreshToken || data.refresh_token || ""
       };
       setTokens(tokens);
+      setTokensState(tokens);
       console.log("[v0] Tokens stored after registration");
     } else {
       console.log("[v0] No tokens returned after registration. Response keys:", Object.keys(data));
@@ -447,18 +463,50 @@ export function AuthProvider({ children }) {
    */
   const updateProfile = useCallback(async (userId, updates) => {
     setError(null);
-    console.log("[v0] Updating profile for:", userId);
+    console.log("[v0] updateProfile called with userId:", userId);
+    console.log("[v0] Current user in state:", user?.id, user?.email);
+    console.log("[v0] Tokens in state:", tokens ? { hasAccessToken: !!tokens.accessToken, hasRefreshToken: !!tokens.refreshToken } : "null");
     
-    // Get current tokens
-    let tokens = getTokens();
-    console.log("[v0] Current tokens:", tokens ? Object.keys(tokens) : "null");
+    // Try to get tokens from context state first (most reliable)
+    let tokensToUse = tokens;
+    
+    // If not in state, try to get from storage
+    if (!tokensToUse) {
+      console.log("[v0] No tokens in state, attempting to retrieve from storage...");
+      tokensToUse = getStoredTokens();
+      console.log("[v0] Tokens retrieved from storage:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
+    }
+    
+    // Final fallback: check localStorage directly
+    if (!tokensToUse) {
+      console.log("[v0] No tokens found anywhere, checking localStorage directly...");
+      try {
+        const stored = typeof window !== "undefined" ? localStorage.getItem("sns_auth_tokens") : null;
+        if (stored) {
+          tokensToUse = JSON.parse(stored);
+          console.log("[v0] Successfully retrieved tokens from localStorage");
+          setTokensState(tokensToUse);
+        }
+      } catch (e) {
+        console.log("[v0] Failed to parse localStorage tokens:", e.message);
+      }
+    }
+    
+    // If still no tokens and user exists, session expired
+    if (!tokensToUse && user?.id) {
+      console.log("[v0] No tokens found anywhere - session expired");
+      const msg = "Session expired - please log in again to update profile";
+      setError(msg);
+      throw new Error(msg);
+    }
     
     // If we only have refreshToken (no accessToken), refresh it
-    if (!tokens?.accessToken && tokens?.refreshToken) {
+    if (!tokensToUse?.accessToken && tokensToUse?.refreshToken) {
       console.log("[v0] No accessToken but refreshToken available - attempting refresh...");
       const refreshedTokens = await refreshAccessToken();
       if (refreshedTokens?.accessToken) {
-        tokens = refreshedTokens;
+        tokensToUse = refreshedTokens;
+        setTokensState(refreshedTokens);
         console.log("[v0] Token refreshed successfully");
       } else {
         const msg = "Failed to refresh access token";
@@ -469,20 +517,23 @@ export function AuthProvider({ children }) {
     }
     
     // Final check for access token
-    if (!tokens?.accessToken) {
-      const msg = "Not authenticated - no access token found";
+    if (!tokensToUse?.accessToken) {
+      const msg = "Not authenticated - please log in again";
       console.log("[v0]", msg);
       setError(msg);
       throw new Error(msg);
     }
     
-    const accessToken = tokens.accessToken;
+    const accessToken = tokensToUse.accessToken;
+    console.log("[v0] Using accessToken:", accessToken.substring(0, 20) + "...");
     
     const url = API.PROFILE_UPDATE.replace(":userId", userId);
     console.log("[v0] Making PUT request to:", url);
     
     // Determine if we're dealing with FormData (multipart) or JSON
     const isFormData = updates instanceof FormData;
+    console.log("[v0] Request type:", isFormData ? "FormData (multipart)" : "JSON");
+    
     const options = {
       method: "PUT",
       headers: {
@@ -496,7 +547,9 @@ export function AuthProvider({ children }) {
       options.headers["Content-Type"] = "application/json";
     }
     
+    console.log("[v0] Request headers:", Object.keys(options.headers));
     const res = await fetch(url, options);
+    console.log("[v0] Update profile response status:", res.status);
     const data = await res.json();
     console.log("[v0] Update profile response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
@@ -560,6 +613,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     isAuthenticated: !!user,
+    tokens,
     selectedTournamentCategory,
     setSelectedTournamentCategory,
 

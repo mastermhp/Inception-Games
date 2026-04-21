@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/context/AuthContext"
 import UnifiedAuthModal from "./AuthModals/UnifiedAuthModal"
+import LaunchCountdownModal from "./LaunchCountdownModal"
 
 const tournamentData = [
   {
@@ -46,6 +47,7 @@ export default function TournamentCarousel() {
   const [isHovered, setIsHovered] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const [signupModalOpen, setSignupModalOpen] = useState(false)
+  const [countdownModalOpen, setCountdownModalOpen] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
   const [signedUpCardId, setSignedUpCardId] = useState(null)
 
@@ -230,7 +232,7 @@ export default function TournamentCarousel() {
                                     router.push(`/profile/events?category=${card.flowType}`)
                                   } else {
                                     setSelectedCard(card)
-                                    setSignupModalOpen(true)
+                                    setCountdownModalOpen(true)
                                   }
                                 }}
                                 className="px-6 md:px-8 py-2 md:py-3 rounded-full font-bold text-white text-sm transition hover:shadow-lg hover:shadow-purple-500/50 hover:scale-105"
@@ -270,6 +272,17 @@ export default function TournamentCarousel() {
           </div>
         </div>
       </section>
+
+  <LaunchCountdownModal
+    isOpen={countdownModalOpen}
+    onClose={() => {
+      setCountdownModalOpen(false)
+    }}
+    onCountdownComplete={() => {
+      setCountdownModalOpen(false)
+      setSignupModalOpen(true)
+    }}
+  />
 
   <UnifiedAuthModal
     isOpen={signupModalOpen}

@@ -32,9 +32,9 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
       transition={{ duration: 0.7 }}
     >
       {/* Background: custom banner or mesh gradient */}
-      {user?.bannerImagePreview ? (
+      {user?.banner || user?.banner_url ? (
         <div className="absolute inset-0">
-          <img src={user.bannerImagePreview} alt="Profile banner" className="w-full h-full object-cover" />
+          <img src={user.banner || user.banner_url} alt="Profile banner" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c14] via-[#0c0c14]/60 to-transparent" />
         </div>
       ) : (
@@ -67,8 +67,8 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
           >
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-[2px] shadow-2xl shadow-purple-500/20">
               <div className="w-full h-full rounded-2xl bg-[#0c0c14] flex items-center justify-center overflow-hidden">
-                {user?.profileImagePreview || user?.avatar ? (
-                  <img src={user.profileImagePreview || user.avatar} alt={user.fullName || 'Avatar'} className="w-full h-full object-cover" />
+                {user?.avatar || user?.avatar_url ? (
+                  <img src={user.avatar || user.avatar_url} alt={user?.fullName || user?.full_name || 'Avatar'} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     {initials}
@@ -93,9 +93,9 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
             >
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                  {user?.fullName || user?.username || 'Player'}
+                  {user?.fullName || user?.full_name || user?.username || 'Player'}
                 </h1>
-                {user?.username && user.username !== user.fullName && (
+                {user?.username && user.username !== (user?.fullName || user?.full_name) && (
                   <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] text-gray-400 text-sm font-medium">
                     @{user.username}
                   </span>
@@ -104,10 +104,10 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
 
               {/* Tags row */}
               <div className="flex flex-wrap items-center gap-2 mt-3">
-                {user?.game && (
+                {(user?.primaryGame || user?.primary_game || user?.game) && (
                   <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-300 border border-purple-500/20">
                     <Gamepad2 size={12} />
-                    {user.game}
+                    {user?.primaryGame || user?.primary_game || user?.game}
                   </span>
                 )}
                 {user?.rank && (
@@ -122,9 +122,9 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                     {user.region}
                   </span>
                 )}
-                {user?.role && (
+                {(user?.gameRole || user?.game_role || user?.role) && (
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/[0.04] text-gray-400 border border-white/[0.08]">
-                    {user.role}
+                    {user?.gameRole || user?.game_role || user?.role}
                   </span>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Menu, X, User, ChevronDown, LogOut, Settings } from 'lucide-react'
 import Link from 'next/link'
 import UnifiedAuthModal from './AuthModals/UnifiedAuthModal'
+import LaunchCountdownModal from './LaunchCountdownModal'
 import { useAuth } from '../../hooks/useAuth'
 
 // Animated Gradient Profile Ring Component
@@ -42,6 +43,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
+  const [countdownModalOpen, setCountdownModalOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [esportsDropdownOpen, setEsportsDropdownOpen] = useState(false)
   const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
@@ -76,6 +78,7 @@ export default function Header() {
   }
 
   const handleLoginClick = () => {
+    // setCountdownModalOpen(true)
     setLoginModalOpen(true)
   }
 
@@ -517,6 +520,16 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Countdown Modal - shows until Friday 8 PM */}
+      {/* <LaunchCountdownModal
+        isOpen={countdownModalOpen}
+        onClose={() => setCountdownModalOpen(false)}
+        onCountdownComplete={() => {
+          setCountdownModalOpen(false)
+          setLoginModalOpen(true)
+        }}
+      /> */}
 
       {/* Auth Modals */}
       <UnifiedAuthModal

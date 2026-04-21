@@ -38,13 +38,16 @@ const RANKS = {
 
 
 export default function EditProfileModal({ isOpen, onClose, user, gamingProfile, onProfileUpdate }) {
-  const { updateProfile } = useAuth()
+  const { updateProfile, user: contextUser } = useAuth()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
     fullName: '', phone: '', username: '', bio: '', game: '', role: '', rank: '', discord: '',
   })
+  
+  // Use contextUser as fallback if user prop is not provided
+  const currentUser = user || contextUser
   const [selectedContinent, setSelectedContinent] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
@@ -57,28 +60,29 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
 
   useEffect(() => {
     if (isOpen) {
-      const existingRegion = user?.region || gamingProfile?.region || ''
+      console.log("[v0] EditProfileModal opened, current user:", currentUser?.id, currentUser?.email)
+      const existingRegion = currentUser?.region || gamingProfile?.region || ''
       const { continent, country, city } = parseRegionString(existingRegion)
-      setSelectedContinent(continent || user?.continent || '')
-      setSelectedCountry(country || user?.country || '')
+      setSelectedContinent(continent || currentUser?.continent || '')
+      setSelectedCountry(country || currentUser?.country || '')
       setSelectedCity(city || '')
       setFormData({
-        fullName: user?.fullName || '',
-        phone: user?.phone || '',
-        username: user?.username || '',
-        bio: user?.bio || '',
-        game: user?.primaryGame || '',
-        role: user?.gameRole || '',
-        rank: user?.rank || '',
-        discord: user?.discord || '',
+        fullName: currentUser?.fullName || currentUser?.full_name || '',
+        phone: currentUser?.phone || '',
+        username: currentUser?.username || '',
+        bio: currentUser?.bio || '',
+        game: currentUser?.primaryGame || currentUser?.primary_game || '',
+        role: currentUser?.gameRole || currentUser?.game_role || '',
+        rank: currentUser?.rank || '',
+        discord: currentUser?.discord || '',
       })
-      setProfileImagePreview(user?.avatar || null)
-      setBannerImagePreview(user?.banner || null)
+      setProfileImagePreview(currentUser?.avatar || currentUser?.avatar_url || null)
+      setBannerImagePreview(currentUser?.banner || currentUser?.banner_url || null)
       setProfileImageFile(null)
       setBannerImageFile(null)
       setMessage(''); setError('')
     }
-  }, [isOpen, user, gamingProfile])
+  }, [isOpen, currentUser, gamingProfile])
 
   const handleImageChange = (e, type) => {
     const file = e.target.files?.[0]
@@ -101,7 +105,7 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
     setError('')
-    if (name === 'game') setFormData(prev => ({ ...prev, [name]: value, role: '', rank: '' }))
+    if (name === 'game') setFormData(prev => ({ ...prev, role: '', rank: '' }))
   }
 
   const getRegionString = () => {
@@ -109,26 +113,42 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     return parts.join(', ')
   }
 
+  // Separate continent, country, city from combined region string
+  const extractRegionParts = (regionStr) => {
+    if (!regionStr) return {}
+    const parts = regionStr.split(', ')
+    // Assuming format: "City, Country, Continent" when all present
+    return {
+      city: parts[0] || '',
+      country: parts[1] || '',
+      continent: parts[2] || ''
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(''); setLoading(true)
     try {
-      if (!user?.id) {
-        throw new Error('User ID not found')
+      console.log("[v0] handleSubmit called, currentUser:", currentUser?.id, currentUser?.email)
+      if (!currentUser?.id) {
+        console.error("[v0] No user ID available. contextUser:", contextUser?.id)
+        throw new Error('User ID not found - please ensure you are logged in')
       }
-      const region = getRegionString()
       
-      // Create FormData for file uploads
+      // Create FormData for file uploads - matches API spec exactly
       const formDataToSend = new FormData()
+      
+      // Add text fields in exact order from API spec
       formDataToSend.append('full_name', formData.fullName || '')
-      formDataToSend.append('phone', formData.phone || '')
       formDataToSend.append('username', formData.username || '')
+      formDataToSend.append('discord', formData.discord || '')
       formDataToSend.append('bio', formData.bio || '')
+      formDataToSend.append('phone', formData.phone || '')
       formDataToSend.append('primary_game', formData.game || '')
       formDataToSend.append('game_role', formData.role || '')
       formDataToSend.append('rank', formData.rank || '')
-      formDataToSend.append('discord', formData.discord || '')
-      formDataToSend.append('region', region || '')
+      formDataToSend.append('continent', selectedContinent || '')
+      formDataToSend.append('country', selectedCountry || '')
       
       // Add files if they were selected
       if (profileImageFile) {
@@ -138,13 +158,28 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
         formDataToSend.append('banner', bannerImageFile)
       }
       
-      console.log("[v0] Submitting profile update for user:", user.id);
-      await updateProfile(user.id, formDataToSend)
+      console.log("[v0] Submitting profile update for user:", currentUser.id)
+      console.log("[v0] FormData entries:", {
+        full_name: formData.fullName,
+        username: formData.username,
+        discord: formData.discord,
+        bio: formData.bio,
+        phone: formData.phone,
+        primary_game: formData.game,
+        game_role: formData.role,
+        rank: formData.rank,
+        continent: selectedContinent,
+        country: selectedCountry,
+        avatar: profileImageFile ? 'file' : 'none',
+        banner: bannerImageFile ? 'file' : 'none'
+      })
+      
+      await updateProfile(currentUser.id, formDataToSend)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
     } catch (err) { 
-      console.error("[v0] Profile update error:", err);
-      const errorMsg = err.message || 'Failed to update profile';
+      console.error("[v0] Profile update error:", err)
+      const errorMsg = err.message || 'Failed to update profile'
       setError(errorMsg)
     }
     finally { setLoading(false) }
