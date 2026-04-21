@@ -17,6 +17,7 @@ export const API = {
 
   // Utility
   RESEND_OTP:            `${BASE_URL}/auth/resend-otp`,
+  REFRESH_TOKEN:         `${BASE_URL}/auth/refresh-token`,
 
   // Profile - use userId per API docs
   PROFILE_GET:           `${BASE_URL}/auth/profile/:userId`,
@@ -59,21 +60,26 @@ export async function authFetch(url, options = {}) {
 let memoryTokens = null;
 
 export function getTokens() {
-  if (memoryTokens) return memoryTokens;
   if (typeof window === "undefined") return null;
   try {
+    // Always check storage first to ensure we have the latest tokens
     // Try sessionStorage first (more secure, cleared on tab close)
     let stored = sessionStorage.getItem("sns_auth_tokens");
     if (stored) {
       memoryTokens = JSON.parse(stored);
-      console.log("[v0] Tokens loaded from sessionStorage");
+      console.log("[v0] Tokens refreshed from sessionStorage");
       return memoryTokens;
     }
     // Fallback to localStorage if sessionStorage is empty
     stored = localStorage.getItem("sns_auth_tokens");
     if (stored) {
       memoryTokens = JSON.parse(stored);
-      console.log("[v0] Tokens loaded from localStorage");
+      console.log("[v0] Tokens refreshed from localStorage");
+      return memoryTokens;
+    }
+    // If nothing in storage, return memory cache (if exists)
+    if (memoryTokens) {
+      console.log("[v0] Using in-memory cached tokens");
       return memoryTokens;
     }
   } catch (err) {
@@ -137,4 +143,59 @@ export function setStoredUser(user) {
   }
 }
 
+/**
+ * Refresh access token using refresh token
+ * This is called when we have a refreshToken but no accessToken
+ */
+export async function refreshAccessToken() {
+  console.log("[v0] Attempting to refresh access token...");
+  const tokens = getTokens();
+  
+  if (!tokens?.refreshToken) {
+    console.log("[v0] No refresh token available - cannot refresh");
+    return null;
+  }
+  
+  try {
+    const res = await fetch(API.REFRESH_TOKEN, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: tokens.refreshToken
+      })
+    });
+    
+    const data = await res.json();
+    console.log("[v0] Token refresh response status:", res.status);
+    
+    if (!res.ok) {
+      console.log("[v0] Token refresh failed:", data.message || "Unknown error");
+      // If refresh fails, clear tokens and require re-login
+      clearTokens();
+      return null;
+    }
+    
+    // Extract new accessToken from response
+    const newAccessToken = data.accessToken || data.access_token || data.token || data.data?.accessToken || data.data?.access_token;
+    
+    if (newAccessToken) {
+      // Update tokens with new accessToken, keep existing refreshToken
+      const updatedTokens = {
+        ...tokens,
+        accessToken: newAccessToken
+      };
+      setTokens(updatedTokens);
+      console.log("[v0] Access token refreshed successfully");
+      return updatedTokens;
+    } else {
+      console.log("[v0] No access token in refresh response. Response:", Object.keys(data));
+      return null;
+    }
+  } catch (err) {
+    console.log("[v0] Error refreshing token:", err.message);
+    return null;
+  }
+}
 
