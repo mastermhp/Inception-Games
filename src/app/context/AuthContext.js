@@ -9,6 +9,7 @@ import {
   getStoredUser,
   setStoredUser,
   authFetch,
+  refreshAccessToken,
 } from "@/lib/api";
 
 const getStoredTokens = () => getTokens();
@@ -161,20 +162,28 @@ export function AuthProvider({ children }) {
     }
 
     // Extract tokens from various possible response formats
-    const accessToken = data.accessToken || data.access_token || data.token || data.user?.token;
-    const refreshToken = data.refreshToken || data.refresh_token || data.refreshToken || "";
+    // Try all possible token property names and nested paths
+    let accessToken = data.accessToken || data.access_token || data.token || data.user?.token || data.data?.token || data.data?.accessToken || data.data?.access_token;
+    let refreshToken = data.refreshToken || data.refresh_token || data.user?.refreshToken || data.user?.refresh_token || data.data?.refreshToken || data.data?.refresh_token || "";
     
-    // If no token found in response, log the structure for debugging
-    if (!accessToken) {
-      console.log("[v0] WARNING: No access token found in login response. Response keys:", Object.keys(data));
-      console.log("[v0] Full response:", JSON.stringify(data));
+    // Log all available data for debugging
+    console.log("[v0] FULL LOGIN RESPONSE:", JSON.stringify(data, null, 2));
+    console.log("[v0] Top-level response keys:", Object.keys(data));
+    if (data.user) console.log("[v0] data.user keys:", Object.keys(data.user));
+    if (data.data) console.log("[v0] data.data keys:", Object.keys(data.data));
+    
+    // If still no token found, try looking in authentication/tokens object
+    if (!accessToken && data.authentication) {
+      accessToken = data.authentication.accessToken || data.authentication.access_token || data.authentication.token;
+      refreshToken = data.authentication.refreshToken || data.authentication.refresh_token;
+      console.log("[v0] Found tokens in authentication object");
     }
     
     const tokens = {
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      accessToken: accessToken || "",
+      refreshToken: refreshToken || ""
     };
-    console.log("[v0] Login tokens received - accessToken:", tokens.accessToken ? tokens.accessToken.substring(0, 20) + "..." : "MISSING");
+    console.log("[v0] Final tokens to store - accessToken:", accessToken ? accessToken.substring(0, 20) + "..." : "EMPTY", "refreshToken:", refreshToken ? refreshToken.substring(0, 20) + "..." : "EMPTY");
     setTokens(tokens);
 
     // Build user object with all available data from login response
@@ -434,14 +443,32 @@ export function AuthProvider({ children }) {
 
   /**
    * Update user profile
-   * PUT /auth/profile/:userId  body: { field updates }
+   * PUT /auth/profile/:userId  body: { field updates } or FormData with files
    */
   const updateProfile = useCallback(async (userId, updates) => {
     setError(null);
     console.log("[v0] Updating profile for:", userId);
-    const tokens = getStoredTokens();
-    console.log("[v0] Tokens available:", !!tokens?.accessToken);
     
+    // Get current tokens
+    let tokens = getTokens();
+    console.log("[v0] Current tokens:", tokens ? Object.keys(tokens) : "null");
+    
+    // If we only have refreshToken (no accessToken), refresh it
+    if (!tokens?.accessToken && tokens?.refreshToken) {
+      console.log("[v0] No accessToken but refreshToken available - attempting refresh...");
+      const refreshedTokens = await refreshAccessToken();
+      if (refreshedTokens?.accessToken) {
+        tokens = refreshedTokens;
+        console.log("[v0] Token refreshed successfully");
+      } else {
+        const msg = "Failed to refresh access token";
+        console.log("[v0]", msg);
+        setError(msg);
+        throw new Error(msg);
+      }
+    }
+    
+    // Final check for access token
     if (!tokens?.accessToken) {
       const msg = "Not authenticated - no access token found";
       console.log("[v0]", msg);
@@ -449,13 +476,27 @@ export function AuthProvider({ children }) {
       throw new Error(msg);
     }
     
+    const accessToken = tokens.accessToken;
+    
     const url = API.PROFILE_UPDATE.replace(":userId", userId);
     console.log("[v0] Making PUT request to:", url);
     
-    const res = await authFetch(url, {
+    // Determine if we're dealing with FormData (multipart) or JSON
+    const isFormData = updates instanceof FormData;
+    const options = {
       method: "PUT",
-      body: JSON.stringify(updates),
-    });
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+      },
+      body: isFormData ? updates : JSON.stringify(updates),
+    };
+    
+    // Don't set Content-Type for FormData - browser will set it with boundary
+    if (!isFormData) {
+      options.headers["Content-Type"] = "application/json";
+    }
+    
+    const res = await fetch(url, options);
     const data = await res.json();
     console.log("[v0] Update profile response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
@@ -463,8 +504,35 @@ export function AuthProvider({ children }) {
       setError(msg);
       throw new Error(msg);
     }
+    
+    // Update the user in state if successful
+    if (res.ok && data.data) {
+      const userData = data.data;
+      const userObj = {
+        id: userData.id || userData._id,
+        email: userData.email,
+        username: userData.username || "",
+        fullName: userData.full_name || userData.fullName || userData.name || "",
+        phone: userData.phone || "",
+        avatar: userData.avatar_url || userData.avatar || "",
+        banner: userData.banner_url || userData.banner || "",
+        discord: userData.discord || "",
+        bio: userData.bio || "",
+        primaryGame: userData.primary_game || "",
+        gameRole: userData.game_role || "",
+        rank: userData.rank || "",
+        continent: userData.continent || "",
+        country: userData.country || "",
+        region: userData.region || "",
+        authMethod: user?.authMethod || "email",
+        firebaseUid: user?.firebaseUid || null,
+      };
+      setUser(userObj);
+      setStoredUser(userObj);
+    }
+    
     return data;
-  }, []);
+  }, [user]);
 
   /**
    * Get user profile

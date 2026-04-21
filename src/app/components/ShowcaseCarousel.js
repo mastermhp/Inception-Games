@@ -111,7 +111,19 @@ const tabs = [
 ];
 
 // ── Quote-style Partner Card ─────────────────────────────────────────────────
-function PartnerCard({ item, isFeatured = false }) {
+function PartnerCard({ item, isFeatured = false, isActive, onVideoEnd }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (item.isVideo && videoRef.current) {
+      if (isActive) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive, item.isVideo]);
   return (
     <div
       className={`relative h-full rounded-3xl overflow-hidden ${
@@ -119,11 +131,22 @@ function PartnerCard({ item, isFeatured = false }) {
       }`}
     >
       {/* Full-bleed background photo */}
-      <img
-        src={item.photo}
-        alt={item.name}
-        className="absolute inset-0 w-full h-full object-cover object-top"
-      />
+      {item.isVideo ? (
+        <video
+          ref={videoRef}
+          src={item.video}
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          onEnded={onVideoEnd}
+        />
+      ) : (
+        <img
+          src={item.photo}
+          alt={item.name}
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+      )}
 
       {/* Dark gradient — heavy at bottom, fades at top */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
@@ -151,9 +174,23 @@ function PartnerCard({ item, isFeatured = false }) {
 }
 
 // ── Shared ShowcaseCard dispatcher
-function ShowcaseCard({ item, type, isFeatured = false, isPreview = false }) {
+function ShowcaseCard({
+  item,
+  type,
+  isFeatured = false,
+  isPreview = false,
+  isActive,
+  onVideoEnd,
+}) {
   if (type === "partners") {
-    return <PartnerCard item={item} isFeatured={isFeatured} />;
+    return (
+      <PartnerCard
+        item={item}
+        isFeatured={isFeatured}
+        isActive={isActive}
+        onVideoEnd={onVideoEnd}
+      />
+    );
   }
 
   if (type === "games") {
@@ -225,11 +262,18 @@ export default function ShowcaseCarousel() {
 
   useEffect(() => {
     if (!isAutoPlaying) return;
+
+    const currentItem = items[activeIndex];
+
+    // ⛔ STOP auto slide if video
+    if (currentItem.isVideo) return;
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % items.length);
     }, 4000);
+
     return () => clearInterval(interval);
-  }, [isAutoPlaying, items.length, activeTab]);
+  }, [isAutoPlaying, items.length, activeIndex, activeTab]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -399,6 +443,8 @@ export default function ShowcaseCarousel() {
                     item={items[activeIndex]}
                     type={activeTab}
                     isFeatured
+                    isActive={true}
+                    onVideoEnd={goToNext}
                   />
                 </div>
               </motion.div>

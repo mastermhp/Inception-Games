@@ -50,6 +50,8 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
   const [selectedCity, setSelectedCity] = useState('')
   const [profileImagePreview, setProfileImagePreview] = useState(null)
   const [bannerImagePreview, setBannerImagePreview] = useState(null)
+  const [profileImageFile, setProfileImageFile] = useState(null)
+  const [bannerImageFile, setBannerImageFile] = useState(null)
   const profileInputRef = useRef(null)
   const bannerInputRef = useRef(null)
 
@@ -72,6 +74,8 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
       })
       setProfileImagePreview(user?.avatar || null)
       setBannerImagePreview(user?.banner || null)
+      setProfileImageFile(null)
+      setBannerImageFile(null)
       setMessage(''); setError('')
     }
   }, [isOpen, user, gamingProfile])
@@ -82,8 +86,13 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     if (file.size > 5 * 1024 * 1024) { setError('Image must be less than 5MB'); return }
     const reader = new FileReader()
     reader.onloadend = () => {
-      if (type === 'profile') setProfileImagePreview(reader.result)
-      else setBannerImagePreview(reader.result)
+      if (type === 'profile') {
+        setProfileImagePreview(reader.result)
+        setProfileImageFile(file)
+      } else {
+        setBannerImagePreview(reader.result)
+        setBannerImageFile(file)
+      }
     }
     reader.readAsDataURL(file)
   }
@@ -108,25 +117,29 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
         throw new Error('User ID not found')
       }
       const region = getRegionString()
-      // Send updates with API field names (snake_case)
-      const updates = {
-        full_name: formData.fullName || undefined,
-        phone: formData.phone || undefined,
-        username: formData.username || undefined,
-        bio: formData.bio || undefined,
-        primary_game: formData.game || undefined,
-        game_role: formData.role || undefined,
-        rank: formData.rank || undefined,
-        discord: formData.discord || undefined,
-        region: region || undefined,
-        avatar_url: profileImagePreview || undefined,
-        banner_url: bannerImagePreview || undefined,
-      }
-      // Remove undefined fields
-      Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key])
       
-      console.log("[v0] Submitting profile update for user:", user.id, "with updates:", updates);
-      await updateProfile(user.id, updates)
+      // Create FormData for file uploads
+      const formDataToSend = new FormData()
+      formDataToSend.append('full_name', formData.fullName || '')
+      formDataToSend.append('phone', formData.phone || '')
+      formDataToSend.append('username', formData.username || '')
+      formDataToSend.append('bio', formData.bio || '')
+      formDataToSend.append('primary_game', formData.game || '')
+      formDataToSend.append('game_role', formData.role || '')
+      formDataToSend.append('rank', formData.rank || '')
+      formDataToSend.append('discord', formData.discord || '')
+      formDataToSend.append('region', region || '')
+      
+      // Add files if they were selected
+      if (profileImageFile) {
+        formDataToSend.append('avatar', profileImageFile)
+      }
+      if (bannerImageFile) {
+        formDataToSend.append('banner', bannerImageFile)
+      }
+      
+      console.log("[v0] Submitting profile update for user:", user.id);
+      await updateProfile(user.id, formDataToSend)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
     } catch (err) { 
