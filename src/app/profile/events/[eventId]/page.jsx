@@ -201,6 +201,7 @@ const SAMPLE_EVENTS = generateSampleEvents();
 
 
 
+
 const getOrdinal = (n) => {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;
@@ -248,18 +249,7 @@ function getOrdinalSuffix(day) {
   }
 }
 
-function getStatusColor(status) {
-  switch (status) {
-    case "Upcoming":
-      return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-    case "Ongoing":
-      return "text-blue-400 bg-blue-500/10 border-blue-500/30";
-    case "Completed":
-      return "text-red-400 bg-red-500/10 border-red-500/30";
-    default:
-      return "text-gray-400 bg-gray-500/10 border-gray-500/30";
-  }
-}
+
 
 function getStatusText(status) {
   switch (status) {
@@ -388,6 +378,9 @@ export default function EventDetailPage() {
     teamMembers: "",
     brandDealType: "solo",
   });
+
+
+
 
   // Auto-fill form with user data when signup form is shown
   useEffect(() => {
@@ -746,7 +739,7 @@ export default function EventDetailPage() {
         },
       );
 
-      const data = await response.json();
+   
 
       if (!response.ok) {
         showNotificationMessage(
@@ -756,6 +749,8 @@ export default function EventDetailPage() {
         setIsSubmitting(false);
         return;
       }
+
+
 
       // Reset form data after successful registration
       setFormData({

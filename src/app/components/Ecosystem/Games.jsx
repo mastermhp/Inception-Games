@@ -1,7 +1,9 @@
 "use client";
+
 import Link from "next/link";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const gamesData = {
   title: "Our Games",
@@ -12,7 +14,7 @@ export const gamesData = {
       name: "Z Inception",
       genre: "Action",
       photo: "/Ecosystem/Games/zinception.jpg",
-      link: "https://drive.google.com/file/d/1a0PfwyBeGXXJAvE5wRGG_7wey0y5JCzX/view",
+      link: "https://drive.google.com/file/d/1a0PfwyBeGXXJAvE5wRGG_7wey0y5JCZx/view",
     },
     {
       id: 2,
@@ -40,7 +42,7 @@ export const gamesData = {
       name: "Arcade Game",
       genre: "Casual",
       photo: "/Ecosystem/Games/ArcadeGame.jpeg",
-      link: "https://play.google.com/store/apps/details?id=asia.ifarmer.farmers&pcampaignid=web_share",
+      link: "https://play.google.com/store/apps/details?id=asia.ifarmer.farmers",
     },
     {
       id: 6,
@@ -52,216 +54,200 @@ export const gamesData = {
   ],
 };
 
-function PlayIcon({ size = 16 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="flex-shrink-0"
-    >
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
+/* ─────────────────────────────────────────────
+   CARD
+───────────────────────────────────────────── */
 export function GameCard({ item, isFeatured = false }) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <Link
-      href={item.link || "#"}
+      href={item.link}
       target="_blank"
       rel="noopener noreferrer"
       className="block w-full h-full"
+      tabIndex={isFeatured ? 0 : -1}
     >
       <div
-        className="relative w-full h-full rounded-3xl overflow-hidden group"
+        className="relative w-full h-full rounded-[28px] overflow-hidden"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          background: "linear-gradient(135deg, rgba(129, 23, 241, 0.1) 0%, rgba(255, 0, 64, 0.05) 100%)",
-          border: "1px solid rgba(129, 23, 241, 0.2)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-          transition: "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-          transform: hovered ? "translateY(-8px)" : "translateY(0)",
+          transform: hovered && isFeatured ? "scale(1.03)" : "scale(1)",
+          transition: "all .45s ease",
+          boxShadow: isFeatured
+            ? "0 0 45px rgba(129,23,241,.22), 0 18px 50px rgba(0,0,0,.55)"
+            : "0 10px 25px rgba(0,0,0,.35)",
         }}
       >
-        {/* Game Image - Full cover */}
+        {/* IMAGE (FULL COVER FIX) */}
         <img
           src={item.photo}
           alt={item.name}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          style={{
-            transition: "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-            transform: hovered ? "scale(1.08) rotate(1deg)" : "scale(1) rotate(0deg)",
-          }}
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
-        {/* Enhanced gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: hovered
-              ? "linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(129,23,241,0.2) 50%, rgba(0,0,0,0.4) 100%)"
-              : "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)",
-            transition: "all 0.5s ease-in-out",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-        {/* Animated border glow on hover */}
-        <div
-          className="absolute inset-0 rounded-3xl"
-          style={{
-            background: hovered
-              ? "linear-gradient(90deg, transparent, rgba(129,23,241,0.3), transparent)"
-              : "transparent",
-            transition: "all 0.5s ease-in-out",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Top-right badge with enhancement */}
-        <div
-          className="absolute top-4 right-4 text-white/90 tracking-widest font-bold z-20"
-          style={{
-            fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: "10px",
-            background: "rgba(129, 23, 241, 0.4)",
-            padding: "6px 12px",
-            borderRadius: "20px",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            transition: "all 0.3s ease",
-            opacity: hovered ? 1 : 0.8,
-            transform: hovered ? "scale(1.1)" : "scale(1)",
-          }}
-        >
-          ● PLAY
+        {/* Genre */}
+        <div className="absolute top-4 right-4 z-20">
+          <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-[1px] uppercase text-white bg-purple-600/45 backdrop-blur-md border border-white/10">
+            {item.genre}
+          </span>
         </div>
 
-        {/* Play now button - appears on hover */}
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            transition={{ duration: 0.3 }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
-            style={{
-              pointerEvents: "none",
-            }}
-          >
-            <div
-              className="flex items-center gap-2 rounded-full text-black font-bold whitespace-nowrap select-none"
-              style={{
-                fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-                fontSize: "13px",
-                background: "linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,240,240,0.95) 100%)",
-                padding: "10px 22px",
-                boxShadow: "0 12px 40px rgba(129, 23, 241, 0.3)",
-                backdropFilter: "blur(4px)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-              }}
+        {/* CTA */}
+        <AnimatePresence>
+          {hovered && isFeatured && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center z-20"
             >
-              <PlayIcon size={16} />
-              <span>Play now</span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Footer: name + genre */}
-        <div
-          className="absolute bottom-0 left-0 right-0"
-          style={{
-            padding: "16px 18px 18px",
-            background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)",
-            transition: "all 0.3s ease",
-          }}
-        >
-          <p
-            style={{
-              background: "linear-gradient(135deg, rgb(129, 23, 241) 0%, rgb(255, 0, 64) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: "16px",
-              fontWeight: 900,
-              letterSpacing: "0.8px",
-              margin: 0,
-              lineHeight: 1.2,
-            }}
-          >
-            {item.name}
-          </p>
-          {item.genre && (
-            <p
-              className="leading-tight"
-              style={{
-                fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-                fontSize: "12px",
-                color: "rgba(255, 255, 255, 0.7)",
-                fontWeight: 600,
-                letterSpacing: "0.3px",
-                marginTop: "8px",
-                transition: "all 0.3s ease",
-              }}
-            >
-              {item.genre}
-            </p>
+              <div className="px-6 py-3 rounded-full bg-white text-black font-bold text-sm">
+                Play Now
+              </div>
+            </motion.div>
           )}
+        </AnimatePresence>
+
+        {/* Footer */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-5">
+          <h3 className="text-xl font-black relative inline-block">
+            <span className="bg-gradient-to-br from-purple-600 via-fuchsia-500 to-pink-500 text-transparent bg-clip-text">
+              {item.name}
+            </span>
+          </h3>
+
+          <p className="text-white/50 text-xs mt-1 uppercase tracking-[2px]">
+            {item.genre}
+          </p>
         </div>
       </div>
     </Link>
   );
 }
 
-export function GamesMarquee() {
+/* ─────────────────────────────────────────────
+   CAROUSEL
+───────────────────────────────────────────── */
+export function GamesCarousel() {
+  const items = gamesData.items;
+  const total = items.length;
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef(null);
+
+  const next = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % total);
+  }, [total]);
+
+  const prev = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + total) % total);
+  }, [total]);
+
+  useEffect(() => {
+    if (paused) return;
+
+    intervalRef.current = setInterval(next, 4500);
+    return () => clearInterval(intervalRef.current);
+  }, [paused, next]);
+
+  const getVisibleCards = () => {
+    const prevIndex = (activeIndex - 1 + total) % total;
+    const nextIndex = (activeIndex + 1) % total;
+
+    return [
+      { ...items[prevIndex], position: "left", key: prevIndex },
+      { ...items[activeIndex], position: "center", key: activeIndex },
+      { ...items[nextIndex], position: "right", key: nextIndex },
+    ];
+  };
+
+  const visibleCards = getVisibleCards();
+
   return (
-    <div className="relative w-full overflow-hidden py-8">
-      {/* Gradient overlays for fade effect */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 bg-gradient-to-r from-[#120820] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 bg-gradient-to-l from-[#120820] to-transparent z-10 pointer-events-none" />
+    <section className="relative">
+      <div className="relative w-full flex justify-center">
+        {/* Left Arrow */}
+        <button
+          onClick={prev}
+         className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center"
+        >
+        
+          <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
+        </button>
 
-      <motion.div
-        animate={{ x: [0, -1000] }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="flex gap-4 md:gap-6 w-fit"
-      >
-        {/* First set of cards */}
-        {gamesData.items.map((item) => (
-          <div
-            key={`game-1-${item.id}`}
-            className="flex-shrink-0"
-            style={{
-              width: "280px",
-              height: "320px",
-            }}
-          >
-            <GameCard item={item} />
-          </div>
-        ))}
+        {/* Right Arrow */}
+        <button
+          onClick={next}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center"
+        >
+          <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+        </button>
 
-        {/* Duplicate set for seamless loop */}
-        {gamesData.items.map((item) => (
-          <div
-            key={`game-2-${item.id}`}
-            className="flex-shrink-0"
-            style={{
-              width: "280px",
-              height: "320px",
-            }}
-          >
-            <GameCard item={item} />
-          </div>
+        <div
+          className="relative flex items-center justify-center px-4 md:px-20"
+          style={{ height: "540px", minHeight: "540px" }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visibleCards.map((card) => {
+              const isCenter = card.position === "center";
+              const isLeft = card.position === "left";
+              const isRight = card.position === "right";
+
+              const centerWidth = 700;
+              const sideWidth = 320;
+
+              const width = isCenter ? centerWidth : sideWidth;
+              const height = isCenter ? 540 : 320;
+
+              let x = 0;
+              if (isLeft) x = -520;
+              if (isRight) x = 520;
+
+              return (
+                <motion.div
+                  key={`${card.position}-${card.key}`}
+                  className="absolute"
+                  initial={{ opacity: 0, scale: 0.7, x: 250 }}
+                  animate={{
+                    x,
+                    opacity: isCenter ? 1 : 0.5,
+                    scale: isCenter ? 1 : 0.8,
+                    zIndex: isCenter ? 30 : 10,
+                  }}
+                  exit={{ opacity: 0, scale: 0.7, x: -250 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                  style={{ width, height }}
+                >
+                  <GameCard item={card} isFeatured={isCenter} />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Dots */}
+      <div className="flex justify-center gap-2 mt-5">
+        {items.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveIndex(i)}
+            className={`rounded-full transition-all duration-300 ${
+              activeIndex === i
+                ? "w-8 h-3 bg-gradient-to-r from-purple-500 to-pink-500"
+                : "w-3 h-3 bg-white/30"
+            }`}
+          />
         ))}
-      </motion.div>
-    </div>
+      </div>
+    </section>
   );
 }

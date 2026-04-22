@@ -102,12 +102,12 @@ export default function ContactSection() {
           >
             Contact Us
           </h3>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">STAY IN THE LOOP</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">STAY IN THE LOOP</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-center max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center max-w-7xl mx-auto">
           {/* Left Side - Animated Icons (Hidden on mobile, shown on lg+) */}
-          <div className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] hidden lg:block">
+          <div className="relative h-64 sm:h-80 md:h-96 hidden lg:block">
             {/* Floating Icons */}
             {floatingIcons.map((item, index) => (
               <motion.div
@@ -152,7 +152,7 @@ export default function ContactSection() {
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-md mx-auto lg:mx-0 bg-[#0D0D0D] p-4 sm:p-6 lg:p-8 rounded-2xl relative"
+            className="w-full max-w-md mx-auto lg:mx-0 bg-[#0D0D0D] p-4 md:p-6  rounded-2xl relative"
           >
             {/* Success State Overlay */}
             {success && (
@@ -302,3 +302,5 @@ export default function ContactSection() {
     </section>
   )
 }
+
+

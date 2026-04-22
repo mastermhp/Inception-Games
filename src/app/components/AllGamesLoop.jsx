@@ -13,61 +13,17 @@ import game10 from "../../assets/AllGames/brand-9.webp";
 import game11 from "../../assets/AllGames/brand-pubg.webp";
 
 const games = [
-  {
-    src: game1?.src ?? game1,
-    alt: "Dota 2",
-    color: "#E2231A",
-  },
-  {
-    src: game2?.src ?? game2,
-    alt: "Street Fighter",
-    color: "#FFD400",
-  },
-  {
-    src: game3?.src ?? game3,
-    alt: "Tekken",
-    color: "#FF5A00",
-  },
-  {
-    src: game4?.src ?? game4,
-    alt: "Fortnite",
-    color: "#00B7FF",
-  },
-  {
-    src: game5?.src ?? game5,
-    alt: "Counter Strike 2",
-    color: "#F59E0B",
-  },
-  {
-    src: game6?.src ?? game6,
-    alt: "Free Fire",
-    color: "#FF6B00",
-  },
-  {
-    src: game7?.src ?? game7,
-    alt: "eFootball",
-    color: "#005CFF",
-  },
-  {
-    src: game8?.src ?? game8,
-    alt: "Valorant",
-    color: "#FF4655",
-  },
-  {
-    src: game9?.src ?? game9,
-    alt: "EA Sports",
-    color: "#00A3FF",
-  },
-  {
-    src: game10?.src ?? game10,
-    alt: "League of Legends",
-    color: "#C89B3C",
-  },
-  {
-    src: game11?.src ?? game11,
-    alt: "PUBG Mobile",
-    color: "#F2A900",
-  },
+  { src: game1?.src ?? game1, alt: "Dota 2", color: "#E2231A" },
+  { src: game2?.src ?? game2, alt: "Street Fighter", color: "#FFD400" },
+  { src: game3?.src ?? game3, alt: "Tekken", color: "#FF5A00" },
+  { src: game4?.src ?? game4, alt: "Fortnite", color: "#00B7FF" },
+  { src: game5?.src ?? game5, alt: "Counter Strike 2", color: "#F59E0B" },
+  { src: game6?.src ?? game6, alt: "Free Fire", color: "#FF6B00" },
+  { src: game7?.src ?? game7, alt: "eFootball", color: "#005CFF" },
+  { src: game8?.src ?? game8, alt: "Valorant", color: "#FF4655" },
+  { src: game9?.src ?? game9, alt: "EA Sports", color: "#00A3FF" },
+  { src: game10?.src ?? game10, alt: "League of Legends", color: "#C89B3C" },
+  { src: game11?.src ?? game11, alt: "PUBG Mobile", color: "#F2A900" },
 ];
 
 export default function AllGamesLoop() {
@@ -146,57 +102,46 @@ export default function AllGamesLoop() {
           width: 200px;
           height: 80px;
           background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.07);
+          border: 1px solid rgba(255,255,255,0.08);
           border-radius: 20px;
           backdrop-filter: blur(6px);
-          transition: all 0.3s ease;
+          transition: all 0.35s ease;
           cursor: pointer;
           padding: 14px 24px;
           position: relative;
           overflow: hidden;
         }
 
-      .game-pill::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--hover-color);
-  opacity: 0.18;          /* always visible */
-  z-index: 0;
-}
+        /* hidden color layer initially */
+        .game-pill::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: var(--hover-color);
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          z-index: 0;
+        }
 
-.game-pill {
-  /* ... existing styles ... */
-  border-color: var(--hover-color);               /* always on */
-  box-shadow: 0 0 20px var(--hover-color);        /* always on */
-}
+        /* show color only on hover */
+        .game-pill:hover::before {
+          opacity: 0.18;
+        }
 
-.game-pill:hover {
-  transform: translateY(-4px) scale(1.03);     
-}
+        .game-pill:hover {
+          transform: translateY(-4px) scale(1.03);
+          border-color: var(--hover-color);
+          box-shadow: 0 0 25px var(--hover-color);
+        }
 
-.game-pill img {
-  position: relative;
-  z-index: 2;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  transition: transform 0.3s ease;
-  user-select: none;
-}
-
-.game-pill:hover img {
-  transform: scale(1.06);
-}
         .game-pill img {
           position: relative;
           z-index: 2;
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
-          filter: brightness(0.75) grayscale(0.2);
-          transition: filter 0.3s ease, transform 0.3s ease;
+          filter: brightness(0.75) grayscale(0.25);
+          transition: all 0.35s ease;
           user-select: none;
         }
 
@@ -208,3 +153,4 @@ export default function AllGamesLoop() {
     </section>
   );
 }
+
