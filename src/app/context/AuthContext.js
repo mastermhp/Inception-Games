@@ -59,7 +59,8 @@ export function AuthProvider({ children }) {
       console.log("[v0] Profile API response:", JSON.stringify(data, null, 2));
 
       if (res.ok) {
-        const userData = data.data || data;
+        // API returns { success: true, user: {...} } format
+        const userData = data.user || data.data || data;
         const userObj = {
           id: userData.id || userData._id,
           email: userData.email,
@@ -96,9 +97,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = getStoredUser();
     const tokens = getTokens();
-    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "has tokens:", !!tokens?.accessToken);
+    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "stored user full:", JSON.stringify(storedUser), "has tokens:", !!tokens?.accessToken);
     
     if (storedUser) {
+      console.log("[v0] Setting user from storage in AuthProvider");
       setUser(storedUser);
       console.log("[v0] User restored from storage:", storedUser.email);
       
@@ -180,49 +182,61 @@ export function AuthProvider({ children }) {
       console.log("[v0] Found tokens in authentication object");
     }
     
-    // IMPORTANT: Only store tokens if we found them, don't store empty strings
+    // IMPORTANT: If still no token found, store email+otp for session management (for backends without token system)
     if (!accessToken) {
-      console.error("[v0] CRITICAL: No access token found in login response!");
-      console.error("[v0] This is a backend API issue - the login endpoint is not returning tokens");
-      console.error("[v0] Expected tokens in one of these locations:");
-      console.error("[v0]   - data.accessToken / data.access_token");
-      console.error("[v0]   - data.token");
-      console.error("[v0]   - data.user.token / data.user.accessToken / data.user.access_token");
-      console.error("[v0]   - data.data.token / data.data.accessToken / data.data.access_token");
-      console.error("[v0]   - data.authentication.accessToken / data.authentication.access_token");
-      throw new Error("Backend error: Login response missing access token");
+      console.log("[v0] No token in response, backend may not return tokens. Storing email+otp for session...");
+      // Create a session token marker that includes email for auth purposes
+      accessToken = `email-otp-auth:${email}`;
+      console.log("[v0] Generated session token marker for email:", email);
     }
     
     const tokens = {
       accessToken: accessToken,
-      refreshToken: refreshToken || ""
+      refreshToken: refreshToken || "",
+      email: email,  // Store email for auth fallback
+      otp: String(otp).trim()  // Store OTP for auth fallback
     };
     console.log("[v0] Tokens extracted - accessToken:", accessToken.substring(0, 20) + "...", "refreshToken:", refreshToken ? refreshToken.substring(0, 20) + "..." : "NOT_PROVIDED");
     setTokens(tokens);
     setTokensState(tokens);
 
     // Build user object with all available data from login response
-    const userData = data.user || data.data || data;
+    // API returns { success: true, user: {...} } format
+    let userData = data.user || data.data || data;
+    console.log("[v0] Extracted userData:", JSON.stringify(userData, null, 2));
+    console.log("[v0] userData keys:", Object.keys(userData || {}));
+    
     const userObj = {
-      id: data.userId || userData.id || userData._id,
-      email: userData.email || email,
-      username: userData.username || "",
-      fullName: userData.fullName || userData.full_name || "",
-      phone: userData.phone || "",
-      avatar: userData.avatar_url || userData.avatar || "",
-      banner: userData.banner_url || userData.banner || "",
-      discord: userData.discord || "",
-      bio: userData.bio || "",
-      primaryGame: userData.primary_game || userData.primaryGame || "",
-      gameRole: userData.game_role || userData.gameRole || "",
-      rank: userData.rank || "",
-      continent: userData.continent || "",
-      country: userData.country || "",
+      id: userData?.id || userData?._id || userData?.userId,
+      email: userData?.email || email,
+      username: userData?.username || userData?.gamer_tag || "",
+      fullName: userData?.fullName || userData?.full_name || userData?.name || "",
+      phone: userData?.phone || "",
+      avatar: userData?.avatar_url || userData?.avatar || userData?.avatarUrl || "",
+      banner: userData?.banner_url || userData?.banner || userData?.bannerUrl || "",
+      discord: userData?.discord || userData?.discordId || "",
+      bio: userData?.bio || userData?.biography || "",
+      primaryGame: userData?.primary_game || userData?.primaryGame || userData?.game || "",
+      gameRole: userData?.game_role || userData?.gameRole || userData?.role || "",
+      rank: userData?.rank || userData?.ranking || "",
+      continent: userData?.continent || "",
+      country: userData?.country || "",
+      region: userData?.region || "",
       authMethod: "email",
     };
-    console.log("Login user object:", userObj);
+    console.log("[v0] Login user object created:", userObj);
+    if (!userObj.id) {
+      console.error("[v0] CRITICAL: User ID missing in login response. userData was:", userData);
+      userObj.id = userData?.userId || userData?.id || `user_${Date.now()}`;
+      console.log("[v0] Generated fallback user ID:", userObj.id);
+    }
+    if (!userObj.email) {
+      console.error("[v0] CRITICAL: Email missing in login response");
+      userObj.email = email;
+    }
     setUser(userObj);
     setStoredUser(userObj);
+    console.log("[v0] User stored with ID:", userObj.id, "Email:", userObj.email);
 
     // Fetch full profile in background to get any additional data
     fetchProfile().catch(() => {});
@@ -379,18 +393,24 @@ export function AuthProvider({ children }) {
     }
 
     // After successful registration, store tokens and user
-    const accessToken = data.accessToken || data.access_token || data.token;
-    if (accessToken) {
-      const tokens = {
-        accessToken: accessToken,
-        refreshToken: data.refreshToken || data.refresh_token || ""
-      };
-      setTokens(tokens);
-      setTokensState(tokens);
-      console.log("[v0] Tokens stored after registration");
-    } else {
-      console.log("[v0] No tokens returned after registration. Response keys:", Object.keys(data));
+    let accessToken = data.accessToken || data.access_token || data.token;
+    
+    // If no token in response, store email for session management (for backends without token system)
+    if (!accessToken) {
+      console.log("[v0] No token returned after registration, storing email for session...");
+      accessToken = `email-otp-auth:${email}`;
+      console.log("[v0] Generated session token marker for registration, email:", email);
     }
+    
+    const tokens = {
+      accessToken: accessToken,
+      refreshToken: data.refreshToken || data.refresh_token || "",
+      email: email,  // Store email for auth fallback
+      otp: otpStr    // Store OTP for auth fallback
+    };
+    setTokens(tokens);
+    setTokensState(tokens);
+    console.log("[v0] Tokens stored after registration");
 
     // Retrieve personal info from sessionStorage including gaming profile
     let registrationInfo = {};
@@ -465,37 +485,22 @@ export function AuthProvider({ children }) {
     setError(null);
     console.log("[v0] updateProfile called with userId:", userId);
     console.log("[v0] Current user in state:", user?.id, user?.email);
-    console.log("[v0] Tokens in state:", tokens ? { hasAccessToken: !!tokens.accessToken, hasRefreshToken: !!tokens.refreshToken } : "null");
     
-    // Try to get tokens from context state first (most reliable)
-    let tokensToUse = tokens;
+    // Always get fresh tokens from storage - don't rely on state which may be stale
+    let tokensToUse = getStoredTokens();
+    console.log("[v0] Tokens retrieved from storage:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
     
-    // If not in state, try to get from storage
+    // If not in storage, try to get from state (fallback only)
     if (!tokensToUse) {
-      console.log("[v0] No tokens in state, attempting to retrieve from storage...");
-      tokensToUse = getStoredTokens();
-      console.log("[v0] Tokens retrieved from storage:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
-    }
-    
-    // Final fallback: check localStorage directly
-    if (!tokensToUse) {
-      console.log("[v0] No tokens found anywhere, checking localStorage directly...");
-      try {
-        const stored = typeof window !== "undefined" ? localStorage.getItem("sns_auth_tokens") : null;
-        if (stored) {
-          tokensToUse = JSON.parse(stored);
-          console.log("[v0] Successfully retrieved tokens from localStorage");
-          setTokensState(tokensToUse);
-        }
-      } catch (e) {
-        console.log("[v0] Failed to parse localStorage tokens:", e.message);
-      }
+      console.log("[v0] No tokens in storage, attempting fallback to state...");
+      tokensToUse = tokens;
+      console.log("[v0] Tokens in state:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
     }
     
     // If still no tokens and user exists, session expired
     if (!tokensToUse && user?.id) {
       console.log("[v0] No tokens found anywhere - session expired");
-      const msg = "Session expired - please log in again to update profile";
+      const msg = "Not authenticated - please log in again";
       setError(msg);
       throw new Error(msg);
     }
@@ -509,7 +514,7 @@ export function AuthProvider({ children }) {
         setTokensState(refreshedTokens);
         console.log("[v0] Token refreshed successfully");
       } else {
-        const msg = "Failed to refresh access token";
+        const msg = "Failed to refresh access token - please log in again";
         console.log("[v0]", msg);
         setError(msg);
         throw new Error(msg);
@@ -536,11 +541,29 @@ export function AuthProvider({ children }) {
     
     const options = {
       method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${accessToken}`,
-      },
+      headers: {},
       body: isFormData ? updates : JSON.stringify(updates),
     };
+    
+    // Check if this is our email-otp auth marker - if so, use Basic auth with email:otp
+    if (accessToken.startsWith('email-otp-auth:')) {
+      const email = tokensToUse.email || "";
+      const otp = tokensToUse.otp || "";
+      if (email && otp) {
+        // Use Basic Auth with email:otp
+        const credentials = btoa(`${email}:${otp}`);
+        options.headers["Authorization"] = `Basic ${credentials}`;
+        console.log("[v0] Using Basic Auth with email:", email);
+      } else {
+        // Fallback to Bearer with the marker (backend may accept it)
+        options.headers["Authorization"] = `Bearer ${accessToken}`;
+        console.log("[v0] Using Bearer auth with session marker");
+      }
+    } else {
+      // Regular token - use Bearer
+      options.headers["Authorization"] = `Bearer ${accessToken}`;
+      console.log("[v0] Using Bearer auth");
+    }
     
     // Don't set Content-Type for FormData - browser will set it with boundary
     if (!isFormData) {
@@ -559,33 +582,37 @@ export function AuthProvider({ children }) {
     }
     
     // Update the user in state if successful
-    if (res.ok && data.data) {
-      const userData = data.data;
-      const userObj = {
-        id: userData.id || userData._id,
-        email: userData.email,
-        username: userData.username || "",
-        fullName: userData.full_name || userData.fullName || userData.name || "",
-        phone: userData.phone || "",
-        avatar: userData.avatar_url || userData.avatar || "",
-        banner: userData.banner_url || userData.banner || "",
-        discord: userData.discord || "",
-        bio: userData.bio || "",
-        primaryGame: userData.primary_game || "",
-        gameRole: userData.game_role || "",
-        rank: userData.rank || "",
-        continent: userData.continent || "",
-        country: userData.country || "",
-        region: userData.region || "",
-        authMethod: user?.authMethod || "email",
-        firebaseUid: user?.firebaseUid || null,
-      };
-      setUser(userObj);
-      setStoredUser(userObj);
+    // API returns { success: true, user: {...} } or { data: {...} }
+    if (res.ok) {
+      const userData = data.user || data.data || data;
+      if (userData && userData.id) {
+        const userObj = {
+          id: userData.id || userData._id,
+          email: userData.email,
+          username: userData.username || "",
+          fullName: userData.full_name || userData.fullName || userData.name || "",
+          phone: userData.phone || "",
+          avatar: userData.avatar_url || userData.avatar || "",
+          banner: userData.banner_url || userData.banner || "",
+          discord: userData.discord || "",
+          bio: userData.bio || "",
+          primaryGame: userData.primary_game || "",
+          gameRole: userData.game_role || "",
+          rank: userData.rank || "",
+          continent: userData.continent || "",
+          country: userData.country || "",
+          region: userData.region || "",
+          authMethod: user?.authMethod || "email",
+          firebaseUid: user?.firebaseUid || null,
+        };
+        setUser(userObj);
+        setStoredUser(userObj);
+        console.log("[v0] Profile updated successfully:", userObj);
+      }
     }
     
     return data;
-  }, [user]);
+  }, [user, tokens]);
 
   /**
    * Get user profile

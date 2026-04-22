@@ -24,6 +24,15 @@ export default function ProfilePage() {
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
 
+  useEffect(() => {
+    console.log("[v0] Profile page state:", {
+      loading,
+      isAuthenticated,
+      user: user ? { id: user.id, email: user.email } : null,
+      profileLoading,
+    });
+  }, [loading, isAuthenticated, user, profileLoading]);
+
   // Fetch user profile data on component mount
   useEffect(() => {
     if (!loading && isAuthenticated && user?.id) {
@@ -44,6 +53,9 @@ export default function ProfilePage() {
           );
           setProfileLoading(false);
         });
+    } else if (!loading && !isAuthenticated) {
+      console.log("[v0] Profile page - user not authenticated and loading complete");
+      setProfileLoading(false);
     }
   }, [isAuthenticated, loading, user?.id, fetchProfile]);
 

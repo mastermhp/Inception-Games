@@ -127,53 +127,45 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(''); setLoading(true)
+    if (!currentUser?.id) {
+      const errorMsg = `User ID not found. CurrentUser: ${JSON.stringify(currentUser)}`
+      console.error("[v0]", errorMsg)
+      setError('User ID not found. Please log in again.')
+      return
+    }
+    setLoading(true)
+    setError('')
+    setMessage('')
     try {
-      console.log("[v0] handleSubmit called, currentUser:", currentUser?.id, currentUser?.email)
-      if (!currentUser?.id) {
-        console.error("[v0] No user ID available. contextUser:", contextUser?.id)
-        throw new Error('User ID not found - please ensure you are logged in')
-      }
-      
-      // Create FormData for file uploads - matches API spec exactly
+      console.log("[v0] Starting profile update for user:", currentUser.id)
       const formDataToSend = new FormData()
-      
-      // Add text fields in exact order from API spec
-      formDataToSend.append('full_name', formData.fullName || '')
-      formDataToSend.append('username', formData.username || '')
-      formDataToSend.append('discord', formData.discord || '')
-      formDataToSend.append('bio', formData.bio || '')
-      formDataToSend.append('phone', formData.phone || '')
-      formDataToSend.append('primary_game', formData.game || '')
-      formDataToSend.append('game_role', formData.role || '')
-      formDataToSend.append('rank', formData.rank || '')
-      formDataToSend.append('continent', selectedContinent || '')
-      formDataToSend.append('country', selectedCountry || '')
-      
-      // Add files if they were selected
+      formDataToSend.append('fullName', formData.fullName)
+      formDataToSend.append('phone', formData.phone)
+      formDataToSend.append('username', formData.username)
+      formDataToSend.append('bio', formData.bio)
+      formDataToSend.append('primaryGame', formData.game)
+      formDataToSend.append('gameRole', formData.role)
+      formDataToSend.append('rank', formData.rank)
+      formDataToSend.append('discord', formData.discord)
       if (profileImageFile) {
+        console.log("[v0] Appending profile image file")
         formDataToSend.append('avatar', profileImageFile)
       }
       if (bannerImageFile) {
+        console.log("[v0] Appending banner image file")
         formDataToSend.append('banner', bannerImageFile)
       }
+      if (selectedContinent || selectedCountry || selectedCity) {
+        formDataToSend.append('region', [selectedContinent, selectedCountry, selectedCity].filter(Boolean).join(' / '))
+      }
       
-      console.log("[v0] Submitting profile update for user:", currentUser.id)
-      console.log("[v0] FormData entries:", {
-        full_name: formData.fullName,
-        username: formData.username,
-        discord: formData.discord,
-        bio: formData.bio,
-        phone: formData.phone,
-        primary_game: formData.game,
-        game_role: formData.role,
-        rank: formData.rank,
-        continent: selectedContinent,
-        country: selectedCountry,
-        avatar: profileImageFile ? 'file' : 'none',
-        banner: bannerImageFile ? 'file' : 'none'
-      })
+      formDataToSend.append('continent', selectedContinent)
+      formDataToSend.append('country', selectedCountry)
+      formDataToSend.append('city', selectedCity || '')
+      formDataToSend.append('avatar', profileImageFile ? 'file' : 'none')
+      formDataToSend.append('banner', bannerImageFile ? 'file' : 'none')
       
+      console.log("[v0] Calling updateProfile with user ID:", currentUser.id)
       await updateProfile(currentUser.id, formDataToSend)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
