@@ -689,6 +689,13 @@ export default function Header() {
                       className="absolute left-0 top-full mt-2 w-56 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
                     >
                       <Link
+                        href="/profile"
+                        onClick={() => setEsportsDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10"
+                      >
+                        <span>Dashboard</span>
+                      </Link>
+                      <Link
                         href="/profile/events?category=tournament"
                         onClick={() => setEsportsDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10"
@@ -739,48 +746,39 @@ export default function Header() {
                     transition={{ duration: 0.15 }}
                     className="absolute left-0 top-full mt-2 w-56 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
                   >
-                    <a
-                      href="#ecosystem-partners"
-                      onClick={() => {
-                        setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-partners')?.scrollIntoView({ behavior: 'smooth' })
-                      }}
+                    <Link
+                      href="/?section=ecosystem-partners"
+                      onClick={() => setEcosystemDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10 cursor-pointer"
                     >
                       <span>Partners</span>
-                    </a>
-                    <a
-                      href="#ecosystem-games"
-                      onClick={() => {
-                        setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-games')?.scrollIntoView({ behavior: 'smooth' })
-                      }}
+                    </Link>
+                    <Link
+                      href="/?section=ecosystem-games"
+                      onClick={() => setEcosystemDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors border-b border-white/10 cursor-pointer"
                     >
                       <span>Games</span>
-                    </a>
-                    <a
-                      href="#ecosystem-community"
-                      onClick={() => {
-                        setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-community')?.scrollIntoView({ behavior: 'smooth' })
-                      }}
+                    </Link>
+                    <Link
+                      href="/?section=ecosystem-community"
+                      onClick={() => setEcosystemDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                     >
                       <span>Community</span>
-                    </a>
+                    </Link>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
-            <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+            <Link href="/?section=news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               <NavItem>News</NavItem>
             </Link>
-            <Link href="#career" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+            <Link href="/?section=career" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               <NavItem>Career</NavItem>
             </Link>
-            <Link href="#contact" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+            <Link href="/?section=contact" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               <NavItem>Contact Us</NavItem>
             </Link>
           </nav>
@@ -954,6 +952,13 @@ export default function Header() {
                         className="overflow-hidden"
                       >
                         <Link
+                          href="/profile"
+                          onClick={handleLinkClick}
+                          className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
                           href="/profile/events?category=tournament"
                           onClick={handleLinkClick}
                           className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
@@ -1000,50 +1005,47 @@ export default function Header() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <a
-                      href="#ecosystem-partners"
+                    <Link
+                      href="/?section=ecosystem-partners"
                       onClick={() => {
                         handleLinkClick()
                         setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-partners')?.scrollIntoView({ behavior: 'smooth' })
                       }}
-                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
                     >
                       Partners
-                    </a>
-                    <a
-                      href="#ecosystem-games"
+                    </Link>
+                    <Link
+                      href="/?section=ecosystem-games"
                       onClick={() => {
                         handleLinkClick()
                         setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-games')?.scrollIntoView({ behavior: 'smooth' })
                       }}
-                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
                     >
                       Games
-                    </a>
-                    <a
-                      href="#ecosystem-community"
+                    </Link>
+                    <Link
+                      href="/?section=ecosystem-community"
                       onClick={() => {
                         handleLinkClick()
                         setEcosystemDropdownOpen(false)
-                        document.getElementById('ecosystem-community')?.scrollIntoView({ behavior: 'smooth' })
                       }}
-                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors cursor-pointer"
+                      className="block text-white/80 text-sm py-2 pl-4 hover:text-purple-400 transition-colors"
                     >
                       Community
-                    </a>
+                    </Link>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <Link href="#news" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
+              <Link href="/?section=news" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
                 News
               </Link>
-              <Link href="#career" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
+              <Link href="/?section=career" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
                 Career
               </Link>
-              <Link href="#contact" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
+              <Link href="/?section=contact" className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors" onClick={handleLinkClick}>
                 Contact Us
               </Link>
 

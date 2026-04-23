@@ -222,12 +222,12 @@ export default function ShowcaseCarousel() {
         </div>
 
         {/* Partners */}
-        <div className="mb-20">
+        <div id="ecosystem-partners" className="mb-20">
           <CarouselSection tabKey="partners" />
         </div>
 
         {/* Games */}
-        <div className="mb-20">
+        <div id="ecosystem-games" className="mb-20">
           <div className="text-center mb-6">
             <h3 className="text-2xl text-white">{gamesData.title}</h3>
             <p className="text-white/60">{gamesData.subtitle}</p>
@@ -236,7 +236,9 @@ export default function ShowcaseCarousel() {
         </div>
 
         {/* Community */}
-        <CarouselSection tabKey="community" />
+        <div id="ecosystem-community">
+          <CarouselSection tabKey="community" />
+        </div>
       </div>
     </section>
   );
