@@ -30,68 +30,9 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [selectedTournamentCategory, setSelectedTournamentCategory] = useState(null);
 
-  /**
-   * Fetch user profile from API (GET /api/v1/auth/profile/:userId)
-   */
-  const fetchProfile = useCallback(async () => {
-    try {
-      const storedUser = getStoredUser();
-      if (!storedUser?.id) {
-        console.log("No stored user ID for profile fetch");
-        return;
-      }
-      const tokens = getStoredTokens();
-      if (!tokens?.accessToken) {
-        console.log("[v0] No access token available for profile fetch");
-        return;
-      }
-      
-      const url = API.PROFILE_GET.replace(":userId", storedUser.id);
-      console.log("[v0] Fetching profile from:", url);
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${tokens.accessToken}`
-        },
-      });
-      const data = await res.json();
-      console.log("[v0] Profile API response:", JSON.stringify(data, null, 2));
-
-      if (res.ok) {
-        // API returns { success: true, user: {...} } format
-        const userData = data.user || data.data || data;
-        const userObj = {
-          id: userData.id || userData._id,
-          email: userData.email,
-          username: userData.username || "",
-          fullName: userData.full_name || userData.fullName || userData.name || "",
-          phone: userData.phone || "",
-          avatar: userData.avatar_url || userData.avatar || "",
-          banner: userData.banner_url || userData.banner || "",
-          discord: userData.discord || "",
-          bio: userData.bio || "",
-          primaryGame: userData.primary_game || "",
-          gameRole: userData.game_role || "",
-          rank: userData.rank || "",
-          continent: userData.continent || "",
-          country: userData.country || "",
-          region: userData.region || "",
-          authMethod: userData.authMethod || getStoredUser()?.authMethod || "email",
-          firebaseUid: userData.firebaseUid || getStoredUser()?.firebaseUid || null,
-        };
-        console.log("[v0] Profile parsed user object:", userObj);
-        setUser(userObj);
-        setStoredUser(userObj);
-        return userObj;
-      } else {
-        console.log("[v0] Profile fetch failed with status:", res.status, data);
-      }
-    } catch (err) {
-      console.error("[v0] Profile fetch error:", err.message);
-    }
-    return null;
-  }, []);
+  // NOTE: There is no GET /profile/:userId endpoint in the API
+  // Profile data is collected during registration and can only be updated via updateProfile
+  // which uses separate endpoints for personal info, gaming profile, and images
 
   // Initialize auth state from storage on mount
   useEffect(() => {
@@ -104,19 +45,15 @@ export function AuthProvider({ children }) {
       setUser(storedUser);
       console.log("[v0] User restored from storage:", storedUser.email);
       
-      // If we have tokens, fetch fresh profile in background
-      if (tokens?.accessToken) {
-        fetchProfile().catch((err) => {
-          console.log("[v0] Background profile fetch failed, keeping stored user:", err.message);
-        });
-      } else {
+      // Profile data is available from stored user - no need to fetch separately
+      if (!tokens?.accessToken) {
         console.log("[v0] User restored but no access token available - user may need to re-login for authenticated actions");
       }
     } else {
       console.log("[v0] No stored user found, app is not authenticated");
     }
     setLoading(false);
-  }, [fetchProfile]);
+  }, []);
 
   // ============================================
   // EMAIL/OTP AUTH METHODS
@@ -238,16 +175,13 @@ export function AuthProvider({ children }) {
     setStoredUser(userObj);
     console.log("[v0] User stored with ID:", userObj.id, "Email:", userObj.email);
 
-    // Fetch full profile in background to get any additional data
-    fetchProfile().catch(() => {});
-
     // Redirect to profile page after login
     setTimeout(() => {
       router.push("/profile");
     }, 500);
 
     return { user: userObj, tokens };
-  }, [fetchProfile, router]);
+  }, [router]);
 
   /**
    * Registration Flow Step 1 - Send OTP
@@ -370,48 +304,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Registration Flow Step 5 - Upload Profile Images
-   * POST /auth/register/profile-images  body: { email, avatar_url?, banner_url? }
+   * Complete Registration - No image upload needed at signup
+   * Simply finalize the registration with the gaming profile that was already saved
    */
-  const registerProfileImages = useCallback(async (email, avatarUrl, bannerUrl) => {
+  const registerProfileImages = useCallback(async (email) => {
     setError(null);
-    console.log("Register profile images for:", email);
-    const body = { email };
-    if (avatarUrl) body.avatar_url = avatarUrl;
-    if (bannerUrl) body.banner_url = bannerUrl;
-    const res = await fetch(API.REGISTER_PROFILE_IMAGES, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    console.log("Register profile images response:", res.status, JSON.stringify(data));
-    if (!res.ok) {
-      const msg = data.error || data.message || "Failed to upload images";
-      setError(msg);
-      throw new Error(msg);
-    }
-
-    // After successful registration, store tokens and user
-    let accessToken = data.accessToken || data.access_token || data.token;
+    console.log("[v0] Completing registration for:", email);
     
-    // If no token in response, store email for session management (for backends without token system)
-    if (!accessToken) {
-      console.log("[v0] No token returned after registration, storing email for session...");
-      accessToken = `email-otp-auth:${email}`;
-      console.log("[v0] Generated session token marker for registration, email:", email);
-    }
-    
-    const tokens = {
-      accessToken: accessToken,
-      refreshToken: data.refreshToken || data.refresh_token || "",
-      email: email,  // Store email for auth fallback
-      otp: otpStr    // Store OTP for auth fallback
-    };
-    setTokens(tokens);
-    setTokensState(tokens);
-    console.log("[v0] Tokens stored after registration");
-
     // Retrieve personal info from sessionStorage including gaming profile
     let registrationInfo = {};
     if (typeof window !== "undefined") {
@@ -425,37 +324,58 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // Build complete user object with all registration data + API response
-    const userData = data.data || data.user || data;
+    // Get userId from sessionStorage if available
+    const userId = typeof window !== "undefined" ? sessionStorage.getItem("temp_userId") : null;
+    
+    // Build complete user object with all registration data from the previous steps
     const userObj = {
-      id: data.userId || userData.id || userData._id || sessionStorage.getItem("temp_userId"),
+      id: userId || `user_${Date.now()}`,
       email: email,
-      username: registrationInfo.username || userData.username || "",
-      fullName: registrationInfo.fullName || userData.full_name || "",
-      phone: userData.phone || "",
-      avatar: avatarUrl || userData.avatar_url || "",
-      banner: bannerUrl || userData.banner_url || "",
-      discord: registrationInfo.discord || userData.discord || "",
-      bio: registrationInfo.bio || userData.bio || "",
-      primaryGame: registrationInfo.primaryGame || userData.primary_game || "",
-      gameRole: registrationInfo.gameRole || userData.game_role || "",
-      rank: registrationInfo.rank || userData.rank || "",
-      continent: registrationInfo.continent || userData.continent || "",
-      country: registrationInfo.country || userData.country || "",
+      username: registrationInfo.username || "",
+      fullName: registrationInfo.fullName || "",
+      phone: registrationInfo.phone || "",
+      avatar: "",
+      banner: "",
+      discord: registrationInfo.discord || "",
+      bio: registrationInfo.bio || "",
+      primaryGame: registrationInfo.primaryGame || "",
+      gameRole: registrationInfo.gameRole || "",
+      rank: registrationInfo.rank || "",
+      continent: registrationInfo.continent || "",
+      country: registrationInfo.country || "",
+      region: registrationInfo.region || "",
       authMethod: "email",
     };
+    
+    // Create a session token marker since API may not return tokens
+    const accessToken = `email-otp-auth:${email}`;
+    const tokens = {
+      accessToken: accessToken,
+      refreshToken: "",
+      email: email,
+      otp: ""
+    };
+    
+    console.log("[v0] Tokens created for registration:", { hasAccessToken: !!accessToken });
+    setTokens(tokens);
+    setTokensState(tokens);
+    
     console.log("[v0] Complete user object after registration:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
-    sessionStorage.removeItem("temp_userId");
-    sessionStorage.removeItem("sns_registration_info");
+    
+    // Clean up session storage
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("temp_userId");
+      sessionStorage.removeItem("sns_registration_info");
+    }
 
     // Redirect to profile page after registration completion
     setTimeout(() => {
       router.push("/profile");
     }, 500);
 
-    return data;
+    return { success: true, message: "Registration completed successfully" };
   }, [router]);
 
   // Backwards compatibility aliases for signup
@@ -478,161 +398,92 @@ export function AuthProvider({ children }) {
   // ============================================
 
   /**
-   * Update user profile
-   * PUT /auth/profile/:userId  body: { field updates } or FormData with files
+   * Update user profile via API - PUT /profile/:userId with FormData and Bearer token
+   * Sends all profile data including optional images as FormData
+   * Updates local state after successful API response
    */
-  const updateProfile = useCallback(async (userId, updates) => {
+  const updateProfile = useCallback(async (userId, formDataToSend) => {
     setError(null);
     console.log("[v0] updateProfile called with userId:", userId);
-    console.log("[v0] Current user in state:", user?.id, user?.email);
     
-    // Always get fresh tokens from storage - don't rely on state which may be stale
-    let tokensToUse = getStoredTokens();
-    console.log("[v0] Tokens retrieved from storage:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
-    
-    // If not in storage, try to get from state (fallback only)
-    if (!tokensToUse) {
-      console.log("[v0] No tokens in storage, attempting fallback to state...");
-      tokensToUse = tokens;
-      console.log("[v0] Tokens in state:", tokensToUse ? { hasAccessToken: !!tokensToUse.accessToken, hasRefreshToken: !!tokensToUse.refreshToken } : "null");
-    }
-    
-    // If still no tokens and user exists, session expired
-    if (!tokensToUse && user?.id) {
-      console.log("[v0] No tokens found anywhere - session expired");
-      const msg = "Not authenticated - please log in again";
-      setError(msg);
-      throw new Error(msg);
-    }
-    
-    // If we only have refreshToken (no accessToken), refresh it
-    if (!tokensToUse?.accessToken && tokensToUse?.refreshToken) {
-      console.log("[v0] No accessToken but refreshToken available - attempting refresh...");
-      const refreshedTokens = await refreshAccessToken();
-      if (refreshedTokens?.accessToken) {
-        tokensToUse = refreshedTokens;
-        setTokensState(refreshedTokens);
-        console.log("[v0] Token refreshed successfully");
-      } else {
-        const msg = "Failed to refresh access token - please log in again";
-        console.log("[v0]", msg);
-        setError(msg);
-        throw new Error(msg);
-      }
-    }
-    
-    // Final check for access token
-    if (!tokensToUse?.accessToken) {
-      const msg = "Not authenticated - please log in again";
-      console.log("[v0]", msg);
-      setError(msg);
-      throw new Error(msg);
-    }
-    
-    const accessToken = tokensToUse.accessToken;
-    console.log("[v0] Using accessToken:", accessToken.substring(0, 20) + "...");
-    
-    const url = API.PROFILE_UPDATE.replace(":userId", userId);
-    console.log("[v0] Making PUT request to:", url);
-    
-    // Determine if we're dealing with FormData (multipart) or JSON
-    const isFormData = updates instanceof FormData;
-    console.log("[v0] Request type:", isFormData ? "FormData (multipart)" : "JSON");
-    
-    const options = {
-      method: "PUT",
-      headers: {},
-      body: isFormData ? updates : JSON.stringify(updates),
-    };
-    
-    // Check if this is our email-otp auth marker - if so, use Basic auth with email:otp
-    if (accessToken.startsWith('email-otp-auth:')) {
-      const email = tokensToUse.email || "";
-      const otp = tokensToUse.otp || "";
-      if (email && otp) {
-        // Use Basic Auth with email:otp
-        const credentials = btoa(`${email}:${otp}`);
-        options.headers["Authorization"] = `Basic ${credentials}`;
-        console.log("[v0] Using Basic Auth with email:", email);
-      } else {
-        // Fallback to Bearer with the marker (backend may accept it)
-        options.headers["Authorization"] = `Bearer ${accessToken}`;
-        console.log("[v0] Using Bearer auth with session marker");
-      }
-    } else {
-      // Regular token - use Bearer
-      options.headers["Authorization"] = `Bearer ${accessToken}`;
-      console.log("[v0] Using Bearer auth");
-    }
-    
-    // Don't set Content-Type for FormData - browser will set it with boundary
-    if (!isFormData) {
-      options.headers["Content-Type"] = "application/json";
-    }
-    
-    console.log("[v0] Request headers:", Object.keys(options.headers));
-    const res = await fetch(url, options);
-    console.log("[v0] Update profile response status:", res.status);
-    const data = await res.json();
-    console.log("[v0] Update profile response:", JSON.stringify(data, null, 2));
-    if (!res.ok) {
-      const msg = data.message || "Failed to update profile";
-      setError(msg);
-      throw new Error(msg);
-    }
-    
-    // Update the user in state if successful
-    // API returns { success: true, user: {...} } or { data: {...} }
-    if (res.ok) {
-      const userData = data.user || data.data || data;
-      if (userData && userData.id) {
-        const userObj = {
-          id: userData.id || userData._id,
-          email: userData.email,
-          username: userData.username || "",
-          fullName: userData.full_name || userData.fullName || userData.name || "",
-          phone: userData.phone || "",
-          avatar: userData.avatar_url || userData.avatar || "",
-          banner: userData.banner_url || userData.banner || "",
-          discord: userData.discord || "",
-          bio: userData.bio || "",
-          primaryGame: userData.primary_game || "",
-          gameRole: userData.game_role || "",
-          rank: userData.rank || "",
-          continent: userData.continent || "",
-          country: userData.country || "",
-          region: userData.region || "",
-          authMethod: user?.authMethod || "email",
-          firebaseUid: user?.firebaseUid || null,
-        };
-        setUser(userObj);
-        setStoredUser(userObj);
-        console.log("[v0] Profile updated successfully:", userObj);
-      }
-    }
-    
-    return data;
-  }, [user, tokens]);
-
-  /**
-   * Get user profile
-   * GET /auth/profile/:identifier
-   */
-  const getProfile = useCallback(async (identifier) => {
     try {
-      const url = API.PROFILE_GET.replace(":identifier", identifier);
-      const res = await authFetch(url);
-      const data = await res.json();
-      console.log("Get profile response:", JSON.stringify(data, null, 2));
-      if (res.ok) {
-        return data;
+      // Get current user and tokens
+      const currentUser = user || getStoredUser();
+      const storedTokens = getStoredTokens();
+      
+      if (!currentUser?.id) {
+        throw new Error("User not found - cannot update profile");
       }
-      return null;
+      
+      if (!storedTokens?.accessToken) {
+        throw new Error("Not authenticated - please log in again");
+      }
+      
+      console.log("[v0] Updating profile via API for user:", currentUser.email);
+      
+      // Build the API URL
+      const url = API.PROFILE_UPDATE.replace(":userId", userId);
+      console.log("[v0] PUT request to:", url);
+      
+      // Make PUT request with FormData and Bearer token
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${storedTokens.accessToken}`,
+        },
+        body: formDataToSend,
+      });
+      
+      console.log("[v0] API response status:", response.status);
+      const responseData = await response.json();
+      console.log("[v0] API response:", JSON.stringify(responseData));
+      
+      if (!response.ok) {
+        const errorMsg = responseData.message || responseData.error || "Failed to update profile";
+        throw new Error(errorMsg);
+      }
+      
+      // Extract updated user data from API response
+      const apiUserData = responseData.data || responseData.user || responseData;
+      
+      // Create updated user object with values from form + API response
+      const updatedUser = {
+        ...currentUser,
+        id: userId,
+        fullName: formDataToSend.get('full_name') || apiUserData.full_name || currentUser.fullName || "",
+        username: formDataToSend.get('username') || apiUserData.username || currentUser.username || "",
+        phone: formDataToSend.get('phone') || apiUserData.phone || currentUser.phone || "",
+        bio: formDataToSend.get('bio') || apiUserData.bio || currentUser.bio || "",
+        discord: formDataToSend.get('discord') || apiUserData.discord || currentUser.discord || "",
+        primaryGame: formDataToSend.get('primary_game') || apiUserData.primary_game || currentUser.primaryGame || "",
+        gameRole: formDataToSend.get('game_role') || apiUserData.game_role || currentUser.gameRole || "",
+        rank: formDataToSend.get('rank') || apiUserData.rank || currentUser.rank || "",
+        continent: formDataToSend.get('continent') || apiUserData.continent || currentUser.continent || "",
+        country: formDataToSend.get('country') || apiUserData.country || currentUser.country || "",
+        avatar: apiUserData.avatar_url || apiUserData.avatar || currentUser.avatar || "",
+        banner: apiUserData.banner_url || apiUserData.banner || currentUser.banner || "",
+      };
+      
+      console.log("[v0] Updated user object from API:", updatedUser);
+      
+      // Update React state
+      setUser(updatedUser);
+      
+      // Update localStorage
+      setStoredUser(updatedUser);
+      
+      console.log("[v0] Profile updated successfully via API");
+      
+      return { success: true, message: "Profile updated successfully", data: updatedUser };
     } catch (err) {
-      console.error("Get profile error:", err);
-      return null;
+      console.error("[v0] Profile update error:", err);
+      const errorMsg = err.message || "Failed to update profile";
+      setError(errorMsg);
+      throw new Error(errorMsg);
     }
-  }, []);
+  }, [user]);
+
+
 
   const value = {
     // State
@@ -667,9 +518,7 @@ export function AuthProvider({ children }) {
     logout,
 
     // Profile
-    fetchProfile,
     updateProfile,
-    getProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

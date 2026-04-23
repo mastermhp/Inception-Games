@@ -19,8 +19,7 @@ export const API = {
   RESEND_OTP:            `${BASE_URL}/auth/resend-otp`,
   REFRESH_TOKEN:         `${BASE_URL}/auth/refresh-token`,
 
-  // Profile - use userId per API docs
-  PROFILE_GET:           `${BASE_URL}/auth/profile/:userId`,
+  // Profile Update - PUT endpoint with FormData
   PROFILE_UPDATE:        `${BASE_URL}/auth/profile/:userId`,
 
   // Events/Tournaments API

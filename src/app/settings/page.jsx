@@ -10,7 +10,7 @@ import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 
 export default function SettingsPage() {
-  const { user, isAuthenticated, logout, logoutAll, updateProfile, fetchProfile, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, logout, logoutAll, updateProfile, loading: authLoading } = useAuth()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('profile')
 

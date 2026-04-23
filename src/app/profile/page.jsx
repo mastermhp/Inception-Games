@@ -18,11 +18,11 @@ import { useAuth } from "../context/AuthContext";
 import NotificationsPanel from "../components/ProfileComponents/NotificationsPanel";
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, loading, fetchProfile } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const router = useRouter();
   const [gamingProfile, setGamingProfile] = useState(null);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   useEffect(() => {
     console.log("[v0] Profile page state:", {
@@ -33,31 +33,8 @@ export default function ProfilePage() {
     });
   }, [loading, isAuthenticated, user, profileLoading]);
 
-  // Fetch user profile data on component mount
-  useEffect(() => {
-    if (!loading && isAuthenticated && user?.id) {
-      console.log(
-        "[v0] Profile page - fetching user profile for user ID:",
-        user.id,
-      );
-      setProfileLoading(true);
-      fetchProfile()
-        .then(() => {
-          console.log("[v0] Profile page - profile fetch completed");
-          setProfileLoading(false);
-        })
-        .catch((err) => {
-          console.error(
-            "[v0] Profile page - profile fetch error:",
-            err.message,
-          );
-          setProfileLoading(false);
-        });
-    } else if (!loading && !isAuthenticated) {
-      console.log("[v0] Profile page - user not authenticated and loading complete");
-      setProfileLoading(false);
-    }
-  }, [isAuthenticated, loading, user?.id, fetchProfile]);
+  // NOTE: Profile data is stored in the user object from AuthContext
+  // No need to fetch separately - data is collected during registration
 
   // Load gaming profile from sessionStorage whenever user changes
   useEffect(() => {

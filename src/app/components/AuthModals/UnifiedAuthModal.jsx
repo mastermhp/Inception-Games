@@ -236,9 +236,8 @@ export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login
 
     try {
       setIsLoading(true)
-      // Complete registration by uploading profile images (can be null)
-      // This endpoint returns tokens and authenticates the user
-      await registerProfileImages(formData.email, null, null)
+      // Complete registration - no image upload needed, images can be added later via edit profile
+      await registerProfileImages(formData.email)
       setMessage('Registration successful! Redirecting...')
       
       // Store the selected tournament category if it exists
@@ -773,7 +772,7 @@ export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login
               <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
                 <div>
                   <h2 className="text-xl font-bold text-white">
-                    {mode === 'login' ? 'Welcome Back' : 'Join SliceNShare'}
+                    {mode === 'login' ? 'Welcome Back' : 'Join Inception Games'}
                   </h2>
                   <p className="text-gray-500 text-xs mt-1">
                     {mode === 'login' ? 'Sign in to your account' : 'Create your gaming profile'}

@@ -139,31 +139,39 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     try {
       console.log("[v0] Starting profile update for user:", currentUser.id)
       const formDataToSend = new FormData()
-      formDataToSend.append('fullName', formData.fullName)
+      
+      // Append all text fields with their correct API field names
+      formDataToSend.append('full_name', formData.fullName)
       formDataToSend.append('phone', formData.phone)
       formDataToSend.append('username', formData.username)
       formDataToSend.append('bio', formData.bio)
-      formDataToSend.append('primaryGame', formData.game)
-      formDataToSend.append('gameRole', formData.role)
+      formDataToSend.append('primary_game', formData.game)
+      formDataToSend.append('game_role', formData.role)
       formDataToSend.append('rank', formData.rank)
       formDataToSend.append('discord', formData.discord)
+      
+      // Add region/location info
+      formDataToSend.append('continent', selectedContinent)
+      formDataToSend.append('country', selectedCountry)
+      if (selectedCity) {
+        formDataToSend.append('city', selectedCity)
+      }
+      
+      // Add region as combined string if any location is selected
+      if (selectedContinent || selectedCountry || selectedCity) {
+        const regionParts = [selectedCity, selectedCountry, selectedContinent].filter(Boolean)
+        formDataToSend.append('region', regionParts.join(', '))
+      }
+      
+      // Append image files only if they were selected
       if (profileImageFile) {
-        console.log("[v0] Appending profile image file")
+        console.log("[v0] Appending profile image file:", profileImageFile.name)
         formDataToSend.append('avatar', profileImageFile)
       }
       if (bannerImageFile) {
-        console.log("[v0] Appending banner image file")
+        console.log("[v0] Appending banner image file:", bannerImageFile.name)
         formDataToSend.append('banner', bannerImageFile)
       }
-      if (selectedContinent || selectedCountry || selectedCity) {
-        formDataToSend.append('region', [selectedContinent, selectedCountry, selectedCity].filter(Boolean).join(' / '))
-      }
-      
-      formDataToSend.append('continent', selectedContinent)
-      formDataToSend.append('country', selectedCountry)
-      formDataToSend.append('city', selectedCity || '')
-      formDataToSend.append('avatar', profileImageFile ? 'file' : 'none')
-      formDataToSend.append('banner', bannerImageFile ? 'file' : 'none')
       
       console.log("[v0] Calling updateProfile with user ID:", currentUser.id)
       await updateProfile(currentUser.id, formDataToSend)
