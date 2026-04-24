@@ -603,11 +603,7 @@ function HomeContent() {
                   />
                   {/* Icon - starts gray, reveals to purple as line passes */}
                   <item.icon 
-                    className="w-12 h-12 relative z-20"
-                    style={{
-                      color: 'rgb(100, 100, 100)',
-                      filter: 'grayscale(100%)',
-                    }}
+                    className="w-12 h-12 relative z-20 icon-color"
                   />
                 </motion.div>
 

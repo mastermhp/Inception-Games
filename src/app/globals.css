@@ -880,6 +880,43 @@ html {
   }
 }
 
+/* Icon color animation */
+@keyframes icon-color-reveal {
+  0% {
+    color: rgb(100, 100, 100);
+    filter: grayscale(100%);
+  }
+  100% {
+    color: rgb(129, 23, 241);
+    filter: grayscale(0%);
+  }
+}
+
+.icon-color {
+  color: rgb(100, 100, 100);
+  filter: grayscale(100%);
+}
+
+.icon-animate-reveal-0 .icon-color {
+  animation: icon-color-reveal 1.2s ease-out forwards;
+  animation-delay: 1.2s;
+}
+
+.icon-animate-reveal-1 .icon-color {
+  animation: icon-color-reveal 1.2s ease-out forwards;
+  animation-delay: 3.2s;
+}
+
+.icon-animate-reveal-2 .icon-color {
+  animation: icon-color-reveal 1.2s ease-out forwards;
+  animation-delay: 5.2s;
+}
+
+.icon-animate-reveal-3 .icon-color {
+  animation: icon-color-reveal 1.2s ease-out forwards;
+  animation-delay: 7.2s;
+}
+
 /* Processing line - animates from gray to gradient fill */
 .processing-line {
   width: 100%;
