@@ -337,9 +337,8 @@ function HomeContent() {
                 {[
                   "🏆 Play Scrims",
                   "🏆 Play Tournaments",
-                  "💰 Get Commissions",
-                  "🎁 Free Merch @ 500 Fans",
                   "🤝 Brand Deals",
+                  "🎁 Free Merch @ 500 Fans",
                 ].map((pill) => (
                   <span
                     key={pill}
