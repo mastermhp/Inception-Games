@@ -169,8 +169,6 @@ export default function ProfilePage() {
           }
         }}
       />
-
-      {/* Add directly inside ProfilePage's return, before the closing main/container div */}
       <a
         href="https://m.me/slicenshareFB"
         target="_blank"
