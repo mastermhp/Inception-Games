@@ -1841,7 +1841,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   </div>
                   <div className="p-4 border-t border-white/[0.06]">
                     <a
-                      href="https://discord.gg/shohan0365_70592"
+                      href="https://discord.gg/GNFx8zgC"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-3 rounded-xl font-semibold text-white bg-[#5865F2] hover:bg-[#4752C4] transition-all duration-300 flex items-center justify-center gap-2"

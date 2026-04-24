@@ -169,6 +169,30 @@ export default function ProfilePage() {
           }
         }}
       />
+
+      {/* Add directly inside ProfilePage's return, before the closing main/container div */}
+      <a
+        href="https://m.me/slicenshareFB"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg transition-colors duration-300"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+          />
+        </svg>
+
+        <span>Need help?</span>
+      </a>
     </div>
   );
 }
