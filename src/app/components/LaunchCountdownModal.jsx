@@ -164,7 +164,7 @@ export default function LaunchCountdownModal({ isOpen, onClose, onCountdownCompl
                     className="space-y-3"
                   >
                     <h1 className="text-4xl md:text-6xl font-black text-white">
-                      🚀 Are You Guys Ready??
+                      🚀 Are You Guys Ready?
                     </h1>
                     <p className="text-lg md:text-2xl bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent font-bold">
                       Launching Saturday 12:00 PM
