@@ -335,7 +335,8 @@ function HomeContent() {
                 className="flex flex-wrap gap-2 mb-8"
               >
                 {[
-                  "🏆 Win Tournaments",
+                  "🏆 Play Scrims",
+                  "🏆 Play Tournaments",
                   "💰 Get Commissions",
                   "🎁 Free Merch @ 500 Fans",
                   "🤝 Brand Deals",
