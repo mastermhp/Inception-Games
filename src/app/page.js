@@ -323,7 +323,7 @@ function HomeContent() {
                 className="text-lg text-zinc-300 mb-8 max-w-lg leading-relaxed"
               >
                 {
-                  "The world's first platform where casual gamers and pros earn real money through tournaments, creator commissions, and brand deals — all in one place."
+                  "From casual solo to esports grinder - turn your skills into real earnings through Scrims, tournaments, and creator brand deals, all in one place."
                 }
               </motion.p>
 
