@@ -140,9 +140,9 @@ export default function ProfilePage() {
           </div>
 
           {/* Featured Carousel - Jobs, Career, Merch */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <FeaturedCarousel />
-          </div>
+          </div> */}
 
           {/* Events Section */}
           <div className="space-y-6">
