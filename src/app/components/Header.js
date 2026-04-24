@@ -78,7 +78,8 @@ export default function Header() {
   }
 
   const handleLoginClick = () => {
-    setCountdownModalOpen(true)
+    // setCountdownModalOpen(true)
+    setLoginModalOpen(true)   
   }
 
   const handleLogout = () => {
@@ -214,9 +215,9 @@ export default function Header() {
             <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               News
             </Link>
-            <Link href="#career" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+            {/* <Link href="#career" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               Career
-            </Link>
+            </Link> */}
             <Link href="#contact" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               Contact Us
             </Link>

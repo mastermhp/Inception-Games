@@ -24,6 +24,10 @@ import {
   CheckCircle2,
   Loader2,
   RefreshCw,
+  Lock,
+  Zap,
+  Smartphone,
+  Gamepad2,
 } from "lucide-react";
 import Image from "next/image";
 import { API } from "@/lib/api";
@@ -179,6 +183,135 @@ function getStatusText(status) {
   return status || "Unknown";
 }
 
+// Platform Icon Component
+function PlatformDisplay({ platform }) {
+  const normalizedPlatform = platform?.toLowerCase().trim();
+  
+  // Determine icon and label based on platform
+  let Icon, label, brandColor;
+  
+  switch (normalizedPlatform) {
+    case "pc":
+    case "pc only":
+    case "pc only ":
+      Icon = Monitor;
+      label = "PC";
+      brandColor = "text-blue-400";
+      break;
+    case "mobile":
+    case "mobile only":
+    case "mobile only ":
+      Icon = Smartphone;
+      label = "Mobile";
+      brandColor = "text-pink-400";
+      break;
+    case "console":
+    case "console only":
+    case "console only ":
+      Icon = Gamepad2;
+      label = "Console";
+      brandColor = "text-yellow-400";
+      break;
+    case "cross-platform":
+    case "all platforms":
+    case "cross platform":
+      Icon = Monitor;
+      label = "Cross Platform";
+      brandColor = "text-purple-400";
+      break;
+    default:
+      Icon = Monitor;
+      label = "All Platforms";
+      brandColor = "text-gray-400";
+  }
+  
+  return (
+    <div className="flex items-center gap-1.5">
+      <Icon size={16} className={`${brandColor} font-bold`} strokeWidth={2.5} />
+      <span className={`${brandColor} font-bold text-sm`}>{label}</span>
+    </div>
+  );
+}
+
+// Coming Soon Card Component
+function ComingSoonCard({ category, icon: IconComponent }) {
+  const isComingSoonDate = new Date("2025-05-01");
+  const daysUntil = Math.ceil((isComingSoonDate - new Date()) / (1000 * 60 * 60 * 24));
+  
+  const categoryColors = {
+    Tournament: {
+      bg: "from-orange-600/20 to-red-600/20",
+      border: "border-orange-500/30",
+      icon: "text-orange-400",
+      accent: "bg-orange-500/10 border-orange-500/30",
+      text: "text-orange-300",
+    },
+    "Brand Deal": {
+      bg: "from-pink-600/20 to-purple-600/20",
+      border: "border-pink-500/30",
+      icon: "text-pink-400",
+      accent: "bg-pink-500/10 border-pink-500/30",
+      text: "text-pink-300",
+    },
+  };
+
+  const colors = categoryColors[category] || categoryColors.Tournament;
+
+  return (
+    <motion.div
+      className={`relative bg-gradient-to-br ${colors.bg} border ${colors.border} rounded-2xl overflow-hidden p-6 h-full min-h-[420px] flex flex-col items-center justify-center text-center group hover:border-opacity-50 transition-all duration-300`}
+      whileHover={{ y: -4, borderColor: "rgba(255, 255, 255, 0.2)" }}
+      layout
+    >
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br ${colors.bg} rounded-full opacity-20 blur-3xl`} />
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br ${colors.bg} rounded-full opacity-20 blur-3xl`} />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 space-y-4">
+        {/* Icon */}
+        <div className={`mx-auto w-16 h-16 rounded-2xl ${colors.accent} flex items-center justify-center border`}>
+          <IconComponent className={`w-8 h-8 ${colors.icon}`} />
+        </div>
+
+        {/* Category Name */}
+        <h3 className="text-2xl font-bold text-white">
+          {category} Events
+        </h3>
+
+        {/* Lock/Coming Soon Badge */}
+        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${colors.accent} border`}>
+          <Lock className={`w-4 h-4 ${colors.icon}`} />
+          <span className={colors.text}>Registration Coming Soon</span>
+        </div>
+
+        {/* Coming Soon Date */}
+        <div className="space-y-2 pt-2">
+          <p className="text-gray-300 text-sm font-medium">Opens May 1st, 2025</p>
+          <p className="text-gray-500 text-xs">
+            {daysUntil > 0 ? `In ${daysUntil} days` : "Available now!"}
+          </p>
+        </div>
+
+        {/* Pulse Animation Indicator */}
+        <div className="pt-2">
+          <div className="inline-flex items-center gap-2 text-xs text-gray-400">
+            <Zap className="w-3 h-3 text-yellow-400 animate-pulse" />
+            <span>More opportunities coming</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Shine Effect on Hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl animate-pulse" />
+      </div>
+    </motion.div>
+  );
+}
+
 // Event Card Component
 function EventCard({ event, onClick }) {
   const [expanded, setExpanded] = useState(false);
@@ -281,10 +414,7 @@ function EventCard({ event, onClick }) {
             <Flag size={12} />
             <span>{event.venue || event.location || "Online"}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Monitor size={12} />
-            <span>{event.platform || "All Platforms"}</span>
-          </div>
+          <PlatformDisplay platform={event.platform} />
           <div className="flex items-center gap-1">
             <Users size={12} />
             <span>{event.teamType || "Open"}</span>
@@ -409,12 +539,14 @@ export default function EventsSection({ user, initialFilter = "all" }) {
     fetchEvents();
   }, [fetchEvents]);
 
-  // Calculate filter counts
+  // Calculate filter counts - Tournaments and Brand Deals show as "coming soon" so count is not displayed from API
+  const scrimmageEvents = events.filter((e) => e.eventType === "Scrims");
+  
   const filterCounts = {
-    all: events.length,
-    Tournament: events.filter((e) => e.eventType === "Tournament").length,
-    Scrims: events.filter((e) => e.eventType === "Scrims").length,
-    "Brand Deal": events.filter((e) => e.eventType === "Brand Deal").length,
+    all: events.length + 2, // Add 2 for the coming soon categories
+    Tournament: 0, // Coming soon category
+    Scrims: scrimmageEvents.length,
+    "Brand Deal": 0, // Coming soon category
   };
 
   const FILTER_TABS = [
@@ -435,8 +567,11 @@ export default function EventsSection({ user, initialFilter = "all" }) {
   ];
 
   const filteredEvents = events.filter((event) => {
+    // Only show Scrims from API
     const matchesFilter =
-      activeFilter === "all" || event.eventType === activeFilter;
+      activeFilter === "all" 
+        ? event.eventType === "Scrims"
+        : (event.eventType === activeFilter && event.eventType === "Scrims");
     const matchesSearch =
       (event.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (event.game?.name || "")
@@ -445,6 +580,12 @@ export default function EventsSection({ user, initialFilter = "all" }) {
       (event.organizer || "").toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  // Determine which coming soon cards to show
+  const showComingSoonCards = {
+    Tournament: activeFilter === "all" || activeFilter === "Tournament",
+    "Brand Deal": activeFilter === "all" || activeFilter === "Brand Deal",
+  };
 
   const handleEventClick = (event) => {
     // Navigate to event detail page with actual event ID
@@ -571,6 +712,20 @@ export default function EventsSection({ user, initialFilter = "all" }) {
           layout
         >
           <AnimatePresence mode="popLayout">
+            {/* Coming Soon Cards - Tournaments */}
+            {showComingSoonCards.Tournament && (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ComingSoonCard category="Tournament" icon={Trophy} />
+              </motion.div>
+            )}
+
+            {/* Scrims from API */}
             {filteredEvents.map((event) => (
               <motion.div
                 key={event.id}
@@ -584,25 +739,23 @@ export default function EventsSection({ user, initialFilter = "all" }) {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
-      )}
 
-      {/* Empty State */}
-      {!loading && !error && filteredEvents.length === 0 && (
-        <motion.div
-          className="text-center py-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-            <Search size={24} className="text-gray-500" />
-          </div>
-          <h3 className="text-xl font-bold text-white mb-2">No events found</h3>
-          <p className="text-gray-500">
-            {events.length === 0
-              ? "No events are available at the moment. Check back later!"
-              : "Try adjusting your filters or search query"}
-          </p>
+          {/* Empty State for Scrims with no data */}
+          {activeFilter === "Scrims" && filteredEvents.length === 0 && !loading && (
+            <motion.div
+              className="col-span-full text-center py-16"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Swords size={28} className="text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">No Scrims Available</h3>
+              <p className="text-gray-400">Check back soon for new scrim opportunities</p>
+            </motion.div>
+          )}
+
+
         </motion.div>
       )}
     </motion.div>

@@ -8,32 +8,88 @@ import { useRouter } from 'next/navigation'
 import { REGION_DATA, CONTINENTS, parseRegionString } from '@/lib/regionData'
 import { useAuth } from '@/app/context/AuthContext'
 
-const GAMES = ['Valorant', 'League of Legends', 'CS:GO', 'Dota 2', 'Fortnite', 'Apex Legends', 'PUBG Mobile', 'Free Fire', 'MLBB', 'Call of Duty Mobile', 'PUBG PC']
+const GAMES = [
+  'Valorant',
+  'League of Legends',
+  'CS2',
+  'Dota 2',
+  'Fortnite',
+  'Apex Legends',
+  'PUBG Mobile',
+  'Free Fire',
+  'MLBB',
+  'Call of Duty Mobile',
+  'PUBG PC',
+
+  // NEW (from image)
+  'Rainbow Six Siege',
+  'CrossFire',
+  'Overwatch 2',
+  'Warzone',
+  'EA Sports FC',
+  'Rocket League',
+  'Trackmania',
+  'Fatal Fury: City of the Wolves',
+  'Street Fighter 6',
+  'Tekken 8',
+  'Chess',
+  'Teamfight Tactics',
+  'Call of Duty Black Ops',
+  'eFootball',
+  'Clash of Clans',
+  'Clash Royale',
+  'FC Mobile',
+  'Assetto Corsa',
+  'Delta Force'
+]
 const ROLES = {
   Valorant: ['Duelist', 'Controller', 'Initiator', 'Sentinel'],
   'League of Legends': ['Top', 'Jungle', 'Mid', 'ADC', 'Support'],
-  'CS:GO': ['Rifler', 'AWPer', 'Support', 'Entry', 'IGL'],
+  'CS2': ['Rifler', 'AWPer', 'Support', 'Entry', 'IGL'],
   'Dota 2': ['Carry', 'Mid', 'Off-lane', 'Support', 'Hard Support'],
   Fortnite: ['Solo', 'Team', 'Creative'],
   'Apex Legends': ['Assault', 'Tracker', 'Support', 'Recon'],
   'PUBG Mobile': ['Assaulter', 'Sniper', 'Support', 'IGL', 'Scout'],
   'Free Fire': ['Rusher', 'Sniper', 'Support', 'Leader'],
-  'MLBB': ['Tank', 'Fighter', 'Assassin', 'Mage', 'Marksman', 'Support'],
+  MLBB: ['Tank', 'Fighter', 'Assassin', 'Mage', 'Marksman', 'Support'],
   'Call of Duty Mobile': ['Slayer', 'Objective', 'Support', 'Anchor', 'Flex'],
   'PUBG PC': ['Assaulter', 'Sniper', 'Support', 'IGL', 'Scout'],
+
+  // NEW
+  'Rainbow Six Siege': ['Entry Fragger', 'Support', 'Anchor', 'Roamer', 'IGL'],
+  'CrossFire': ['Sniper', 'Rifler', 'Support', 'Entry'],
+  'Overwatch 2': ['Tank', 'Damage', 'Support'],
+  'Warzone': ['Sniper', 'Assaulter', 'Support', 'Scout'],
+  'Rocket League': ['Striker', 'Defender', 'Playmaker'],
+  'Teamfight Tactics': ['Flex', 'Economy', 'Aggro'],
+  'Call of Duty Black Ops': ['Slayer', 'Objective', 'Support', 'Anchor'],
+  'eFootball': ['Forward', 'Midfielder', 'Defender', 'Goalkeeper'],
+  'Clash of Clans': ['Attacker', 'Defender', 'Strategist'],
+  'Clash Royale': ['Cycle', 'Beatdown', 'Control'],
+  'FC Mobile': ['Forward', 'Midfielder', 'Defender', 'Goalkeeper']
 }
 const RANKS = {
   Valorant: ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Ascendant', 'Immortal', 'Radiant'],
   'League of Legends': ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger'],
-  'CS:GO': ['Silver 1', 'Silver 2', 'SEM', 'Gold Nova', 'GN2', 'GN3', 'MG', 'DMG', 'LE', 'LEM', 'SMFC', 'Global'],
+  'CS2': ['Silver', 'Gold Nova', 'MG', 'DMG', 'LE', 'LEM', 'Supreme', 'Global'],
   'Dota 2': ['Herald', 'Guardian', 'Crusader', 'Archon', 'Legend', 'Ancient', 'Divine', 'Immortal'],
   Fortnite: ['Open', 'Contender', 'Champion'],
   'Apex Legends': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Apex Predator'],
   'PUBG Mobile': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'],
   'Free Fire': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Heroic', 'Grandmaster'],
-  'MLBB': ['Warrior', 'Elite', 'Master', 'Grandmaster', 'Epic', 'Legend', 'Mythic', 'Mythical Glory'],
+  MLBB: ['Warrior', 'Elite', 'Master', 'Grandmaster', 'Epic', 'Legend', 'Mythic', 'Mythical Glory'],
   'Call of Duty Mobile': ['Rookie', 'Veteran', 'Elite', 'Pro', 'Master', 'Grandmaster', 'Legendary'],
   'PUBG PC': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Conqueror'],
+
+  // NEW
+  'Rainbow Six Siege': ['Copper', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Emerald', 'Diamond', 'Champion'],
+  'Overwatch 2': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Top 500'],
+  'Warzone': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Crimson', 'Iridescent', 'Top 250'],
+  'Rocket League': ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Champion', 'Grand Champion', 'Supersonic Legend'],
+  'Teamfight Tactics': ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger'],
+  'eFootball': ['Division 10', 'Division 9', 'Division 8', 'Division 7', 'Division 6', 'Division 5', 'Division 4', 'Division 3', 'Division 2', 'Division 1'],
+  'Clash Royale': ['Arena 1–15', 'Challenger', 'Master', 'Champion', 'Ultimate Champion'],
+  'FC Mobile': ['Amateur', 'Pro', 'World Class', 'Legendary', 'FIFA Champion']
 }
 
 export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login', tournamentCategory }) {

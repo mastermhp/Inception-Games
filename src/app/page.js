@@ -270,13 +270,32 @@ function HomeContent() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-zinc-900/80 border border-zinc-700 rounded-full px-4 py-1.5 mb-6"
+                className="inline-flex items-center gap-2 bg-zinc-900/80 border border-purple-700 rounded-full px-4 py-1.5 mb-6"
               >
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-sm text-zinc-300">
-                  500 gamers earning{" "}
-                  <span className="text-green-400">right now</span>
+                <span className="w-2 h-2 bg-purple-600 rounded-full animate-pulse" />
+                <span className="text-xs text-zinc-300">
+                  500 Gamers Earning,{" "}
+                  <span className="text-purple-500">Right now</span>
                 </span>
+
+                {/* Logo */}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                // transition={{
+                //   duration: ANIMATION_DURATION,
+                //   delay: ANIMATION_DELAYS.logo,
+                // }}
+                className="mb-0"
+              >
+                <div className="flex items-center pt-4 pb-2">
+                  <img
+                    src="/Logo/fullLogo.png"
+                    alt="SNS Logo"
+                    className="w-50  h-13"
+                  />
+                </div>
               </motion.div>
 
               <motion.h1
@@ -706,7 +725,8 @@ function HomeContent() {
                 if (user) {
                   router.push("/profile");
                 } else {
-                  setCountdownModalOpen(true);
+                  // setCountdownModalOpen(true);
+                  setLoginModalOpen(true);
                 }
               }}
               className="relative cursor-pointer px-10 py-3 bg-gradient-to-r from-purple-900 to-pink-800 hover:bg-transparent transition-all duration-500 rounded-[40px] inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg overflow-hidden group"
