@@ -1,121 +1,596 @@
-"use client"
-import { useEffect, useRef } from "react"
-import { useSearchParams } from "next/navigation"
-import Header from "./components/Header"
-import HeroSection from "./components/HeroSection"
-import TournamentCarousel from "./components/TournamentCarousel.js"
-import TrustedBrands from "./components/TrustedBrands"
-import ShowcaseCarousel from "./components/ShowcaseCarousel"
-import UpcomingEvents from "./components/UpcomingEvents"
-import LatestNews from "./components/LatestNews"
-import ContactSection from "./components/ContactSection"
-import Footer from "./components/Footer"
-import AllGamesLoop from "./components/AllGamesLoop"
-import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx"
+"use client";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Trophy,
+  Swords,
+  Video,
+  Briefcase,
+  Users,
+  Calendar,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  MessageSquare,
+  ShoppingBag,
+  Shirt,
+  Package,
+  Star,
+  Bell,
+  Zap,
+  ChevronRight,
+  Play,
+  ArrowRight,
+  Gamepad2,
+  Target,
+  Flame,
+  Lock,
+  CheckCircle,
+  ExternalLink,
+  Globe,
+} from "lucide-react";
+// import { ImageWithFallback } from "./components/figma/ImageWithFallback";
+import Header from "./components/Header";
+import HeroSection from "./components/HeroSection";
+import TournamentCarousel from "./components/TournamentCarousel.js";
+import TrustedBrands from "./components/TrustedBrands";
+import ShowcaseCarousel from "./components/ShowcaseCarousel";
+import UpcomingEvents from "./components/UpcomingEvents";
+import LatestNews from "./components/LatestNews";
+import ContactSection from "./components/ContactSection";
+import Footer from "./components/Footer";
+import AllGamesLoop from "./components/AllGamesLoop";
+import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx";
+import Image from "next/image";
+
+function AnimatedCounter({ target, suffix = "", prefix = "" }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          let start = 0;
+          const step = target / 60;
+
+          const id = setInterval(() => {
+            start += step;
+            if (start >= target) {
+              setCount(target);
+              clearInterval(id);
+            } else {
+              setCount(Math.floor(start));
+            }
+          }, 16);
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+}
 
 export default function Home() {
-  const searchParams = useSearchParams()
-  const scrollTimeoutRef = useRef(null)
-  const observerRef = useRef(null)
-  const pollIntervalRef = useRef(null)
+  const searchParams = useSearchParams();
+  const scrollTimeoutRef = useRef(null);
+  const observerRef = useRef(null);
+  const pollIntervalRef = useRef(null);
+
+  const howToEarn = [
+    {
+      step: "01",
+      title: "Sign Up Free",
+      desc: "Create your account in 60 seconds.",
+      icon: Gamepad2,
+      color: "text-purple-400",
+      bg: "bg-purple-500/10 border-purple-500/30",
+    },
+    {
+      step: "02",
+      title: "Join Tournaments",
+      desc: "Play and compete.",
+      icon: Trophy,
+      color: "text-yellow-400",
+      bg: "bg-yellow-500/10 border-yellow-500/30",
+    },
+    {
+      step: "03",
+      title: "Build Fanbase",
+      desc: "Grow followers.",
+      icon: Users,
+      color: "text-cyan-400",
+      bg: "bg-cyan-500/10 border-cyan-500/30",
+    },
+    {
+      step: "04",
+      title: "Earn Money",
+      desc: "Get paid.",
+      icon: DollarSign,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10 border-emerald-500/30",
+    },
+  ];
 
   useEffect(() => {
     // Also check window.location on first load in case useSearchParams doesn't catch it
-    const section = searchParams.get('section') || new URLSearchParams(window.location.search).get('section')
-    console.log("[v0] Section param detected:", section, "URL:", window.location.href)
-    
-    if (!section) return
+    const section =
+      searchParams.get("section") ||
+      new URLSearchParams(window.location.search).get("section");
+    console.log(
+      "[v0] Section param detected:",
+      section,
+      "URL:",
+      window.location.href,
+    );
+
+    if (!section) return;
 
     // Cleanup previous timers
-    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-    if (observerRef.current) observerRef.current.disconnect()
-    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    if (observerRef.current) observerRef.current.disconnect();
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
 
     const doScroll = () => {
-      const element = document.getElementById(section)
-      
+      const element = document.getElementById(section);
+
       if (!element) {
         // Log all available IDs for debugging
-        const allIds = Array.from(document.querySelectorAll('[id]')).map(el => el.id)
-        console.log("[v0] Element not found:", section, "Available IDs:", allIds)
+        const allIds = Array.from(document.querySelectorAll("[id]")).map(
+          (el) => el.id,
+        );
+        console.log(
+          "[v0] Element not found:",
+          section,
+          "Available IDs:",
+          allIds,
+        );
       } else {
-        console.log("[v0] Element found! Scrolling to:", section)
+        console.log("[v0] Element found! Scrolling to:", section);
         // Scroll with proper offset for fixed header
-        const headerOffset = 120
-        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+        const headerOffset = 120;
+        const elementPosition =
+          element.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({
           top: elementPosition - headerOffset,
-          behavior: 'smooth'
-        })
-        
+          behavior: "smooth",
+        });
+
         // Cleanup
-        if (observerRef.current) observerRef.current.disconnect()
-        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+        if (observerRef.current) observerRef.current.disconnect();
+        if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
       }
-      
-      return !!element
-    }
+
+      return !!element;
+    };
 
     // Start scrolling attempt after a longer initial delay to let components render
     scrollTimeoutRef.current = setTimeout(() => {
-      console.log("[v0] Starting scroll attempt for section:", section)
-      
+      console.log("[v0] Starting scroll attempt for section:", section);
+
       // First try immediately
-      if (doScroll()) return
+      if (doScroll()) return;
 
       // Set up MutationObserver to catch DOM changes
       observerRef.current = new MutationObserver(() => {
-        doScroll()
-      })
+        doScroll();
+      });
 
       observerRef.current.observe(document.body, {
         childList: true,
         subtree: true,
         attributes: false,
-        characterData: false
-      })
+        characterData: false,
+      });
 
       // Polling fallback with more attempts and longer intervals
-      let scrollAttempts = 0
-      const maxAttempts = 50
-      
+      let scrollAttempts = 0;
+      const maxAttempts = 50;
+
       pollIntervalRef.current = setInterval(() => {
-        scrollAttempts++
+        scrollAttempts++;
         if (doScroll()) {
-          clearInterval(pollIntervalRef.current)
-          if (observerRef.current) observerRef.current.disconnect()
+          clearInterval(pollIntervalRef.current);
+          if (observerRef.current) observerRef.current.disconnect();
         } else if (scrollAttempts >= maxAttempts) {
-          console.log("[v0] Max scroll attempts reached for section:", section)
-          clearInterval(pollIntervalRef.current)
-          if (observerRef.current) observerRef.current.disconnect()
+          console.log("[v0] Max scroll attempts reached for section:", section);
+          clearInterval(pollIntervalRef.current);
+          if (observerRef.current) observerRef.current.disconnect();
         }
-      }, 300)
-    }, 800)
+      }, 300);
+    }, 800);
 
     return () => {
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-      if (observerRef.current) observerRef.current.disconnect()
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
-    }
-  }, [searchParams])
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      if (observerRef.current) observerRef.current.disconnect();
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, [searchParams]);
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: "#0a0a14" }}>
       <Header />
+      {/* ── HERO ── */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1699962700191-0f5633845733?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
+            alt="Esports Arena"
+            fill
+            className="object-cover"
+            priority
+          />{" "}
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/90 to-zinc-950/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/20" />
+        </div>
+
+        {/* Neon grid overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-6 w-full pt-28 pb-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Live badge */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 bg-zinc-900/80 border border-zinc-700 rounded-full px-4 py-1.5 mb-6"
+              >
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-sm text-zinc-300">
+                  3,241 gamers earning{" "}
+                  <span className="text-green-400">right now</span>
+                </span>
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="text-6xl lg:text-7xl mb-4 tracking-tight leading-[0.92]"
+              >
+                PLAY GAMES.
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  GET PAID.
+                </span>
+                <br />
+                <span className="text-3xl lg:text-4xl text-zinc-400">
+                  BUILD YOUR LEGACY.
+                </span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-lg text-zinc-300 mb-8 max-w-lg leading-relaxed"
+              >
+                The world's first platform where casual gamers and pros earn
+                real money through tournaments, creator commissions, and brand
+                deals — all in one place.
+              </motion.p>
+
+              {/* Earning path teaser */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-wrap gap-2 mb-8"
+              >
+                {[
+                  "🏆 Win Tournaments",
+                  "💰 Get Commissions",
+                  "🎁 Free Merch @ 1K Fans",
+                  "🤝 Brand Deals",
+                ].map((pill) => (
+                  <span
+                    key={pill}
+                    className="text-xs bg-zinc-800/80 border border-zinc-700 rounded-full px-3 py-1.5 text-zinc-300"
+                  >
+                    {pill}
+                  </span>
+                ))}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-wrap gap-4 mb-10"
+              >
+                {/* <button
+                  onClick={() => setShowSignIn(true)}
+                  className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all hover:scale-105 rounded-xl flex items-center gap-2 shadow-lg shadow-purple-500/25"
+                >
+                  <Zap className="w-5 h-5" /> Start Earning — It's Free
+                </button> */}
+                <button className="px-8 py-4 bg-zinc-800/80 hover:bg-zinc-700 transition-all rounded-xl flex items-center gap-2 border border-zinc-700">
+                  <Play className="w-5 h-5 text-cyan-400" /> Watch How It Works
+                </button>
+              </motion.div>
+
+              {/* Stats */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="grid grid-cols-3 gap-4 border-t border-zinc-800/60 pt-6"
+              >
+                {[
+                  {
+                    target: 2100000,
+                    suffix: "+",
+                    prefix: "$",
+                    label: "Paid Out",
+                  },
+                  {
+                    target: 48000,
+                    suffix: "+",
+                    prefix: "",
+                    label: "Active Gamers",
+                  },
+                  {
+                    target: 175000,
+                    suffix: "",
+                    prefix: "$",
+                    label: "Prize Pools",
+                  },
+                ].map(({ target, suffix, prefix, label }) => (
+                  <div key={label}>
+                    <div className="text-2xl text-purple-400">
+                      <AnimatedCounter
+                        target={target}
+                        suffix={suffix}
+                        prefix={prefix}
+                      />
+                    </div>
+                    <div className="text-xs text-zinc-500">{label}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Right: Floating Cards */}
+            {/* <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="hidden lg:block"
+            >
+              <div className="space-y-4 max-w-sm ml-auto">
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-emerald-400" />
+                      <span className="text-sm text-zinc-400">
+                        Monthly Earnings
+                      </span>
+                    </div>
+                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      +34% ↑
+                    </span>
+                  </div>
+                  <div className="text-3xl text-white mb-1">$1,247.80</div>
+                  <div className="flex gap-4 text-xs text-zinc-500">
+                    <span className="flex items-center gap-1">
+                      <Trophy className="w-3 h-3 text-yellow-400" />
+                      Tournaments $820
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3 h-3 text-purple-400" />
+                      Commission $427
+                    </span>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 7, 0] }}
+                  transition={{
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5,
+                  }}
+                  className="bg-gradient-to-br from-purple-900/60 to-zinc-900/90 border border-purple-500/30 rounded-2xl p-5 backdrop-blur"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span className="text-sm text-zinc-300">
+                        1000 Follower Reward
+                      </span>
+                    </div>
+                    <span className="text-xs text-purple-400">84.7%</span>
+                  </div>
+                  <div className="w-full bg-zinc-800 rounded-full h-2.5 mb-3 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "84.7%" }}
+                      transition={{ duration: 2, delay: 1 }}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full"
+                    />
+                  </div>
+                  <div className="text-xs text-zinc-500 mb-3">
+                    847 / 1000 followers — 153 to go!
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-xs bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
+                      <Package className="w-3 h-3" /> Free Merch
+                    </span>
+                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
+                      <DollarSign className="w-3 h-3" /> 15% Commission
+                    </span>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                  }}
+                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/30 rounded-xl flex items-center justify-center">
+                      <Trophy className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm">Spring Championship</div>
+                      <div className="text-xs text-zinc-500">
+                        Starts in{" "}
+                        <span className="text-yellow-400">8 days</span> · $50K
+                        Prize
+                      </div>
+                    </div>
+                    <button className="text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded-lg transition-colors">
+                      Join
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div> */}
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-zinc-600"
+        >
+          <span className="text-xs">Scroll to explore</span>
+          <div className="w-5 h-8 border-2 border-zinc-700 rounded-full flex items-start justify-center pt-1">
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1 h-2 bg-purple-500 rounded-full"
+            />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── HOW TO EARN ── */}
+      <section className="py-28 px-6 bg-zinc-950 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-purple-950/10 to-zinc-950 pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/30 rounded-full px-4 py-1.5 mb-5">
+              <Flame className="w-4 h-4 text-orange-400" />
+              <span className="text-sm text-purple-300">Your Earning Path</span>
+            </div>
+            <h2 className="text-5xl mb-4">
+              How You{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Earn Money
+              </span>
+            </h2>
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              Four simple steps from a casual gamer to a paid professional.
+              Start today, get paid this month.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-4 gap-6 relative">
+            {/* connector line */}
+            <div className="hidden md:block absolute top-16 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-emerald-500/40" />
+            {howToEarn.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12, duration: 0.6 }}
+                className="relative flex flex-col items-center text-center"
+              >
+                <div
+                  className={`w-16 h-16 ${item.bg} border rounded-2xl flex items-center justify-center mb-5 relative z-10`}
+                >
+                  <item.icon className={`w-7 h-7 ${item.color}`} />
+                </div>
+                <div className="text-xs text-zinc-600 mb-1">{item.step}</div>
+                <h3 className="text-lg mb-2">{item.title}</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mt-14"
+          >
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all hover:scale-105 rounded-xl inline-flex items-center gap-2 shadow-lg shadow-purple-500/20"
+            >
+              Start Your Journey <ArrowRight className="w-5 h-5" />
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
       <HeroSection />
       {/* <ComingSoon/> */}
       <TournamentCarousel />
-      <AllGamesLoop/>
+      <AllGamesLoop />
       <TrustedBrands />
-      <Ecosystem/>
+      <Ecosystem />
       {/* <ShowcaseCarousel /> */}
       {/* <UpcomingEvents /> */}
       <LatestNews />
-      <div id="career">
-        {/* Career section can be added here if needed */}
-      </div>
+      <div id="career">{/* Career section can be added here if needed */}</div>
       <ContactSection />
       <Footer />
     </main>
-  )
+  );
 }

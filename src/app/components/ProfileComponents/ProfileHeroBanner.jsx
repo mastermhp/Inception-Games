@@ -1,32 +1,44 @@
-'use client'
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Share2, Edit3, Gamepad2, MapPin, Award, Check, Link2, Facebook, Twitter, Bell } from 'lucide-react'
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Share2,
+  Edit3,
+  Gamepad2,
+  MapPin,
+  Award,
+  Check,
+  Link2,
+  Facebook,
+  Twitter,
+  Bell,
+} from "lucide-react";
 
 export default function ProfileHeroBanner({ user, onEditProfile }) {
-  const [showShareMenu, setShowShareMenu] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const shareRef = useRef(null)
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareRef = useRef(null);
 
   // Close share menu on outside click
   useEffect(() => {
     const handleClick = (e) => {
-      if (shareRef.current && !shareRef.current.contains(e.target)) setShowShareMenu(false)
-    }
-    if (showShareMenu) document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [showShareMenu])
-  const initials = (user?.fullName || user?.username || 'P')
-    .split(' ')
-    .map(w => w[0])
-    .join('')
+      if (shareRef.current && !shareRef.current.contains(e.target))
+        setShowShareMenu(false);
+    };
+    if (showShareMenu) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showShareMenu]);
+  const initials = (user?.fullName || user?.username || "P")
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, 2);
 
   return (
     <motion.div
-      className="relative w-full rounded-2xl overflow-hidden border border-white/[0.06]"
+      className="relative w-full rounded-2xl overflow-hidden border border-white/[0.06] min-h-[420px] sm:min-h-[320px] lg:min-h-[420px]"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
@@ -34,7 +46,11 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
       {/* Background: custom banner or mesh gradient */}
       {user?.banner || user?.banner_url ? (
         <div className="absolute inset-0">
-          <img src={user.banner || user.banner_url} alt="Profile banner" className="w-full h-full object-cover" />
+          <img
+            src={user.banner || user.banner_url}
+            alt="Profile banner"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c14] via-[#0c0c14]/60 to-transparent" />
         </div>
       ) : (
@@ -49,39 +65,50 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent"
         animate={{ x: [-800, 800] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       />
 
       {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'1\'/%3E%3C/svg%3E")' }} />
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")",
+        }}
+      />
 
       {/* Content */}
-      <div className="relative z-10 px-6 sm:px-8 lg:px-10 py-8 sm:py-10 lg:py-12">
+      <div className="relative z-10 h-full flex flex-col justify-between px-6 sm:px-8 lg:px-10 py-6 mt-[20%]">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
           {/* Avatar */}
           <motion.div
-            className="relative flex-shrink-0"
+            className="relative"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 180 }}
           >
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-[2px] shadow-2xl shadow-purple-500/20">
-              <div className="w-full h-full rounded-2xl bg-[#0c0c14] flex items-center justify-center overflow-hidden">
+            {/* Glow */}
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 blur-md opacity-60 animate-pulse" />
+
+            {/* Avatar */}
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full p-[2px] bg-gradient-to-br from-purple-500 to-pink-500">
+              <div className="w-full h-full rounded-full bg-[#0c0c14] overflow-hidden flex items-center justify-center">
                 {user?.avatar || user?.avatar_url ? (
-                  <img src={user.avatar || user.avatar_url} alt={user?.fullName || user?.full_name || 'Avatar'} className="w-full h-full object-cover" />
+                  <img
+                    src={user.avatar || user.avatar_url}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  <span className="text-4xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     {initials}
                   </span>
                 )}
               </div>
             </div>
+
             {/* Online indicator */}
-            <motion.div
-              className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-[3px] border-[#0c0c14]"
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <span className="absolute bottom-3 right-3 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#0c0c14] animate-ping" />
+            <span className="absolute bottom-3 right-3 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0c0c14]" />
           </motion.div>
 
           {/* Info */}
@@ -93,13 +120,17 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
             >
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                  {user?.fullName || user?.full_name || user?.username || 'Player'}
+                  {user?.fullName ||
+                    user?.full_name ||
+                    user?.username ||
+                    "Player"}
                 </h1>
-                {user?.username && user.username !== (user?.fullName || user?.full_name) && (
-                  <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] text-gray-400 text-sm font-medium">
-                    @{user.username}
-                  </span>
-                )}
+                {user?.username &&
+                  user.username !== (user?.fullName || user?.full_name) && (
+                    <span className="px-2.5 py-0.5 rounded-md bg-white/[0.06] text-gray-400 text-sm font-medium">
+                      @{user.username}
+                    </span>
+                  )}
               </div>
 
               {/* Tags row */}
@@ -153,7 +184,11 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                 onClick={() => setShowShareMenu(!showShareMenu)}
                 aria-label="Share profile"
               >
-                {copied ? <Check size={18} className="text-emerald-400" /> : <Share2 size={18} />}
+                {copied ? (
+                  <Check size={18} className="text-emerald-400" />
+                ) : (
+                  <Share2 size={18} />
+                )}
               </motion.button>
               <AnimatePresence>
                 {showShareMenu && (
@@ -166,14 +201,23 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                     <button
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white transition"
                       onClick={async () => {
-                        const url = typeof window !== 'undefined' ? window.location.href : ''
+                        const url =
+                          typeof window !== "undefined"
+                            ? window.location.href
+                            : "";
                         if (navigator.share) {
-                          try { await navigator.share({ title: `${user?.fullName || 'Player'} - SNS Profile`, url }) } catch {}
+                          try {
+                            await navigator.share({
+                              title: `${user?.fullName || "Player"} - SNS Profile`,
+                              url,
+                            });
+                          } catch {}
                         } else {
-                          await navigator.clipboard.writeText(url)
-                          setCopied(true); setTimeout(() => setCopied(false), 2000)
+                          await navigator.clipboard.writeText(url);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
                         }
-                        setShowShareMenu(false)
+                        setShowShareMenu(false);
                       }}
                     >
                       <Link2 size={14} /> Copy Link
@@ -181,9 +225,16 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                     <button
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white transition"
                       onClick={() => {
-                        const url = typeof window !== 'undefined' ? window.location.href : ''
-                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400')
-                        setShowShareMenu(false)
+                        const url =
+                          typeof window !== "undefined"
+                            ? window.location.href
+                            : "";
+                        window.open(
+                          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                          "_blank",
+                          "width=600,height=400",
+                        );
+                        setShowShareMenu(false);
                       }}
                     >
                       <Facebook size={14} /> Facebook
@@ -191,9 +242,16 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
                     <button
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white transition"
                       onClick={() => {
-                        const url = typeof window !== 'undefined' ? window.location.href : ''
-                        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`Check out ${user?.fullName || 'this player'} on Inception Games!`)}`, '_blank', 'width=600,height=400')
-                        setShowShareMenu(false)
+                        const url =
+                          typeof window !== "undefined"
+                            ? window.location.href
+                            : "";
+                        window.open(
+                          `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`Check out ${user?.fullName || "this player"} on Inception Games!`)}`,
+                          "_blank",
+                          "width=600,height=400",
+                        );
+                        setShowShareMenu(false);
                       }}
                     >
                       <Twitter size={14} /> Twitter / X
@@ -203,7 +261,7 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
               </AnimatePresence>
             </div>
             {/* Notification button */}
-            
+
             {/* Edit Profile button */}
             {onEditProfile && (
               <motion.button
@@ -245,5 +303,5 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
       {/* Top accent line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/40 to-pink-500/40" />
     </motion.div>
-  )
+  );
 }
