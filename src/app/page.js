@@ -1,6 +1,6 @@
 
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -45,6 +45,7 @@ import Footer from "./components/Footer";
 import AllGamesLoop from "./components/AllGamesLoop";
 import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx";
 import Image from "next/image";
+import UnifiedAuthModal from "./components/AuthModals/UnifiedAuthModal";
 
 function AnimatedCounter({ target, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
@@ -89,7 +90,7 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }) {
   );
 }
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -97,6 +98,7 @@ export default function Home() {
   const observerRef = useRef(null);
   const pollIntervalRef = useRef(null);
   const [showSignIn, setShowSignIn] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const howToEarn = [
     {
@@ -555,69 +557,10 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-8 relative py-16">
-            {/* Premium Animated Flowing Connector */}
-            <div className="hidden md:block absolute top-36 left-[5%] right-[5%]">
-              {/* SVG-based flowing line with gradient */}
-              <svg className="w-full h-3" viewBox="0 0 1000 12" preserveAspectRatio="none" style={{ filter: 'drop-shadow(0 0 8px rgba(168, 85, 247, 0.4))' }}>
-                <defs>
-                  <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.2" />
-                    <stop offset="25%" stopColor="#a855f7" stopOpacity="0.9" />
-                    <stop offset="50%" stopColor="#ec4899" stopOpacity="0.9" />
-                    <stop offset="75%" stopColor="#06b6d4" stopOpacity="0.9" />
-                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.2" />
-                  </linearGradient>
-                </defs>
-                <path d="M0,6 Q250,2 500,6 T1000,6" stroke="url(#flowGrad)" strokeWidth="2.5" fill="none" vectorEffect="non-scaling-stroke" />
-              </svg>
-
-              {/* Animated flowing particles along the line */}
-              {[0, 1, 2, 3].map((i) => (
-                <motion.div
-                  key={`particle-${i}`}
-                  className="absolute w-3 h-3 rounded-full"
-                  style={{
-                    top: '-6px',
-                    background: '#ec4899',
-                    boxShadow: '0 0 12px rgba(236, 72, 153, 0.8), 0 0 24px rgba(236, 72, 153, 0.4)',
-                  }}
-                  animate={{
-                    left: ['0%', '100%'],
-                    opacity: [0, 1, 1, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    delay: i * 0.7,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                />
-              ))}
-
-              {/* Static pulse connection points */}
-              {[0.25, 0.5, 0.75].map((pos, i) => (
-                <motion.div
-                  key={`pulse-${i}`}
-                  className="absolute w-2.5 h-2.5 rounded-full"
-                  style={{
-                    left: `${pos * 100}%`,
-                    top: '-3px',
-                    transform: 'translateX(-50%)',
-                    background: ['#a855f7', '#ec4899', '#06b6d4'][i],
-                  }}
-                  animate={{
-                    boxShadow: [
-                      `0 0 0 2px ${['rgba(168, 85, 247, 0.5)', 'rgba(236, 72, 153, 0.5)', 'rgba(6, 182, 212, 0.5)'][i]}, 0 0 0 8px ${['rgba(168, 85, 247, 0)', 'rgba(236, 72, 153, 0)', 'rgba(6, 182, 212, 0)'][i]}`,
-                      `0 0 0 2px ${['rgba(168, 85, 247, 0.5)', 'rgba(236, 72, 153, 0.5)', 'rgba(6, 182, 212, 0.5)'][i]}, 0 0 0 0px ${['rgba(168, 85, 247, 0)', 'rgba(236, 72, 153, 0)', 'rgba(6, 182, 212, 0)'][i]}`,
-                    ],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: 'easeOut',
-                  }}
-                />
-              ))}
+            {/* ===== Processing Bar Fill - Gray fills to Purple-Pink ===== */}
+            <div className="hidden md:block absolute top-36 left-[5%] right-[5%] h-1 pointer-events-none">
+              {/* Container for the processing line */}
+              <div className="processing-line w-full h-full" />
             </div>
 
             {/* Step Cards */}
@@ -637,66 +580,75 @@ export default function Home() {
                 }}
                 className="relative flex flex-col items-center text-center group"
               >
-                {/* Premium icon container */}
+                {/* Icon container - starts gray, reveals to purple-pink glow */}
                 <motion.div
                   whileHover={{ 
                     scale: 1.2,
                     y: -4,
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  className={`w-24 h-24 ${item.bg} border-2 rounded-3xl flex items-center justify-center mb-8 relative z-10 transition-all duration-300`}
+                  className={`icon-animate-reveal icon-animate-reveal-${i} w-24 h-24 bg-gray-900 border-2 border-gray-600 rounded-3xl flex items-center justify-center mb-8 relative z-10 transition-all duration-300`}
                   style={{
-                    borderColor: ['rgba(168, 85, 247, 0.5)', 'rgba(250, 204, 21, 0.5)', 'rgba(6, 182, 212, 0.5)', 'rgba(16, 185, 129, 0.5)'][i],
-                    boxShadow: `0 20px 40px ${['rgba(168, 85, 247, 0.12)', 'rgba(250, 204, 21, 0.12)', 'rgba(6, 182, 212, 0.12)', 'rgba(16, 185, 129, 0.12)'][i]}`,
+                    boxShadow: `0 20px 40px rgba(100, 100, 100, 0.1)`,
                   }}
                 >
-                  {/* Subtle rotating border animation */}
+                  {/* Rotating border - starts gray, reveals purple on animation */}
                   <motion.div
                     animate={{ rotate: [0, 360] }}
                     transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-1 rounded-3xl border border-dashed opacity-30 group-hover:opacity-60 transition-opacity duration-300"
+                    className="absolute inset-1 rounded-3xl border border-dashed opacity-20 group-hover:opacity-40 transition-opacity duration-300"
                     style={{
-                      borderColor: ['#a855f7', '#facc15', '#06b6d4', '#10b981'][i],
+                      borderColor: 'rgb(129, 23, 241)',
                     }}
                   />
-                  <item.icon className={`w-12 h-12 ${item.color} relative z-20`} />
+                  {/* Icon - starts gray, reveals to purple as line passes */}
+                  <item.icon 
+                    className="w-12 h-12 relative z-20"
+                    style={{
+                      color: 'rgb(100, 100, 100)',
+                      filter: 'grayscale(100%)',
+                    }}
+                  />
                 </motion.div>
 
-                {/* Step Label */}
+                {/* Step Label - starts gray, reveals purple */}
                 <motion.div 
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.2 }}
-                  className="text-xs font-extrabold mb-3 tracking-widest"
+                  className="step-label text-xs font-extrabold mb-3 tracking-widest"
                   style={{
-                    color: ['#a855f7', '#facc15', '#06b6d4', '#10b981'][i],
+                    color: 'rgb(120, 120, 120)',
                   }}
                 >
                   STEP {item.step}
                 </motion.div>
 
-                {/* Title with hover gradient effect */}
+                {/* Title - starts gray, reveals to light gray as animation plays */}
                 <motion.h3 
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.1 }}
-                  className="text-2xl font-bold mb-3 text-white leading-tight group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
+                  className="step-title text-2xl font-bold mb-3 leading-tight transition-all duration-300"
                   style={{
-                    backgroundImage: `linear-gradient(135deg, ${['#a855f7', '#facc15', '#06b6d4', '#10b981'][i]}, ${['#ec4899', '#f97316', '#0ea5e9', '#34d399'][i]})`,
+                    color: 'rgb(130, 130, 130)',
                   }}
                 >
                   {item.title}
                 </motion.h3>
 
-                {/* Description */}
+                {/* Description - starts gray, reveals lighter gray */}
                 <motion.p 
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.15 }}
-                  className="text-zinc-400 text-base leading-relaxed group-hover:text-zinc-300 transition-colors duration-300"
+                  className="step-description text-base leading-relaxed transition-colors duration-300"
+                  style={{
+                    color: 'rgb(100, 100, 100)',
+                  }}
                 >
                   {item.desc}
                 </motion.p>
@@ -730,7 +682,7 @@ export default function Home() {
                 if (user) {
                   router.push('/profile');
                 } else {
-                  setShowSignIn(true);
+                  setLoginModalOpen(true);
                 }
               }}
               className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all rounded-xl inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg"
@@ -753,6 +705,20 @@ export default function Home() {
       <div id="career">{/* Career section can be added here if needed */}</div>
       <ContactSection />
       <Footer />
+      
+      {/* Login Modal */}
+      <UnifiedAuthModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div />}>
+      <HomeContent />
+    </Suspense>
   );
 }
