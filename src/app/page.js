@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -46,6 +45,7 @@ import AllGamesLoop from "./components/AllGamesLoop";
 import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx";
 import Image from "next/image";
 import UnifiedAuthModal from "./components/AuthModals/UnifiedAuthModal";
+import LaunchCountdownModal from "./components/LaunchCountdownModal";
 
 function AnimatedCounter({ target, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
@@ -99,6 +99,7 @@ function HomeContent() {
   const pollIntervalRef = useRef(null);
   const [showSignIn, setShowSignIn] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [countdownModalOpen, setCountdownModalOpen] = useState(false);
 
   const howToEarn = [
     {
@@ -237,7 +238,8 @@ function HomeContent() {
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1699962700191-0f5633845733?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
+            // src="https://images.unsplash.com/photo-1699962700191-0f5633845733?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
+            src="/Hero/bg.jpeg"
             alt="Esports Arena"
             fill
             className="object-cover"
@@ -269,13 +271,32 @@ function HomeContent() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-zinc-900/80 border border-zinc-700 rounded-full px-4 py-1.5 mb-6"
+                className="inline-flex items-center gap-2 bg-zinc-900/80 border border-purple-700 rounded-full px-4 py-1.5 mb-6"
               >
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-sm text-zinc-300">
-                  3,241 gamers earning{" "}
-                  <span className="text-green-400">right now</span>
+                <span className="w-2 h-2 bg-purple-600 rounded-full animate-pulse" />
+                <span className="text-xs text-zinc-300">
+                  500 Gamers Earning,{" "}
+                  <span className="text-purple-500">Right now</span>
                 </span>
+
+                {/* Logo */}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                // transition={{
+                //   duration: ANIMATION_DURATION,
+                //   delay: ANIMATION_DELAYS.logo,
+                // }}
+                className="mb-0"
+              >
+                <div className="flex items-center pt-4 pb-2">
+                  <img
+                    src="/Logo/fulllogo.jpg"
+                    alt="SNS Logo"
+                    className="w-50  h-13"
+                  />
+                </div>
               </motion.div>
 
               <motion.h1
@@ -302,7 +323,7 @@ function HomeContent() {
                 className="text-lg text-zinc-300 mb-8 max-w-lg leading-relaxed"
               >
                 {
-                  "The world's first platform where casual gamers and pros earn real money through tournaments, creator commissions, and brand deals — all in one place."
+                  "From casual solo to esports grinder - turn your skills into real earnings through Scrims, tournaments, and creator brand deals, all in one place."
                 }
               </motion.p>
 
@@ -314,10 +335,10 @@ function HomeContent() {
                 className="flex flex-wrap gap-2 mb-8"
               >
                 {[
-                  "🏆 Win Tournaments",
-                  "💰 Get Commissions",
-                  "🎁 Free Merch @ 1K Fans",
+                  "🏆 Play Scrims",
+                  "🏆 Play Tournaments",
                   "🤝 Brand Deals",
+                  "🎁 Free Merch @ 500 Fans",
                 ].map((pill) => (
                   <span
                     key={pill}
@@ -334,27 +355,49 @@ function HomeContent() {
                 transition={{ delay: 0.6 }}
                 className="flex flex-wrap gap-4 mb-10"
               >
-                {/* <button
-                  onClick={() => setShowSignIn(true)}
-                  className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all hover:scale-105 rounded-xl flex items-center gap-2 shadow-lg shadow-purple-500/25"
-                >
-                  <Zap className="w-5 h-5" /> Start Earning — It's Free
-                </button> */}
-                <button 
+                <button
                   onClick={() => {
-                    const element = document.getElementById('how-to-earn');
+                    const element = document.getElementById("how-to-earn");
                     if (element) {
                       const headerOffset = 120;
-                      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                      const elementPosition =
+                        element.getBoundingClientRect().top +
+                        window.pageYOffset;
                       window.scrollTo({
                         top: elementPosition - headerOffset,
-                        behavior: 'smooth',
+                        behavior: "smooth",
                       });
                     }
                   }}
-                  className="px-8 py-4 bg-zinc-800/80 hover:bg-zinc-700 transition-all rounded-xl flex items-center gap-2 border border-zinc-700"
+                  className="relative px-8 py-4 bg-purple-800 cursor-pointer hover:bg-transparent transition-all duration-500 rounded-full flex items-center gap-2 border border-zinc-700 overflow-hidden group"
                 >
-                  <Play className="w-5 h-5 text-cyan-400" /> Watch How It Works
+                  {/* base background */}
+                  <div className="absolute inset-0 bg-zinc-800/80 group-hover:opacity-0 transition-opacity duration-500 rounded-full" />
+
+                  {/* glass effect on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-white/5 backdrop-blur-md rounded-full" />
+
+                  {/* premium purple-pink glow sweep */}
+                  <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100">
+                    <motion.div
+                      className="absolute -left-1/2 top-0 w-1/2 h-full bg-gradient-to-r from-transparent via-purple-400/25 to-transparent"
+                      animate={{ x: ["0%", "250%"] }}
+                      transition={{
+                        duration: 1.3,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* glowing border */}
+                  <div className="absolute inset-0 rounded-full border border-purple-500/0 group-hover:border-pink-400/30 transition-all duration-500" />
+
+                  {/* content */}
+                  <span className="relative z-10 flex items-center gap-2 text-white group-hover:text-purple-200 transition-colors duration-300">
+                    <Play className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform duration-300" />
+                    Watch How It Works
+                  </span>
                 </button>
               </motion.div>
 
@@ -367,20 +410,20 @@ function HomeContent() {
               >
                 {[
                   {
-                    target: 2100000,
+                    target: 1500,
                     suffix: "+",
                     prefix: "$",
                     label: "Paid Out",
                   },
                   {
-                    target: 48000,
+                    target: 5000,
                     suffix: "+",
                     prefix: "",
                     label: "Active Gamers",
                   },
                   {
-                    target: 175000,
-                    suffix: "",
+                    target: 1000,
+                    suffix: "+",
                     prefix: "$",
                     label: "Prize Pools",
                   },
@@ -398,117 +441,6 @@ function HomeContent() {
                 ))}
               </motion.div>
             </motion.div>
-
-            {/* Right: Floating Cards */}
-            {/* <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="hidden lg:block"
-            >
-              <div className="space-y-4 max-w-sm ml-auto">
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-emerald-400" />
-                      <span className="text-sm text-zinc-400">
-                        Monthly Earnings
-                      </span>
-                    </div>
-                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                      +34% ↑
-                    </span>
-                  </div>
-                  <div className="text-3xl text-white mb-1">$1,247.80</div>
-                  <div className="flex gap-4 text-xs text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <Trophy className="w-3 h-3 text-yellow-400" />
-                      Tournaments $820
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Zap className="w-3 h-3 text-purple-400" />
-                      Commission $427
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 7, 0] }}
-                  transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5,
-                  }}
-                  className="bg-gradient-to-br from-purple-900/60 to-zinc-900/90 border border-purple-500/30 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      <span className="text-sm text-zinc-300">
-                        1000 Follower Reward
-                      </span>
-                    </div>
-                    <span className="text-xs text-purple-400">84.7%</span>
-                  </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2.5 mb-3 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: "84.7%" }}
-                      transition={{ duration: 2, delay: 1 }}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full"
-                    />
-                  </div>
-                  <div className="text-xs text-zinc-500 mb-3">
-                    847 / 1000 followers — 153 to go!
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-xs bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
-                      <Package className="w-3 h-3" /> Free Merch
-                    </span>
-                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" /> 15% Commission
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/30 rounded-xl flex items-center justify-center">
-                      <Trophy className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm">Spring Championship</div>
-                      <div className="text-xs text-zinc-500">
-                        Starts in{" "}
-                        <span className="text-yellow-400">8 days</span> · $50K
-                        Prize
-                      </div>
-                    </div>
-                    <button className="text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded-lg transition-colors">
-                      Join
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div> */}
           </div>
         </div>
 
@@ -530,7 +462,10 @@ function HomeContent() {
       </section>
 
       {/* ── HOW TO EARN ── */}
-      <section id="how-to-earn" className="py-28 px-6 bg-zinc-950 relative overflow-hidden">
+      <section
+        id="how-to-earn"
+        className="py-28 px-6 bg-zinc-950 relative overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-purple-950/10 to-zinc-950 pointer-events-none" />
         <div className="max-w-7xl mx-auto relative">
           <motion.div
@@ -570,24 +505,24 @@ function HomeContent() {
                 initial={{ opacity: 0, y: 40, scale: 0.9 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 whileHover={{ y: -16 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ 
-                  delay: i * 0.1, 
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{
+                  delay: i * 0.1,
                   duration: 0.6,
-                  type: 'spring',
+                  type: "spring",
                   stiffness: 100,
-                  damping: 15
+                  damping: 15,
                 }}
                 className="relative flex flex-col items-center text-center group"
               >
                 {/* Icon container - starts gray, reveals to purple-pink glow */}
                 <motion.div
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.2,
                     y: -4,
                   }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  className={`icon-animate-reveal icon-animate-reveal-${i} w-24 h-24 bg-gray-900 border-2 border-gray-600 rounded-3xl flex items-center justify-center mb-8 relative z-10 transition-all duration-300`}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className={`icon-animate-reveal icon-animate-reveal-${i} w-24 h-24 bg-gray-900 rounded-full border-1 border-gray-500 rounded-3xl flex items-center justify-center mb-8 relative z-10 transition-all duration-300`}
                   style={{
                     boxShadow: `0 20px 40px rgba(100, 100, 100, 0.1)`,
                   }}
@@ -595,55 +530,57 @@ function HomeContent() {
                   {/* Rotating border - starts gray, reveals purple on animation */}
                   <motion.div
                     animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-1 rounded-3xl border border-dashed opacity-20 group-hover:opacity-40 transition-opacity duration-300"
+                    transition={{
+                      duration: 25,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    className="absolute inset-1 rounded-full border-2 border-dashed opacity-50 group-hover:opacity-40 transition-opacity duration-300"
                     style={{
-                      borderColor: 'rgb(129, 23, 241)',
+                      borderColor: "rgb(129, 23, 241)",
                     }}
                   />
                   {/* Icon - starts gray, reveals to purple as line passes */}
-                  <item.icon 
-                    className="w-12 h-12 relative z-20 icon-color"
-                  />
+                  <item.icon className="w-10 h-10 relative z-20 icon-color" />
                 </motion.div>
 
                 {/* Step Label - starts gray, reveals purple */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.2 }}
                   className="step-label text-xs font-extrabold mb-3 tracking-widest"
                   style={{
-                    color: 'rgb(120, 120, 120)',
+                    color: "rgb(120, 120, 120)",
                   }}
                 >
                   STEP {item.step}
                 </motion.div>
 
                 {/* Title - starts gray, reveals to light gray as animation plays */}
-                <motion.h3 
+                <motion.h3
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.1 }}
                   className="step-title text-2xl font-bold mb-3 leading-tight transition-all duration-300"
                   style={{
-                    color: 'rgb(130, 130, 130)',
+                    color: "rgb(130, 130, 130)",
                   }}
                 >
                   {item.title}
                 </motion.h3>
 
                 {/* Description - starts gray, reveals lighter gray */}
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + 0.15 }}
                   className="step-description text-base leading-relaxed transition-colors duration-300"
                   style={{
-                    color: 'rgb(100, 100, 100)',
+                    color: "rgb(100, 100, 100)",
                   }}
                 >
                   {item.desc}
@@ -657,7 +594,7 @@ function HomeContent() {
                   transition={{ delay: i * 0.1 + 0.3, duration: 0.8 }}
                   className="h-1 mt-6 w-12 rounded-full origin-left"
                   style={{
-                    background: `linear-gradient(90deg, ${['#a855f7', '#facc15', '#06b6d4', '#10b981'][i]}, ${['#ec4899', '#f97316', '#0ea5e9', '#34d399'][i]})`,
+                    background: `linear-gradient(90deg, ${["#a855f7", "#facc15", "#06b6d4", "#10b981"][i]}, ${["#ec4899", "#f97316", "#0ea5e9", "#34d399"][i]})`,
                   }}
                 />
               </motion.div>
@@ -676,22 +613,50 @@ function HomeContent() {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 if (user) {
-                  router.push('/profile');
+                  router.push("/profile");
                 } else {
-                  setLoginModalOpen(true);
+                  setCountdownModalOpen(true);
+                  // setLoginModalOpen(true);
                 }
               }}
-              className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all rounded-xl inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg"
+              className="relative cursor-pointer px-10 py-3 bg-gradient-to-r from-purple-900 to-pink-800 hover:bg-transparent transition-all duration-500 rounded-[40px] inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg overflow-hidden group"
             >
-              {user ? 'Go to Profile' : 'Start Your Journey'} <ArrowRight className="w-5 h-5" />
+              {/* fade out gradient on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-pink-800 group-hover:opacity-0 transition-opacity duration-500 rounded-[40px]" />
+
+              {/* glass layer appears on hover */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-white/5 backdrop-blur-md rounded-[40px]" />
+
+              {/* animated glow sweep (only visible on hover) */}
+              <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100">
+                <motion.div
+                  className="absolute -left-1/2 top-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                  animate={{ x: ["0%", "250%"] }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+              </motion.div>
+
+              {/* border glow on hover */}
+              <div className="absolute inset-0 rounded-[40px] border border-white/0 group-hover:border-purple-300/30 transition-all duration-500" />
+
+              {/* content */}
+              <span className="relative z-10 text-white group-hover:text-purple-200 transition-colors duration-300">
+                {user ? "My Profile" : "Start Your Journey"}
+              </span>
+
+              <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </motion.button>
           </motion.div>
         </div>
       </section>
 
-      <HeroSection />
+      {/* <HeroSection /> */}
       {/* <ComingSoon/> */}
-      <TournamentCarousel />
+      {/* <TournamentCarousel /> */}
       <AllGamesLoop />
       <TrustedBrands />
       <Ecosystem />
@@ -701,7 +666,17 @@ function HomeContent() {
       <div id="career">{/* Career section can be added here if needed */}</div>
       <ContactSection />
       <Footer />
-      
+
+      {/* Countdown Modal */}
+      <LaunchCountdownModal
+        isOpen={countdownModalOpen}
+        onClose={() => setCountdownModalOpen(false)}
+        onCountdownComplete={() => {
+          setCountdownModalOpen(false);
+          setLoginModalOpen(true);
+        }}
+      />
+
       {/* Login Modal */}
       <UnifiedAuthModal
         isOpen={loginModalOpen}

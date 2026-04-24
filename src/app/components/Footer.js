@@ -182,13 +182,13 @@ export default function Footer() {
                 >
                   News
                 </motion.a>
-                <motion.a
+                {/* <motion.a
                   href="#career"
                   className="block text-white hover:text-gray-300 transition-colors"
                   whileHover={{ x: 5 }}
                 >
                   Career
-                </motion.a>
+                </motion.a> */}
                 <motion.a
                   href="#contact"
                   className="block text-white hover:text-gray-300 transition-colors"

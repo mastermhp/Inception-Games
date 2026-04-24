@@ -24,6 +24,8 @@ import {
   Loader2,
   Shield,
   ArrowRight,
+  Smartphone,
+  Gamepad2,
 } from "lucide-react";
 import Image from "next/image";
 import Header from "@/app/components/Header";
@@ -262,6 +264,52 @@ function getStatusText(status) {
     default:
       return status;
   }
+}
+
+// Platform Icon Component
+function PlatformDisplay({ platform }) {
+  const normalizedPlatform = platform?.toLowerCase().trim();
+  
+  let Icon, label, brandColor;
+  
+  switch (normalizedPlatform) {
+    case "pc":
+    case "pc only":
+      Icon = Monitor;
+      label = "PC";
+      brandColor = "text-blue-400";
+      break;
+    case "mobile":
+    case "mobile only":
+      Icon = Smartphone;
+      label = "Mobile";
+      brandColor = "text-pink-400";
+      break;
+    case "console":
+    case "console only":
+      Icon = Gamepad2;
+      label = "Console";
+      brandColor = "text-orange-400";
+      break;
+    case "cross-platform":
+    case "all platforms":
+    case "cross platform":
+      Icon = Monitor;
+      label = "Cross Platform";
+      brandColor = "text-purple-400";
+      break;
+    default:
+      Icon = Monitor;
+      label = "All Platforms";
+      brandColor = "text-gray-400";
+  }
+  
+  return (
+    <div className="flex items-center gap-2">
+      <Icon size={16} className={`${brandColor} font-bold`} strokeWidth={2.5} />
+      <span className={`${brandColor} font-bold`}>{label}</span>
+    </div>
+  );
 }
 
 // Animated Input Component
@@ -953,10 +1001,10 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
   ];
 
   const progressionSteps = [
-    { label: "Registration Start at", date: event.registrationStart },
-    { label: "Registration End at", date: event.registrationEnd },
-    { label: "Tournament Start at", date: event.tournamentStart },
-    { label: "Tournament End at", date: event.tournamentEnd },
+    { label: "Reg Starting", date: new Date("2025-04-25 12:00:00"), time: "12:00" },
+    { label: "Reg Ending", date: new Date("2025-04-29"), time: "23:59" },
+    { label: "Match Starts", date: new Date("2025-05-02"), time: "12:00" },
+    { label: "Match Ends", date: new Date("2025-05-12"), time: "23:59" },
   ];
 
   const price = getPrice();
@@ -1573,17 +1621,10 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   <Flag size={16} />
                   <span>{event.location}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Monitor size={16} />
-                  <span>{event.platform}</span>
-                </div>
+                <PlatformDisplay platform={event.platform} />
                 <div className="flex items-center gap-2">
                   <Users size={16} />
                   <span>{event.teamType}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users size={16} />
-                  <span>{event.filledSlots} Participants</span>
                 </div>
               </div>
 
@@ -1638,16 +1679,16 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                             }
                           />
                         </div>
-                        <p className="text-sm text-gray-400 text-center mb-2">
+                        <p className="text-sm font-semibold text-white text-center mb-2">
                           {step.label}
                         </p>
-                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-300 font-medium">
                           <Calendar size={12} />
-                          <span>{formatDateTime(step.date)}</span>
+                          <span>{new Date(step.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
                         </div>
-                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 mt-1">
+                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-1.5">
                           <Clock size={12} />
-                          <span>{formatTime(step.date)}</span>
+                          <span>{step.time || formatTime(step.date)}</span>
                         </div>
                       </div>
                     );

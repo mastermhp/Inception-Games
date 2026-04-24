@@ -17,17 +17,17 @@ export default function LaunchCountdownModal({ isOpen, onClose, onCountdownCompl
     if (!isOpen) return
 
     const calculateTime = () => {
-      // Set target date to Friday 8:00 PM
+      // Set target date to Saturday 12:00 PM
       const now = new Date()
       let target = new Date()
       
-      // Get current day of week (0 = Sunday, 5 = Friday)
+      // Get current day of week (0 = Sunday, 6 = Saturday)
       const currentDay = now.getDay()
-      const daysUntilFriday = (5 - currentDay + 7) % 7
+      const daysUntilSaturday = (6 - currentDay + 7) % 7
       
-      // If today is Friday and time hasn't passed, use today; otherwise use next Friday
-      target.setDate(target.getDate() + (daysUntilFriday === 0 && now.getHours() >= 20 ? 7 : daysUntilFriday))
-      target.setHours(20, 0, 0, 0)
+      // If today is Saturday and time hasn't passed, use today; otherwise use next Saturday
+      target.setDate(target.getDate() + (daysUntilSaturday === 0 && now.getHours() >= 12 ? 7 : daysUntilSaturday))
+      target.setHours(12, 0, 0, 0)
 
       const diff = target - now
       
@@ -164,10 +164,10 @@ export default function LaunchCountdownModal({ isOpen, onClose, onCountdownCompl
                     className="space-y-3"
                   >
                     <h1 className="text-4xl md:text-6xl font-black text-white">
-                      🚀 Get Ready to Launch
+                      🚀 Are You Guys Ready?
                     </h1>
                     <p className="text-lg md:text-2xl bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent font-bold">
-                      Launching Friday 8:00 PM
+                      Launching Saturday 12:00 PM
                     </p>
                   </motion.div>
 
