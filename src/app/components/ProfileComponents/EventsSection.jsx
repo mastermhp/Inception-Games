@@ -418,7 +418,7 @@ export default function EventsSection({ user, initialFilter = "all" }) {
   };
 
   const FILTER_TABS = [
-    { id: "all", label: "All", count: filterCounts.all },
+    // { id: "all", label: "All", count: filterCounts.all },
     {
       id: "Tournament",
       label: "Tournaments",
@@ -478,7 +478,7 @@ export default function EventsSection({ user, initialFilter = "all" }) {
                 {IconComponent && <IconComponent size={14} />}
                 {tab.label}
                 <span className={`text-xs ${activeFilter === tab.id ? 'text-purple-200' : 'text-gray-500'}`}>
-                  ({tab.count})
+                  {/* ({tab.count})F */}
                 </span>
               </button>
             )
@@ -564,8 +564,28 @@ export default function EventsSection({ user, initialFilter = "all" }) {
         </motion.div>
       )}
 
+
+
+{/* Coming Soon Message */}
+{activeFilter === "Tournament" && (
+  <div className="w-full text-center py-16">
+    <p className="text-xl font-semibold text-purple-400">
+      Tournaments and Registration Coming at 1st May
+    </p>
+  </div>
+)}
+
+{activeFilter === "Brand Deal" && (
+  <div className="w-full text-center py-16">
+    <p className="text-xl font-semibold text-purple-400">
+      Brand Deals and Registration Coming at 1st May
+    </p>
+  </div>
+)}
+
       {/* Events Grid */}
-      {!loading && !error && (
+      {/* {!loading && !error && ( */}
+      {!loading && !error && activeFilter !== "Tournament" && activeFilter !== "Brand Deal" && (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
           layout
@@ -588,7 +608,8 @@ export default function EventsSection({ user, initialFilter = "all" }) {
       )}
 
       {/* Empty State */}
-      {!loading && !error && filteredEvents.length === 0 && (
+      {/* {!loading && !error && filteredEvents.length === 0 && ( */}
+{filteredEvents.length === 0 && activeFilter !== "Brand Deal" && (
         <motion.div
           className="text-center py-16"
           initial={{ opacity: 0 }}
