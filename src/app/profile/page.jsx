@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
 
       <a
-        href="https://m.me/slicenshareFB"
+        href="https://m.me/inceptiongames00"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg transition-colors duration-300"
@@ -194,7 +194,7 @@ export default function ProfilePage() {
         <span>Need help?</span>
       </a>
 
-      
+
     </div>
   );
 }
