@@ -45,6 +45,7 @@ import AllGamesLoop from "./components/AllGamesLoop";
 import Ecosystem from "../../src/app/components/Ecosystem/Ecosystem.jsx";
 import Image from "next/image";
 import UnifiedAuthModal from "./components/AuthModals/UnifiedAuthModal";
+import LaunchCountdownModal from "./components/LaunchCountdownModal";
 
 function AnimatedCounter({ target, suffix = "", prefix = "" }) {
   const [count, setCount] = useState(0);
@@ -98,6 +99,7 @@ function HomeContent() {
   const pollIntervalRef = useRef(null);
   const [showSignIn, setShowSignIn] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [countdownModalOpen, setCountdownModalOpen] = useState(false);
 
   const howToEarn = [
     {
@@ -704,7 +706,7 @@ function HomeContent() {
                 if (user) {
                   router.push("/profile");
                 } else {
-                  setLoginModalOpen(true);
+                  setCountdownModalOpen(true);
                 }
               }}
               className="relative cursor-pointer px-10 py-3 bg-gradient-to-r from-purple-900 to-pink-800 hover:bg-transparent transition-all duration-500 rounded-[40px] inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg overflow-hidden group"
@@ -754,6 +756,16 @@ function HomeContent() {
       <div id="career">{/* Career section can be added here if needed */}</div>
       <ContactSection />
       <Footer />
+
+      {/* Countdown Modal */}
+      <LaunchCountdownModal
+        isOpen={countdownModalOpen}
+        onClose={() => setCountdownModalOpen(false)}
+        onCountdownComplete={() => {
+          setCountdownModalOpen(false);
+          setLoginModalOpen(true);
+        }}
+      />
 
       {/* Login Modal */}
       <UnifiedAuthModal
