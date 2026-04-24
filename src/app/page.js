@@ -238,7 +238,8 @@ function HomeContent() {
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1699962700191-0f5633845733?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
+            // src="https://images.unsplash.com/photo-1699962700191-0f5633845733?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920"
+            src="/Hero/bg.jpeg"
             alt="Esports Arena"
             fill
             className="object-cover"
@@ -291,7 +292,7 @@ function HomeContent() {
               >
                 <div className="flex items-center pt-4 pb-2">
                   <img
-                    src="/Logo/fullLogo.png"
+                    src="/Logo/fulllogo.jpg"
                     alt="SNS Logo"
                     className="w-50  h-13"
                   />
@@ -440,117 +441,6 @@ function HomeContent() {
                 ))}
               </motion.div>
             </motion.div>
-
-            {/* Right: Floating Cards */}
-            {/* <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="hidden lg:block"
-            >
-              <div className="space-y-4 max-w-sm ml-auto">
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-emerald-400" />
-                      <span className="text-sm text-zinc-400">
-                        Monthly Earnings
-                      </span>
-                    </div>
-                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                      +34% ↑
-                    </span>
-                  </div>
-                  <div className="text-3xl text-white mb-1">$1,247.80</div>
-                  <div className="flex gap-4 text-xs text-zinc-500">
-                    <span className="flex items-center gap-1">
-                      <Trophy className="w-3 h-3 text-yellow-400" />
-                      Tournaments $820
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Zap className="w-3 h-3 text-purple-400" />
-                      Commission $427
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 7, 0] }}
-                  transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5,
-                  }}
-                  className="bg-gradient-to-br from-purple-900/60 to-zinc-900/90 border border-purple-500/30 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      <span className="text-sm text-zinc-300">
-                        1000 Follower Reward
-                      </span>
-                    </div>
-                    <span className="text-xs text-purple-400">84.7%</span>
-                  </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2.5 mb-3 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: "84.7%" }}
-                      transition={{ duration: 2, delay: 1 }}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full"
-                    />
-                  </div>
-                  <div className="text-xs text-zinc-500 mb-3">
-                    847 / 1000 followers — 153 to go!
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="text-xs bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
-                      <Package className="w-3 h-3" /> Free Merch
-                    </span>
-                    <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-lg flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" /> 15% Commission
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                  className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 backdrop-blur"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/30 rounded-xl flex items-center justify-center">
-                      <Trophy className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm">Spring Championship</div>
-                      <div className="text-xs text-zinc-500">
-                        Starts in{" "}
-                        <span className="text-yellow-400">8 days</span> · $50K
-                        Prize
-                      </div>
-                    </div>
-                    <button className="text-xs bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded-lg transition-colors">
-                      Join
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div> */}
           </div>
         </div>
 
