@@ -635,19 +635,13 @@ export default function EventDetailPage() {
     const fetchEvent = async () => {
       try {
         const url = API.EVENTS_GET_BY_ID.replace(":eventId", params.eventId);
-        console.log("[v0] Fetching event from URL:", url);
         const response = await fetch(url);
         const data = await response.json();
-
-        console.log("[v0] Event API response status:", response.status);
-        console.log("[v0] Event API response data:", data);
 
         if (response.ok && data) {
           // Handle nested API response format - unwrap tournament object
           let eventData =
             data.tournament || (data.success && data.data ? data.data : data);
-
-          console.log("[v0] Unwrapped event data:", eventData);
 
           // Transform API data to component format
           // Ensure banner_image is always an absolute URL for social media sharing
@@ -699,38 +693,23 @@ export default function EventDetailPage() {
             absoluteBannerUrl: absoluteBannerUrl,
           };
 
-          console.log("[v0] Setting transformed event:", transformedEvent);
           setEvent(transformedEvent);
         } else {
-          console.log(
-            "[v0] API response not ok or no data, status:",
-            response.status,
-          );
           // Fallback to sample events if API fails
           const foundEvent = SAMPLE_EVENTS.find(
             (e) => e.id === `event-${params.eventId}`,
           );
           if (foundEvent) {
-            console.log("[v0] Using fallback sample event");
             setEvent(foundEvent);
-          } else {
-            console.log("[v0] No fallback event found for ID:", params.eventId);
           }
         }
       } catch (error) {
-        console.log("[v0] Error fetching event:", error);
         // Fallback to sample events if API fails
         const foundEvent = SAMPLE_EVENTS.find(
           (e) => e.id === `event-${params.eventId}`,
         );
         if (foundEvent) {
-          console.log("[v0] Using fallback sample event after error");
           setEvent(foundEvent);
-        } else {
-          console.log(
-            "[v0] No fallback event found after error for ID:",
-            params.eventId,
-          );
         }
       }
     };
@@ -804,8 +783,6 @@ export default function EventDetailPage() {
         address: address,
       };
 
-      console.log("[v0] Submitting registration with payload:", payload);
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/participants/tournaments/${params.eventId}/register`,
         {
@@ -818,10 +795,8 @@ export default function EventDetailPage() {
       );
 
       const data = await response.json();
-      console.log("[v0] Registration Response:", { status: response.status, data });
 
       if (!response.ok) {
-        console.error("[v0] Registration Error:", data);
         showNotificationMessage(
           "error",
           data.message || data.error || "Registration failed. Please try again.",
@@ -853,7 +828,6 @@ export default function EventDetailPage() {
       // success modal
       setShowSuccessModal(true);
     } catch (error) {
-      console.error("[v0] Registration Network/CORS Error:", error.message, error);
       showNotificationMessage(
         "error",
         "Network error. Please check your connection and try again.",

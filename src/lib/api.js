@@ -1,8 +1,6 @@
 // API base URL with /api/v1 path as per API docs
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://inception-games.an.r.appspot.com/api/v1";
 
-console.log("[v0] API BASE_URL initialized to:", BASE_URL);
-
 export const API = {
   // Registration Flow (5 Steps)
   REGISTER_SEND_OTP:     `${BASE_URL}/auth/register/send-otp`,
@@ -66,23 +64,20 @@ export function getTokens() {
     let stored = sessionStorage.getItem("sns_auth_tokens");
     if (stored) {
       memoryTokens = JSON.parse(stored);
-      console.log("[v0] Tokens refreshed from sessionStorage");
       return memoryTokens;
     }
     // Fallback to localStorage if sessionStorage is empty
     stored = localStorage.getItem("sns_auth_tokens");
     if (stored) {
       memoryTokens = JSON.parse(stored);
-      console.log("[v0] Tokens refreshed from localStorage");
       return memoryTokens;
     }
     // If nothing in storage, return memory cache (if exists)
     if (memoryTokens) {
-      console.log("[v0] Using in-memory cached tokens");
       return memoryTokens;
     }
   } catch (err) {
-    console.log("[v0] Error loading tokens:", err.message);
+    // Error loading tokens - continue silently
   }
   return null;
 }
@@ -94,9 +89,8 @@ export function setTokens(tokens) {
       // Store in both sessionStorage and localStorage for redundancy
       sessionStorage.setItem("sns_auth_tokens", JSON.stringify(tokens));
       localStorage.setItem("sns_auth_tokens", JSON.stringify(tokens));
-      console.log("[v0] Tokens stored in sessionStorage and localStorage");
     } catch (err) {
-      console.log("[v0] Error storing tokens:", err.message);
+      // Error storing tokens - continue silently
     }
   }
 }
@@ -109,9 +103,8 @@ export function clearTokens() {
       sessionStorage.removeItem("sns_user");
       localStorage.removeItem("sns_auth_tokens");
       localStorage.removeItem("sns_user");
-      console.log("[v0] Tokens and user data cleared from all storage");
     } catch (err) {
-      console.log("[v0] Error clearing tokens:", err.message);
+      // Error clearing tokens - continue silently
     }
   }
 }
@@ -126,7 +119,7 @@ export function getStoredUser() {
     stored = localStorage.getItem("sns_user");
     if (stored) return JSON.parse(stored);
   } catch (err) {
-    console.log("[v0] Error loading user data:", err.message);
+    // Error loading user data - continue silently
   }
   return null;
 }
@@ -137,7 +130,7 @@ export function setStoredUser(user) {
       sessionStorage.setItem("sns_user", JSON.stringify(user));
       localStorage.setItem("sns_user", JSON.stringify(user));
     } catch (err) {
-      console.log("[v0] Error storing user data:", err.message);
+      // Error storing user data - continue silently
     }
   }
 }
@@ -147,11 +140,9 @@ export function setStoredUser(user) {
  * This is called when we have a refreshToken but no accessToken
  */
 export async function refreshAccessToken() {
-  console.log("[v0] Attempting to refresh access token...");
   const tokens = getTokens();
   
   if (!tokens?.refreshToken) {
-    console.log("[v0] No refresh token available - cannot refresh");
     return null;
   }
   
@@ -167,10 +158,8 @@ export async function refreshAccessToken() {
     });
     
     const data = await res.json();
-    console.log("[v0] Token refresh response status:", res.status);
     
     if (!res.ok) {
-      console.log("[v0] Token refresh failed:", data.message || "Unknown error");
       // If refresh fails, clear tokens and require re-login
       clearTokens();
       return null;
@@ -186,14 +175,11 @@ export async function refreshAccessToken() {
         accessToken: newAccessToken
       };
       setTokens(updatedTokens);
-      console.log("[v0] Access token refreshed successfully");
       return updatedTokens;
     } else {
-      console.log("[v0] No access token in refresh response. Response:", Object.keys(data));
       return null;
     }
   } catch (err) {
-    console.log("[v0] Error refreshing token:", err.message);
     return null;
   }
 }

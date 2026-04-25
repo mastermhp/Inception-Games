@@ -18,6 +18,7 @@ function CarouselSection({ tabKey }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const intervalRef = useRef(null);
 
   const registryItem = TAB_REGISTRY?.[tabKey];
@@ -26,6 +27,12 @@ function CarouselSection({ tabKey }) {
 
   useEffect(() => {
     setIsClient(true);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // ❌ HARD SAFE GUARD (prevents crash)
@@ -95,6 +102,10 @@ function CarouselSection({ tabKey }) {
 
   // visible cards
   const getVisibleCards = () => {
+    if (isMobile) {
+      return [{ ...items[activeIndex], position: "center", key: activeIndex }];
+    }
+
     const prevIndex = (activeIndex - 1 + items.length) % items.length;
     const nextIndex = (activeIndex + 1) % items.length;
 
@@ -116,40 +127,43 @@ function CarouselSection({ tabKey }) {
   return (
     <div className="relative">
       {/* Header */}
-      <div className="text-center mb-6 md:mb-8">
-        <h3 className="text-xl md:text-3xl font-bold text-white mb-1">
+      <div className="text-center mb-4 sm:mb-6 md:mb-8">
+        <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-white mb-1">
           {currentData.title}
         </h3>
-        <p className="text-white/60 text-sm md:text-base">
+        <p className="text-white/60 text-xs sm:text-sm md:text-base px-2">
           {currentData.subtitle}
         </p>
       </div>
 
       {/* Carousel */}
-      <div className="relative w-full flex justify-center">
+      <div className="relative w-full flex justify-center overflow-hidden">
         {/* Left */}
         <button
           onClick={handlePrevious}
-          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-40 
-  w-8 h-8 md:w-12 md:h-12 
-  rounded-full bg-purple-600/40 text-white flex items-center justify-center"
+          className="absolute left-1 sm:left-2 md:left-6 top-1/2 -translate-y-1/2 z-40 
+  w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 
+  rounded-full bg-purple-600/40 hover:bg-purple-600/70 text-white flex items-center justify-center transition-all"
         >
-          <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
         </button>
 
         {/* Right */}
         <button
           onClick={handleNext}
-          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-40 
-  w-8 h-8 md:w-12 md:h-12 
-  rounded-full bg-purple-600/40 text-white flex items-center justify-center"
+          className="absolute right-1 sm:right-2 md:right-6 top-1/2 -translate-y-1/2 z-40 
+  w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 
+  rounded-full bg-purple-600/40 hover:bg-purple-600/70 text-white flex items-center justify-center transition-all"
         >
-          <ChevronRight className="w-3  h-3 md:w-4 md:h-4" />
+          <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
         </button>
 
         <div
-          className="relative flex items-center justify-center px-4 md:px-20"
-          style={{ height: "520px" }}
+          className="relative w-full flex items-center justify-center overflow-hidden"
+          style={{ 
+            height: isMobile ? "340px" : "520px",
+            maxWidth: "100vw"
+          }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onTouchStart={handleTouchStart}
@@ -159,25 +173,29 @@ function CarouselSection({ tabKey }) {
             {visibleCards.map((card) => {
               const isCenter = card.position === "center";
 
-              const centerWidth = 700;
-              const sideWidth = 320;
+              let width, height, x;
 
-              const width = isCenter ? centerWidth : sideWidth;
-              const height = isCenter ? 540 : 320;
-
-              let x = 0;
-              if (card.position === "left") x = -520;
-              if (card.position === "right") x = 520;
+              if (isMobile) {
+                width = Math.max(280, Math.min(window.innerWidth - 50, 380));
+                height = 300;
+                x = 0;
+              } else {
+                width = isCenter ? 700 : 320;
+                height = isCenter ? 540 : 320;
+                x = 0;
+                if (card.position === "left") x = -520;
+                if (card.position === "right") x = 520;
+              }
 
               return (
                 <motion.div
                   key={card.key}
-                  className="absolute"
+                  className="absolute flex-shrink-0"
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={{
                     x,
-                    opacity: isCenter ? 1 : 0.5,
-                    scale: isCenter ? 1 : 0.8,
+                    opacity: isCenter ? 1 : isMobile ? 0 : 0.5,
+                    scale: isCenter ? 1 : isMobile ? 0 : 0.8,
                     zIndex: isCenter ? 30 : 10,
                   }}
                   transition={{ type: "spring", stiffness: 260, damping: 30 }}
@@ -192,15 +210,15 @@ function CarouselSection({ tabKey }) {
       </div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-1 sm:gap-2 mt-4 sm:mt-6">
         {items.map((_, i) => (
           <button
             key={i}
             onClick={() => handleGoToIndex(i)}
-            className={`rounded-full ${
+            className={`rounded-full transition-all ${
               activeIndex === i
-                ? "w-8 h-3 bg-purple-500"
-                : "w-3 h-3 bg-white/40"
+                ? "w-6 sm:w-8 h-2 sm:h-3 bg-purple-500"
+                : "w-2 sm:w-3 h-2 sm:h-3 bg-white/40"
             }`}
           />
         ))}
@@ -212,25 +230,25 @@ function CarouselSection({ tabKey }) {
 // ── MAIN COMPONENT ─────────────────────────────────────
 export default function ShowcaseCarousel() {
   return (
-    <section className="py-12 md:py-20 bg-[#0a0a14]">
-      <div className="container mx-auto px-4">
+    <section className="py-8 sm:py-12 md:py-20 bg-[#0a0a14]">
+      <div className="container mx-auto px-2 sm:px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
             Discover Our Ecosystem
           </h2>
         </div>
 
         {/* Partners */}
-        <div id="ecosystem-partners" className="mb-20">
+        <div id="ecosystem-partners" className="mb-12 sm:mb-16 md:mb-20">
           <CarouselSection tabKey="partners" />
         </div>
 
         {/* Games */}
-        <div id="ecosystem-games" className="mb-20">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl text-white">{gamesData.title}</h3>
-            <p className="text-white/60">{gamesData.subtitle}</p>
+        <div id="ecosystem-games" className="mb-12 sm:mb-16 md:mb-20">
+          <div className="text-center mb-4 sm:mb-6 md:mb-8">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{gamesData.title}</h3>
+            <p className="text-white/60 text-sm sm:text-base mt-1 sm:mt-2">{gamesData.subtitle}</p>
           </div>
           <GamesCarousel />
         </div>
