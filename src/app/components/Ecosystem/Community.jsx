@@ -17,18 +17,19 @@ export const communityData = {
 export function CommunityCard({ item, isFeatured = false }) {
   return (
     <div
-      className={`relative h-full rounded-3xl overflow-hidden ${
+      className={`relative h-full rounded-2xl sm:rounded-3xl overflow-hidden ${
         isFeatured ? "shadow-2xl shadow-purple-500/20" : ""
       }`}
       style={{
         backgroundImage: `url('${item.photo}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+        minHeight: isFeatured ? "300px" : "200px",
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-      <div className="absolute top-4 left-4">
-        <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-sm font-bold">
+      <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+        <span className="inline-flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-bold">
           {item.id}
         </span>
       </div>

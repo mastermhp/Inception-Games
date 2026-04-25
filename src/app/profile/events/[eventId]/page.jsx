@@ -635,19 +635,13 @@ export default function EventDetailPage() {
     const fetchEvent = async () => {
       try {
         const url = API.EVENTS_GET_BY_ID.replace(":eventId", params.eventId);
-        console.log("[v0] Fetching event from URL:", url);
         const response = await fetch(url);
         const data = await response.json();
-
-        console.log("[v0] Event API response status:", response.status);
-        console.log("[v0] Event API response data:", data);
 
         if (response.ok && data) {
           // Handle nested API response format - unwrap tournament object
           let eventData =
             data.tournament || (data.success && data.data ? data.data : data);
-
-          console.log("[v0] Unwrapped event data:", eventData);
 
           // Transform API data to component format
           // Ensure banner_image is always an absolute URL for social media sharing
@@ -699,38 +693,23 @@ export default function EventDetailPage() {
             absoluteBannerUrl: absoluteBannerUrl,
           };
 
-          console.log("[v0] Setting transformed event:", transformedEvent);
           setEvent(transformedEvent);
         } else {
-          console.log(
-            "[v0] API response not ok or no data, status:",
-            response.status,
-          );
           // Fallback to sample events if API fails
           const foundEvent = SAMPLE_EVENTS.find(
             (e) => e.id === `event-${params.eventId}`,
           );
           if (foundEvent) {
-            console.log("[v0] Using fallback sample event");
             setEvent(foundEvent);
-          } else {
-            console.log("[v0] No fallback event found for ID:", params.eventId);
           }
         }
       } catch (error) {
-        console.log("[v0] Error fetching event:", error);
         // Fallback to sample events if API fails
         const foundEvent = SAMPLE_EVENTS.find(
           (e) => e.id === `event-${params.eventId}`,
         );
         if (foundEvent) {
-          console.log("[v0] Using fallback sample event after error");
           setEvent(foundEvent);
-        } else {
-          console.log(
-            "[v0] No fallback event found after error for ID:",
-            params.eventId,
-          );
         }
       }
     };
@@ -772,27 +751,55 @@ export default function EventDetailPage() {
     setIsSubmitting(true);
 
     try {
+      // Client-side validation
+      if (!formData.fullName || formData.fullName.trim() === "") {
+        showNotificationMessage("error", "Full name is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!formData.email || formData.email.trim() === "") {
+        showNotificationMessage("error", "Email is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!formData.phone || formData.phone.trim() === "") {
+        showNotificationMessage("error", "Phone number is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Get game name from event
+      const gameName = event?.game?.name || event?.gameName || "EA FC 26";
+      const address = event?.address || "Online";
+
+      const payload = {
+        event_id: parseInt(params.eventId),
+        full_name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        game_name: gameName,
+        address: address,
+      };
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tournaments/${params.eventId}/register`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/participants/tournaments/${params.eventId}/register`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            full_name: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-          }),
+          body: JSON.stringify(payload),
         },
       );
 
-   
+      const data = await response.json();
 
       if (!response.ok) {
         showNotificationMessage(
           "error",
-          data.message || "Registration failed. Please try again.",
+          data.message || data.error || "Registration failed. Please try again.",
         );
         setIsSubmitting(false);
         return;
@@ -821,7 +828,6 @@ export default function EventDetailPage() {
       // success modal
       setShowSuccessModal(true);
     } catch (error) {
-      // console.error('[registration] Error:', error)
       showNotificationMessage(
         "error",
         "Network error. Please check your connection and try again.",
@@ -1072,54 +1078,54 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                 <div className="absolute inset-0 bg-gradient-to-t from-[#030305] via-black/50 to-transparent" />
 
                 {/* Bottom Overlay — full width bar */}
-                <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between">
+                <div className="absolute bottom-0 left-0 right-0 px-3 sm:px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 sm:gap-0">
                   {/* Bottom Left — Registration dates */}
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
+                  <div className="flex flex-col gap-1 sm:gap-1.5 w-full sm:w-auto">
+                    <div className="flex items-baseline gap-1.5 sm:gap-2">
+                      <span className="text-gray-400 text-xs sm:text-sm font-medium">
                         Reg Starting:
                       </span>
-                      <span className="text-white text-[15px] font-semibold font-mono">
+                      <span className="text-white text-sm sm:text-base font-bold">
                         {formatDate(event.registrationStart)}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-[15px] min-w-[52px] font-mono">
+                    <div className="flex items-baseline gap-1.5 sm:gap-2">
+                      <span className="text-gray-400 text-xs sm:text-sm font-medium">
                         Reg Ending:
                       </span>
-                      <span className="text-white text-[15px] font-semibold font-mono">
+                      <span className="text-white text-sm sm:text-base font-bold">
                         {formatDate(event.registrationEnd)}
                       </span>
                     </div>
                   </div>
 
                   {/* Bottom Right — Game name aligned with Reg Start, badges aligned with Reg End */}
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-start sm:items-end gap-1 sm:gap-1 w-full sm:w-auto">
                     {/* Circular badges — same visual row as Reg End */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                       <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30">
-                          <Flag size={14} className="text-white" />
+                        <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30 flex-shrink-0">
+                          <Flag size={12} className="sm:w-3.5 sm:h-3.5 text-white" />
                         </div>
-                        <span className="text-gray-400 text-[9px] w-full text-center leading-tight">
+                        <span className="text-gray-400 text-[8px] sm:text-[9px] w-full text-center leading-tight">
                           {event.location || "—"}
                         </span>
                       </div>
                       <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30">
-                          <Monitor size={14} className="text-white" />
+                        <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30 flex-shrink-0">
+                          <Monitor size={12} className="sm:w-3.5 sm:h-3.5 text-white" />
                         </div>
-                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                        <span className="text-gray-400 text-[8px] sm:text-[9px] max-w-[32px] sm:max-w-[36px] text-center truncate leading-tight">
                           {event.platform || "—"}
                         </span>
                       </div>
                       <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30">
-                          <Users size={14} className="text-white" />
+                        <div className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center backdrop-blur-sm shadow-lg shadow-purple-500/30 flex-shrink-0">
+                          <Users size={12} className="sm:w-3.5 sm:h-3.5 text-white" />
                         </div>
 
-                        <span className="text-gray-400 text-[9px] max-w-[36px] text-center truncate leading-tight">
+                        <span className="text-gray-400 text-[8px] sm:text-[9px] max-w-[32px] sm:max-w-[36px] text-center truncate leading-tight">
                           {event.teamType || "—"}
                         </span>
                       </div>
@@ -1129,14 +1135,14 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl md:text-4xl font-bold text-white mb-6">
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                 {event.title}
               </h1>
 
               {/* Game + Actions Row */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800">
+              <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-lg sm:rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
                     <Image
                       src={gameImage}
                       alt={gameName}
@@ -1145,37 +1151,38 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <span className="text-white font-semibold text-lg">
+                  <span className="text-white font-semibold text-sm sm:text-lg">
                     {gameName}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 relative">
+                <div className="flex items-center gap-1 sm:gap-2 relative">
                   <div ref={shareMenuRef} className="relative">
                     <button
                       onClick={() => setShowShareMenu(!showShareMenu)}
-                      className="px-4 py-2.5 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-2 transition-colors"
+                      className="px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center gap-1 sm:gap-2 transition-colors"
                     >
-                      <Share2 size={16} />
-                      Share
+                      <Share2 size={14} className="hidden sm:inline" />
+                      <Share2 size={12} className="sm:hidden" />
+                      <span className="hidden sm:inline">Share</span>
                     </button>
 
                     {/* Share Menu Dropdown */}
                     <AnimatePresence>
                       {showShareMenu && (
-                        <motion.div
+                          <motion.div
                           initial={{ opacity: 0, y: -10, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-50"
+                          className="absolute right-0 mt-1 sm:mt-2 w-44 sm:w-48 bg-gray-900 border border-gray-700 rounded-lg sm:rounded-xl shadow-xl overflow-hidden z-50"
                         >
                           <button
                             onClick={() => {
                               handleFacebookShare();
                               setShowShareMenu(false);
                             }}
-                            className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 border-b border-gray-800"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 border-b border-gray-800"
                           >
                             <svg
                               className="w-5 h-5"
@@ -1192,7 +1199,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                               handleTwitterShare();
                               setShowShareMenu(false);
                             }}
-                            className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 border-b border-gray-800"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 border-b border-gray-800"
                           >
                             <svg
                               className="w-5 h-5"
@@ -1209,7 +1216,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                               handleWhatsappShare();
                               setShowShareMenu(false);
                             }}
-                            className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-3 border-b border-gray-800"
+                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 border-b border-gray-800"
                           >
                             <svg
                               className="w-5 h-5"
@@ -1252,12 +1259,14 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   {event.status !== "Completed" && !showSignupForm && (
                     <motion.button
                       onClick={() => setShowSignupForm(true)}
-                      className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-300 flex items-center gap-2 shadow-lg shadow-purple-500/20 text-sm"
+                      className="px-2 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-300 flex items-center gap-1 sm:gap-2 shadow-lg shadow-purple-500/20 text-xs sm:text-sm"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Users size={16} />
-                      Join
+                      <Users size={14} className="hidden sm:inline" />
+                      <Users size={12} className="sm:hidden" />
+                      <span className="hidden sm:inline">Join</span>
+                      <span className="sm:hidden">Join</span>
                     </motion.button>
                   )}
                 </div>
@@ -1402,49 +1411,49 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                       {/* Registration Form */}
                       {!otpStep && (
                         <>
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold text-white">
+                          <div className="flex items-center justify-between mb-3 sm:mb-4">
+                            <h3 className="text-lg sm:text-xl font-bold text-white">
                               {event.eventType} Registration
                             </h3>
                             <button
                               onClick={() => setShowSignupForm(false)}
                               className="text-gray-400 hover:text-white transition-colors"
                             >
-                              <X size={20} />
+                              <X size={18} className="sm:w-5 sm:h-5" />
                             </button>
                           </div>
 
-                          <div className="flex items-center gap-3 mb-4 p-3 bg-gray-800 rounded-lg">
+                          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-800 rounded-lg">
                             <Image
                               src={gameImage}
                               alt={gameName}
-                              width={48}
-                              height={48}
-                              className="rounded-lg"
+                              width={40}
+                              height={40}
+                              className="rounded-lg w-10 h-10 sm:w-12 sm:h-12"
                             />
-                            <div>
-                              <p className="text-white font-semibold">
+                            <div className="min-w-0">
+                              <p className="text-white font-semibold text-sm sm:text-base truncate">
                                 {gameName}
                               </p>
-                              <p className="text-gray-400 text-sm">
+                              <p className="text-gray-400 text-xs sm:text-sm truncate">
                                 {event.eventType}
                               </p>
                             </div>
                           </div>
 
                           {price > 0 && (
-                            <div className="mb-4 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
-                              <p className="text-gray-400 text-sm">
+                            <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-500/30 text-center">
+                              <p className="text-gray-400 text-xs sm:text-sm">
                                 Registration Fee
                               </p>
-                              <p className="text-2xl font-bold text-white">
+                              <p className="text-xl sm:text-2xl font-bold text-white">
                                 BDT {price}
                               </p>
                             </div>
                           )}
 
                           {event.eventType === "Brand Deal" && (
-                            <div className="mb-4 grid grid-cols-2 gap-3">
+                            <div className="mb-3 sm:mb-4 grid grid-cols-2 gap-2 sm:gap-3">
                               <button
                                 type="button"
                                 onClick={() =>
@@ -1453,9 +1462,9 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                                     brandDealType: "solo",
                                   }))
                                 }
-                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "solo" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                                className={`p-2 sm:p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "solo" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
                               >
-                                <p className="text-white font-semibold">Solo</p>
+                                <p className="text-white font-semibold text-sm sm:text-base">Solo</p>
                                 <p className="text-gray-400 text-xs">BDT 499</p>
                               </button>
                               <button
@@ -1466,9 +1475,9 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                                     brandDealType: "team",
                                   }))
                                 }
-                                className={`p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "team" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
+                                className={`p-2 sm:p-3 rounded-lg border-2 transition-all ${formData.brandDealType === "team" ? "border-purple-500 bg-purple-500/10" : "border-gray-700 hover:border-gray-600"}`}
                               >
-                                <p className="text-white font-semibold">Team</p>
+                                <p className="text-white font-semibold text-sm sm:text-base">Team</p>
                                 <p className="text-gray-400 text-xs">BDT 999</p>
                               </button>
                             </div>
@@ -1650,11 +1659,11 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
               </div>
 
               {/* Tournament Progression */}
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-white mb-6">
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">
                   Tournament Progression
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                   {progressionSteps.map((step, index) => {
                     const stepDate = new Date(step.date);
                     const isCompleted = new Date() > stepDate;
@@ -1663,7 +1672,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                     return (
                       <div
                         key={index}
-                        className={`p-4 rounded-xl border ${
+                        className={`p-2 sm:p-4 rounded-lg sm:rounded-xl border ${
                           isCurrent
                             ? "bg-purple-500/10 border-purple-500/30"
                             : isCompleted
@@ -1671,24 +1680,24 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                               : "bg-gray-800/30 border-gray-700/30"
                         }`}
                       >
-                        <div className="flex justify-center mb-3">
+                        <div className="flex justify-center mb-2 sm:mb-3">
                           <CheckCircle2
-                            size={24}
-                            className={
+                            size={20}
+                            className={`sm:w-6 sm:h-6 ${
                               isCompleted ? "text-emerald-400" : "text-gray-600"
-                            }
+                            }`}
                           />
                         </div>
-                        <p className="text-sm font-semibold text-white text-center mb-2">
+                        <p className="text-xs sm:text-sm font-semibold text-white text-center mb-1 sm:mb-2 leading-tight">
                           {step.label}
                         </p>
-                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-300 font-medium">
-                          <Calendar size={12} />
-                          <span>{new Date(step.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                        <div className="flex items-center justify-center gap-1 text-xs text-gray-300 font-medium">
+                          <Calendar size={10} className="sm:w-3 sm:h-3" />
+                          <span className="text-xs">{new Date(step.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</span>
                         </div>
-                        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mt-1.5">
-                          <Clock size={12} />
-                          <span>{step.time || formatTime(step.date)}</span>
+                        <div className="flex items-center justify-center gap-1 text-xs text-gray-400 mt-1">
+                          <Clock size={10} className="sm:w-3 sm:h-3" />
+                          <span className="text-xs">{step.time || formatTime(step.date)}</span>
                         </div>
                       </div>
                     );
@@ -1697,13 +1706,13 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
               </div>
 
               {/* Tabs */}
-              <div className="border-b border-gray-800 mb-6">
+              <div className="border-b border-gray-800 mb-4 sm:mb-6">
                 <div className="flex gap-1 overflow-x-auto pb-px">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative ${
+                      className={`px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors relative ${
                         activeTab === tab.id
                           ? "text-purple-400"
                           : "text-gray-400 hover:text-gray-300"
@@ -1882,7 +1891,7 @@ Join the action! Sign up now on Inception Games.${prizeText}`;
                   </div>
                   <div className="p-4 border-t border-white/[0.06]">
                     <a
-                      href="https://discord.gg/GNFx8zgC"
+                      href="https://discord.com/invite/9AtUGVqKs3"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-3 rounded-xl font-semibold text-white bg-[#5865F2] hover:bg-[#4752C4] transition-all duration-300 flex items-center justify-center gap-2"

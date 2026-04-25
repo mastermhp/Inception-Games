@@ -80,11 +80,10 @@ export function PartnerCard({
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        borderRadius: "2rem",
+        borderRadius: "1rem",
         overflow: "hidden",
-        transition: "all 0.4s",
+        transition: "all 0.4s ease",
         transform: hovered ? "translateY(-12px)" : "translateY(0)",
-        transition: "0.4s ease",
         cursor: "pointer",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -96,10 +95,10 @@ export function PartnerCard({
         target="_blank"
         rel="noopener noreferrer"
         style={{
-          // height: isFeatured ? "420px" : "240px",
           flex: 1,
           flexShrink: 0,
           position: "relative",
+          minHeight: "250px",
         }}
       >
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -123,21 +122,23 @@ export function PartnerCard({
               alt={item.name}
               fill
               unoptimized
-              sizes="100vw"
+              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 50vw"
               style={{
                 objectFit: "cover",
                 transform: hovered ? "scale(1.08)" : "scale(1)",
+                transition: "transform 0.4s ease",
               }}
+              priority
             />
           )}
         </div>
       </a>
 
-      {/* Caption stays same */}
-      <div style={{ padding: "1rem", textAlign: "center" }}>
-        <p style={{ color: "#fff", margin: 0 }}>
+      {/* Caption responsive */}
+      <div style={{ padding: "0.75rem", textAlign: "center", flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#fff", margin: 0, fontSize: "0.85rem", lineHeight: 1.4 }}>
           {item.caption.normalText}
-          <span style={{ color: "#FFD700", display: "block" }}>
+          <span style={{ color: "#FFD700", display: "block", marginTop: "0.25rem", fontWeight: 600 }}>
             {item.caption.highlightText}
           </span>
         </p>

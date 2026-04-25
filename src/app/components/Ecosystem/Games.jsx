@@ -139,7 +139,17 @@ export function GamesCarousel() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const next = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % total);
@@ -157,6 +167,10 @@ export function GamesCarousel() {
   }, [paused, next]);
 
   const getVisibleCards = () => {
+    if (isMobile) {
+      return [{ ...items[activeIndex], position: "center", key: activeIndex }];
+    }
+
     const prevIndex = (activeIndex - 1 + total) % total;
     const nextIndex = (activeIndex + 1) % total;
 
@@ -171,27 +185,29 @@ export function GamesCarousel() {
 
   return (
     <section className="relative">
-      <div className="relative w-full flex justify-center">
+      <div className="relative w-full flex justify-center overflow-hidden">
         {/* Left Arrow */}
         <button
           onClick={prev}
-         className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center"
+          className="absolute left-1 sm:left-2 md:left-8 top-1/2 -translate-y-1/2 z-50 w-7 h-7 sm:w-10 sm:h-10 md:w-10 md:h-10 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center transition-all"
         >
-        
-          <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
         </button>
 
         {/* Right Arrow */}
         <button
           onClick={next}
-          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center"
+          className="absolute right-1 sm:right-2 md:right-8 top-1/2 -translate-y-1/2 z-50 w-7 h-7 sm:w-10 sm:h-10 md:w-10 md:h-10 rounded-full bg-purple-600/40 hover:bg-purple-600/70 backdrop-blur-md text-white flex items-center justify-center transition-all"
         >
-          <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+          <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
         </button>
 
         <div
-          className="relative flex items-center justify-center px-4 md:px-20"
-          style={{ height: "540px", minHeight: "540px" }}
+          className="relative flex items-center justify-center w-full overflow-hidden"
+          style={{ 
+            height: isMobile ? "340px" : "540px",
+            maxWidth: "100vw"
+          }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -201,25 +217,29 @@ export function GamesCarousel() {
               const isLeft = card.position === "left";
               const isRight = card.position === "right";
 
-              const centerWidth = 700;
-              const sideWidth = 320;
+              let width, height, x;
 
-              const width = isCenter ? centerWidth : sideWidth;
-              const height = isCenter ? 540 : 320;
-
-              let x = 0;
-              if (isLeft) x = -520;
-              if (isRight) x = 520;
+              if (isMobile) {
+                width = Math.max(280, Math.min(window.innerWidth - 50, 380));
+                height = 300;
+                x = 0;
+              } else {
+                width = isCenter ? 700 : 320;
+                height = isCenter ? 540 : 320;
+                x = 0;
+                if (isLeft) x = -520;
+                if (isRight) x = 520;
+              }
 
               return (
                 <motion.div
                   key={`${card.position}-${card.key}`}
-                  className="absolute"
+                  className="absolute flex-shrink-0"
                   initial={{ opacity: 0, scale: 0.7, x: 250 }}
                   animate={{
                     x,
-                    opacity: isCenter ? 1 : 0.5,
-                    scale: isCenter ? 1 : 0.8,
+                    opacity: isCenter ? 1 : isMobile ? 0 : 0.5,
+                    scale: isCenter ? 1 : isMobile ? 0 : 0.8,
                     zIndex: isCenter ? 30 : 10,
                   }}
                   exit={{ opacity: 0, scale: 0.7, x: -250 }}
@@ -235,15 +255,15 @@ export function GamesCarousel() {
       </div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-2 mt-5">
+      <div className="flex justify-center gap-1 sm:gap-2 mt-4 sm:mt-5">
         {items.map((_, i) => (
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
             className={`rounded-full transition-all duration-300 ${
               activeIndex === i
-                ? "w-8 h-3 bg-gradient-to-r from-purple-500 to-pink-500"
-                : "w-3 h-3 bg-white/30"
+                ? "w-6 sm:w-8 h-2 sm:h-3 bg-gradient-to-r from-purple-500 to-pink-500"
+                : "w-2 sm:w-3 h-2 sm:h-3 bg-white/30"
             }`}
           />
         ))}

@@ -51,7 +51,7 @@ function HiringFormModal({ isOpen, onClose }) {
                   className="w-8 h-8"
                 />
                 <h2 className="text-xl font-bold text-white">
-                  SliceNShare Hiring
+                  Inception Games Hiring
                 </h2>
               </div>
               <button
@@ -73,7 +73,7 @@ function HiringFormModal({ isOpen, onClose }) {
                 marginWidth="0"
                 className="w-full h-full"
                 style={{ minHeight: "500px" }}
-                title="SliceNShare Hiring Form"
+                title="Inception Games Hiring Form"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               >
                 Loading form...

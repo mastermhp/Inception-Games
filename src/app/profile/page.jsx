@@ -24,14 +24,7 @@ export default function ProfilePage() {
   const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  useEffect(() => {
-    console.log("[v0] Profile page state:", {
-      loading,
-      isAuthenticated,
-      user: user ? { id: user.id, email: user.email } : null,
-      profileLoading,
-    });
-  }, [loading, isAuthenticated, user, profileLoading]);
+
 
   // NOTE: Profile data is stored in the user object from AuthContext
   // No need to fetch separately - data is collected during registration
@@ -55,9 +48,6 @@ export default function ProfilePage() {
   useEffect(() => {
     // Only redirect if loading is complete and user is not authenticated
     if (loading === false && !isAuthenticated) {
-      console.log(
-        "[v0] Profile page - user not authenticated, redirecting to home",
-      );
       router.push("/");
     }
   }, [isAuthenticated, loading, router]);
@@ -101,13 +91,7 @@ export default function ProfilePage() {
     role: user?.gameRole || gamingProfile?.role || "",
   };
 
-  console.log("[v0] Profile page - mergedUser data:", {
-    username: mergedUser.username,
-    primaryGame: mergedUser.primaryGame,
-    gameRole: mergedUser.gameRole,
-    rank: mergedUser.rank,
-    region: mergedUser.region,
-  });
+
 
   return (
     <div className="min-h-screen bg-[#060608] flex flex-col">

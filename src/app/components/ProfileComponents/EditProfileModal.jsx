@@ -116,7 +116,6 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
 
   useEffect(() => {
     if (isOpen) {
-      console.log("[v0] EditProfileModal opened, current user:", currentUser?.id, currentUser?.email)
       const existingRegion = currentUser?.region || gamingProfile?.region || ''
       const { continent, country, city } = parseRegionString(existingRegion)
       setSelectedContinent(continent || currentUser?.continent || '')
@@ -184,8 +183,6 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!currentUser?.id) {
-      const errorMsg = `User ID not found. CurrentUser: ${JSON.stringify(currentUser)}`
-      console.error("[v0]", errorMsg)
       setError('User ID not found. Please log in again.')
       return
     }
@@ -193,7 +190,6 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
     setError('')
     setMessage('')
     try {
-      console.log("[v0] Starting profile update for user:", currentUser.id)
       const formDataToSend = new FormData()
       
       // Append all text fields with their correct API field names
@@ -221,20 +217,16 @@ export default function EditProfileModal({ isOpen, onClose, user, gamingProfile,
       
       // Append image files only if they were selected
       if (profileImageFile) {
-        console.log("[v0] Appending profile image file:", profileImageFile.name)
         formDataToSend.append('avatar', profileImageFile)
       }
       if (bannerImageFile) {
-        console.log("[v0] Appending banner image file:", bannerImageFile.name)
         formDataToSend.append('banner', bannerImageFile)
       }
       
-      console.log("[v0] Calling updateProfile with user ID:", currentUser.id)
       await updateProfile(currentUser.id, formDataToSend)
       setMessage('Profile updated successfully!')
       setTimeout(() => onClose(), 1000)
     } catch (err) { 
-      console.error("[v0] Profile update error:", err)
       const errorMsg = err.message || 'Failed to update profile'
       setError(errorMsg)
     }

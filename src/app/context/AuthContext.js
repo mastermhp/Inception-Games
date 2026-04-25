@@ -38,19 +38,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedUser = getStoredUser();
     const tokens = getTokens();
-    console.log("[v0] AuthProvider init - stored user:", storedUser?.email, "stored user full:", JSON.stringify(storedUser), "has tokens:", !!tokens?.accessToken);
     
     if (storedUser) {
-      console.log("[v0] Setting user from storage in AuthProvider");
       setUser(storedUser);
-      console.log("[v0] User restored from storage:", storedUser.email);
       
       // Profile data is available from stored user - no need to fetch separately
-      if (!tokens?.accessToken) {
-        console.log("[v0] User restored but no access token available - user may need to re-login for authenticated actions");
-      }
-    } else {
-      console.log("[v0] No stored user found, app is not authenticated");
     }
     setLoading(false);
   }, []);
@@ -65,14 +57,12 @@ export function AuthProvider({ children }) {
    */
   const loginSendOTP = useCallback(async (email) => {
     setError(null);
-    console.log("Login - sending OTP to:", email);
     const res = await fetch(API.LOGIN_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
     const data = await res.json();
-    console.log("Login send OTP response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to send OTP";
       setError(msg);
@@ -87,14 +77,12 @@ export function AuthProvider({ children }) {
    */
   const loginVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
-    console.log("Login - verifying OTP for:", email);
     const res = await fetch(API.LOGIN_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: String(otp).trim() }),
     });
     const data = await res.json();
-    console.log("Login verify OTP response:", JSON.stringify(data, null, 2));
     if (!res.ok) {
       const msg = data.error || data.message || "Invalid OTP";
       setError(msg);
@@ -106,25 +94,16 @@ export function AuthProvider({ children }) {
     let accessToken = data.accessToken || data.access_token || data.token || data.user?.token || data.data?.token || data.data?.accessToken || data.data?.access_token;
     let refreshToken = data.refreshToken || data.refresh_token || data.user?.refreshToken || data.user?.refresh_token || data.data?.refreshToken || data.data?.refresh_token;
     
-    // Log all available data for debugging
-    console.log("[v0] FULL LOGIN RESPONSE:", JSON.stringify(data, null, 2));
-    console.log("[v0] Top-level response keys:", Object.keys(data));
-    if (data.user) console.log("[v0] data.user keys:", Object.keys(data.user));
-    if (data.data) console.log("[v0] data.data keys:", Object.keys(data.data));
-    
     // If still no token found, try looking in authentication/tokens object
     if (!accessToken && data.authentication) {
       accessToken = data.authentication.accessToken || data.authentication.access_token || data.authentication.token;
       refreshToken = data.authentication.refreshToken || data.authentication.refresh_token;
-      console.log("[v0] Found tokens in authentication object");
     }
     
     // IMPORTANT: If still no token found, store email+otp for session management (for backends without token system)
     if (!accessToken) {
-      console.log("[v0] No token in response, backend may not return tokens. Storing email+otp for session...");
       // Create a session token marker that includes email for auth purposes
       accessToken = `email-otp-auth:${email}`;
-      console.log("[v0] Generated session token marker for email:", email);
     }
     
     const tokens = {
@@ -133,15 +112,12 @@ export function AuthProvider({ children }) {
       email: email,  // Store email for auth fallback
       otp: String(otp).trim()  // Store OTP for auth fallback
     };
-    console.log("[v0] Tokens extracted - accessToken:", accessToken.substring(0, 20) + "...", "refreshToken:", refreshToken ? refreshToken.substring(0, 20) + "..." : "NOT_PROVIDED");
     setTokens(tokens);
     setTokensState(tokens);
 
     // Build user object with all available data from login response
     // API returns { success: true, user: {...} } format
     let userData = data.user || data.data || data;
-    console.log("[v0] Extracted userData:", JSON.stringify(userData, null, 2));
-    console.log("[v0] userData keys:", Object.keys(userData || {}));
     
     const userObj = {
       id: userData?.id || userData?._id || userData?.userId,
@@ -161,19 +137,14 @@ export function AuthProvider({ children }) {
       region: userData?.region || "",
       authMethod: "email",
     };
-    console.log("[v0] Login user object created:", userObj);
     if (!userObj.id) {
-      console.error("[v0] CRITICAL: User ID missing in login response. userData was:", userData);
       userObj.id = userData?.userId || userData?.id || `user_${Date.now()}`;
-      console.log("[v0] Generated fallback user ID:", userObj.id);
     }
     if (!userObj.email) {
-      console.error("[v0] CRITICAL: Email missing in login response");
       userObj.email = email;
     }
     setUser(userObj);
     setStoredUser(userObj);
-    console.log("[v0] User stored with ID:", userObj.id, "Email:", userObj.email);
 
     // Redirect to profile page after login
     setTimeout(() => {
@@ -191,14 +162,12 @@ export function AuthProvider({ children }) {
     setError(null);
     const body = { email };
     if (phone) body.phone = phone;
-    console.log("Register send OTP:", JSON.stringify(body));
     const res = await fetch(API.REGISTER_SEND_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    console.log("Register send OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to send OTP";
       setError(msg);
@@ -214,14 +183,12 @@ export function AuthProvider({ children }) {
   const registerVerifyOTP = useCallback(async (email, otp) => {
     setError(null);
     const otpStr = String(otp).trim();
-    console.log("Register verify OTP for:", email);
     const res = await fetch(API.REGISTER_VERIFY_OTP, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp: otpStr }),
     });
     const data = await res.json();
-    console.log("Register verify OTP response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Invalid OTP";
       setError(msg);
@@ -240,7 +207,6 @@ export function AuthProvider({ children }) {
    */
   const registerPersonalInfo = useCallback(async (email, fullName, username, discord = '', bio = '') => {
     setError(null);
-    console.log("Register personal info for:", email);
     const body = { email, full_name: fullName, username };
     if (discord) body.discord = discord;
     if (bio) body.bio = bio;
@@ -251,7 +217,6 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    console.log("Register personal info response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to save personal info";
       setError(msg);
@@ -274,14 +239,12 @@ export function AuthProvider({ children }) {
    */
   const registerGamingProfile = useCallback(async (email, gameData) => {
     setError(null);
-    console.log("Register gaming profile for:", email);
     const res = await fetch(API.REGISTER_GAMING_PROFILE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, ...gameData }),
     });
     const data = await res.json();
-    console.log("Register gaming profile response:", res.status, JSON.stringify(data));
     if (!res.ok) {
       const msg = data.error || data.message || "Failed to save gaming profile";
       setError(msg);
@@ -309,7 +272,6 @@ export function AuthProvider({ children }) {
    */
   const registerProfileImages = useCallback(async (email) => {
     setError(null);
-    console.log("[v0] Completing registration for:", email);
     
     // Retrieve personal info from sessionStorage including gaming profile
     let registrationInfo = {};
@@ -320,7 +282,7 @@ export function AuthProvider({ children }) {
           registrationInfo = JSON.parse(stored);
         }
       } catch (e) {
-        console.log("Could not retrieve registration info");
+        // Could not retrieve registration info
       }
     }
 
@@ -356,11 +318,9 @@ export function AuthProvider({ children }) {
       otp: ""
     };
     
-    console.log("[v0] Tokens created for registration:", { hasAccessToken: !!accessToken });
     setTokens(tokens);
     setTokensState(tokens);
     
-    console.log("[v0] Complete user object after registration:", userObj);
     setUser(userObj);
     setStoredUser(userObj);
     
@@ -386,11 +346,9 @@ export function AuthProvider({ children }) {
    * Logout - clear tokens and user session
    */
   const logout = useCallback(async () => {
-    console.log("Logging out...");
     clearTokens();
     setUser(null);
     setError(null);
-    console.log("Session cleared");
   }, []);
 
   // ============================================
@@ -404,7 +362,6 @@ export function AuthProvider({ children }) {
    */
   const updateProfile = useCallback(async (userId, formDataToSend) => {
     setError(null);
-    console.log("[v0] updateProfile called with userId:", userId);
     
     try {
       // Get current user and tokens
@@ -419,11 +376,8 @@ export function AuthProvider({ children }) {
         throw new Error("Not authenticated - please log in again");
       }
       
-      console.log("[v0] Updating profile via API for user:", currentUser.email);
-      
       // Build the API URL
       const url = API.PROFILE_UPDATE.replace(":userId", userId);
-      console.log("[v0] PUT request to:", url);
       
       // Make PUT request with FormData and Bearer token
       const response = await fetch(url, {
@@ -434,9 +388,7 @@ export function AuthProvider({ children }) {
         body: formDataToSend,
       });
       
-      console.log("[v0] API response status:", response.status);
       const responseData = await response.json();
-      console.log("[v0] API response:", JSON.stringify(responseData));
       
       if (!response.ok) {
         const errorMsg = responseData.message || responseData.error || "Failed to update profile";
@@ -464,19 +416,14 @@ export function AuthProvider({ children }) {
         banner: apiUserData.banner_url || apiUserData.banner || currentUser.banner || "",
       };
       
-      console.log("[v0] Updated user object from API:", updatedUser);
-      
       // Update React state
       setUser(updatedUser);
       
       // Update localStorage
       setStoredUser(updatedUser);
       
-      console.log("[v0] Profile updated successfully via API");
-      
       return { success: true, message: "Profile updated successfully", data: updatedUser };
     } catch (err) {
-      console.error("[v0] Profile update error:", err);
       const errorMsg = err.message || "Failed to update profile";
       setError(errorMsg);
       throw new Error(errorMsg);
