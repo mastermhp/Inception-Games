@@ -772,27 +772,59 @@ export default function EventDetailPage() {
     setIsSubmitting(true);
 
     try {
+      // Client-side validation
+      if (!formData.fullName || formData.fullName.trim() === "") {
+        showNotificationMessage("error", "Full name is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!formData.email || formData.email.trim() === "") {
+        showNotificationMessage("error", "Email is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!formData.phone || formData.phone.trim() === "") {
+        showNotificationMessage("error", "Phone number is required");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Get game name from event
+      const gameName = event?.game?.name || event?.gameName || "EA FC 26";
+      const address = event?.address || "Online";
+
+      const payload = {
+        event_id: parseInt(params.eventId),
+        full_name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        game_name: gameName,
+        address: address,
+      };
+
+      console.log("[v0] Submitting registration with payload:", payload);
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tournaments/${params.eventId}/register`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/participants/tournaments/${params.eventId}/register`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            full_name: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-          }),
+          body: JSON.stringify(payload),
         },
       );
 
-   
+      const data = await response.json();
+      console.log("[v0] Registration Response:", { status: response.status, data });
 
       if (!response.ok) {
+        console.error("[v0] Registration Error:", data);
         showNotificationMessage(
           "error",
-          data.message || "Registration failed. Please try again.",
+          data.message || data.error || "Registration failed. Please try again.",
         );
         setIsSubmitting(false);
         return;
@@ -821,7 +853,7 @@ export default function EventDetailPage() {
       // success modal
       setShowSuccessModal(true);
     } catch (error) {
-      // console.error('[registration] Error:', error)
+      console.error("[v0] Registration Network/CORS Error:", error.message, error);
       showNotificationMessage(
         "error",
         "Network error. Please check your connection and try again.",
