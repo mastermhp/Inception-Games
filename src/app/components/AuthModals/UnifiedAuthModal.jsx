@@ -660,7 +660,7 @@ export default function UnifiedAuthModal({ isOpen, onClose, initialMode = 'login
         </motion.div>
       </div>
       <h3 className="text-xl font-bold text-white mb-2">Almost there!</h3>
-      <p className="text-gray-400 text-sm mb-6">Complete your registration to start your gaming journey on SliceNShare.</p>
+      <p className="text-gray-400 text-sm mb-6">Complete your registration to start your gaming journey on Inception Games.</p>
       <div className="space-y-3">
         <motion.button
           variants={itemVariants}

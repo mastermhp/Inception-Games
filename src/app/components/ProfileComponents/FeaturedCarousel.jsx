@@ -44,7 +44,7 @@ const CAROUSEL_ITEMS = [
     badgeColor: 'from-purple-500 to-pink-500',
     title: 'SNS Merch Store',
     subtitle: 'Rep your favorite gaming brand',
-    description: 'Exclusive hoodies, jerseys, and accessories. Limited edition designs available now at slicenshare.com/shop.',
+    description: 'Exclusive hoodies, jerseys, and accessories. Limited edition designs available now at inception.games/shop.',
     cta: 'Shop Now',
     link: '#',
     icon: ShoppingBag,
