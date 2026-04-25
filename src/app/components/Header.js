@@ -78,8 +78,8 @@ export default function Header() {
   }
 
   const handleLoginClick = () => {
-    setCountdownModalOpen(true)
-    // setLoginModalOpen(true)   
+    // setCountdownModalOpen(true)
+    setLoginModalOpen(true)   
   }
 
   const handleLogout = () => {

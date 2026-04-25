@@ -615,8 +615,8 @@ function HomeContent() {
                 if (user) {
                   router.push("/profile");
                 } else {
-                  setCountdownModalOpen(true);
-                  // setLoginModalOpen(true);
+                  // setCountdownModalOpen(true);
+                  setLoginModalOpen(true);
                 }
               }}
               className="relative cursor-pointer px-10 py-3 bg-gradient-to-r from-purple-900 to-pink-800 hover:bg-transparent transition-all duration-500 rounded-[40px] inline-flex items-center gap-2 shadow-lg shadow-purple-500/20 font-semibold text-lg overflow-hidden group"
