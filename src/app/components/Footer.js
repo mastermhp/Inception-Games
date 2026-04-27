@@ -8,24 +8,24 @@ export default function Footer() {
   return (
     <>
       <footer className="py-8 md:py-12 bg-[#0D0D0D]">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
 
             {/* Logo + Description Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="flex flex-col items-center md:items-start gap-4"
+              className="flex flex-col items-center sm:items-start gap-4 sm:col-span-2 md:col-span-1"
             >
-              {/* Logo */}
-              <div className="flex items-center space-x-1">
-                <img src="/Logo/Logo.png" alt="Inceptions Logo" className="w-20 h-25" />
-              </div>
+              {/* Logo — links to homepage */}
+              <a href="/" aria-label="Inceptions Home" className="inline-flex">
+                <img src="/Logo/Logo.png" alt="Inceptions Logo" className="w-20 h-auto" />
+              </a>
 
               {/* Short Description */}
-              <p className="text-gray-400 text-sm leading-relaxed text-center md:text-left max-w-xs">
+              <p className="text-gray-400 text-sm leading-relaxed text-center sm:text-left max-w-xs">
                 Compete. Connect. Conquer. — Your home for premier esports tournaments and gaming excellence.
               </p>
 
@@ -43,7 +43,7 @@ export default function Footer() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-center md:text-left"
+              className="flex flex-col items-center sm:items-start"
             >
               <h3
                 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wider"
@@ -57,13 +57,13 @@ export default function Footer() {
               >
                 SOCIAL LINKS
               </h3>
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-2 sm:space-y-3 w-full">
                 <motion.a
                   href={process.env.NEXT_PUBLIC_LINKEDIN_URL}
-                  className="flex items-center justify-center md:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
+                  className="flex items-center justify-center sm:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
                   whileHover={{ x: 5 }}
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                   </svg>
                   <span className="text-sm sm:text-base">LinkedIn</span>
@@ -79,10 +79,10 @@ export default function Footer() {
 
                 <motion.a
                   href={process.env.NEXT_PUBLIC_FACEBOOK_URL}
-                  className="flex items-center justify-center md:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
+                  className="flex items-center justify-center sm:justify-start space-x-3 text-white hover:text-gray-300 transition-colors group"
                   whileHover={{ x: 5 }}
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                   <span className="text-sm sm:text-base">Facebook</span>
@@ -103,7 +103,7 @@ export default function Footer() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-center md:text-left"
+              className="flex flex-col items-center sm:items-start"
             >
               <h3
                 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 tracking-wider"
@@ -117,12 +117,12 @@ export default function Footer() {
               >
                 WEBSITE
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-3 w-full">
                 {/* Ecosystem Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
-                    className="flex items-center justify-center md:justify-start gap-2 text-white hover:text-gray-300 transition-colors group"
+                    className="flex items-center justify-center sm:justify-start gap-2 text-white hover:text-gray-300 transition-colors group w-full sm:w-auto"
                   >
                     <span>Ecosystem</span>
                     <ChevronDown
@@ -138,7 +138,7 @@ export default function Footer() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.15 }}
-                        className="mt-2 space-y-2 text-center md:text-left"
+                        className="mt-2 space-y-2 text-center sm:text-left"
                       >
                         <a
                           href="#ecosystem-partners"
@@ -146,7 +146,7 @@ export default function Footer() {
                             setEcosystemDropdownOpen(false)
                             document.getElementById("ecosystem-partners")?.scrollIntoView({ behavior: "smooth" })
                           }}
-                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Partners
                         </a>
@@ -156,7 +156,7 @@ export default function Footer() {
                             setEcosystemDropdownOpen(false)
                             document.getElementById("ecosystem-games")?.scrollIntoView({ behavior: "smooth" })
                           }}
-                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Games
                         </a>
@@ -166,7 +166,7 @@ export default function Footer() {
                             setEcosystemDropdownOpen(false)
                             document.getElementById("ecosystem-community")?.scrollIntoView({ behavior: "smooth" })
                           }}
-                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 md:pl-4"
+                          className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Community
                         </a>
@@ -177,21 +177,21 @@ export default function Footer() {
 
                 <motion.a
                   href="#news"
-                  className="block text-white hover:text-gray-300 transition-colors"
+                  className="block text-white hover:text-gray-300 transition-colors text-center sm:text-left"
                   whileHover={{ x: 5 }}
                 >
                   News
                 </motion.a>
                 {/* <motion.a
                   href="#career"
-                  className="block text-white hover:text-gray-300 transition-colors"
+                  className="block text-white hover:text-gray-300 transition-colors text-center sm:text-left"
                   whileHover={{ x: 5 }}
                 >
                   Career
                 </motion.a> */}
                 <motion.a
                   href="#contact"
-                  className="block text-white hover:text-gray-300 transition-colors"
+                  className="block text-white hover:text-gray-300 transition-colors text-center sm:text-left"
                   whileHover={{ x: 5 }}
                 >
                   Contact
@@ -203,7 +203,7 @@ export default function Footer() {
       </footer>
 
       {/* Bottom Bar */}
-      <div className="bg-[#0D0D0D] pb-4">
+      <div className="bg-[#0D0D0D] pb-4 px-4">
         <p className="text-gray-500 text-sm text-center">
           Copyright © 2026. All Rights Reserved by Inception Games.
         </p>

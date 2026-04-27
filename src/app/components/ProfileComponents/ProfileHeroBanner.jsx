@@ -38,7 +38,7 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
 
   return (
     <motion.div
-      className="relative w-full rounded-2xl overflow-hidden border border-white/[0.06] min-h-[420px] sm:min-h-[320px] lg:min-h-[420px]"
+      className="relative w-full rounded-2xl overflow-visible border border-white/[0.06] min-h-[420px] sm:min-h-[320px] lg:min-h-[420px]"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
@@ -193,10 +193,10 @@ export default function ProfileHeroBanner({ user, onEditProfile }) {
               <AnimatePresence>
                 {showShareMenu && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: -5 }}
+                    initial={{ opacity: 0, scale: 0.9, y: 5 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -5 }}
-                    className="absolute right-0 top-12 z-50 w-48 rounded-xl bg-[#1a1a24] border border-white/[0.08] shadow-2xl shadow-black/40 overflow-hidden"
+                    exit={{ opacity: 0, scale: 0.9, y: 5 }}
+                 className="absolute -right-40 bottom-12 z-50 w-48 rounded-xl bg-[#1a1a24] border border-white/[0.08] shadow-2xl shadow-black/40 overflow-hidden"
                   >
                     <button
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.06] hover:text-white transition"
