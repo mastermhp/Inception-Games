@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
 import { ChevronDown } from "lucide-react"
+import Link from "next/link"
 
 export default function Footer() {
   const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
@@ -20,9 +21,9 @@ export default function Footer() {
               className="flex flex-col items-center sm:items-start gap-4 sm:col-span-2 md:col-span-1"
             >
               {/* Logo — links to homepage */}
-              <a href="/" aria-label="Inceptions Home" className="inline-flex">
+              <Link href="/" aria-label="Inceptions Home" className="inline-flex">
                 <img src="/Logo/Logo.png" alt="Inceptions Logo" className="w-20 h-auto" />
-              </a>
+              </Link>
 
               {/* Short Description */}
               <p className="text-gray-400 text-sm leading-relaxed text-center sm:text-left max-w-xs">
@@ -140,7 +141,7 @@ export default function Footer() {
                         transition={{ duration: 0.15 }}
                         className="mt-2 space-y-2 text-center sm:text-left"
                       >
-                        <a
+                        <Link
                           href="#ecosystem-partners"
                           onClick={() => {
                             setEcosystemDropdownOpen(false)
@@ -149,8 +150,8 @@ export default function Footer() {
                           className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Partners
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                           href="#ecosystem-games"
                           onClick={() => {
                             setEcosystemDropdownOpen(false)
@@ -159,8 +160,8 @@ export default function Footer() {
                           className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Games
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                           href="#ecosystem-community"
                           onClick={() => {
                             setEcosystemDropdownOpen(false)
@@ -169,7 +170,7 @@ export default function Footer() {
                           className="block text-white/80 text-sm hover:text-gray-300 transition-colors cursor-pointer pl-0 sm:pl-4"
                         >
                           Community
-                        </a>
+                        </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
