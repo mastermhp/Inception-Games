@@ -152,11 +152,28 @@ export default function Header() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                
               </div>
             )}
+              <Link href="#store" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+              Store
+            </Link>
+
+              <Link href="#ecosystem-games" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+              Games
+            </Link>
+
+             <Link href="#ecosystem-partners" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+              Partners
+            </Link>
+
+             <Link href="#ecosystem-community" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
+              Community
+            </Link>
 
             {/* Ecosystem Dropdown */}
-            <div className="relative ecosystem-dropdown-container">
+            {/* <div className="relative ecosystem-dropdown-container">
               <button
                 onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
                 className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors flex items-center gap-1"
@@ -210,11 +227,12 @@ export default function Header() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </div> */}
 
             <Link href="#news" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               News
             </Link>
+        
             {/* <Link href="#career" className="text-white text-[16px] font-medium hover:text-purple-400 transition-colors">
               Career
             </Link> */}
@@ -418,8 +436,26 @@ export default function Header() {
                 </>
               )}
 
+               <a href="#store" onClick={handleLinkClick} className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors">
+                Store
+              </a>
+
+               <a href="#ecosystem-games" onClick={handleLinkClick} className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors">
+                Games
+              </a>
+
+               <a href="#ecosystem-partners" onClick={handleLinkClick} className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors">
+                Partners
+              </a>
+
+               <a href="#ecosystem-community" onClick={handleLinkClick} className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors">
+                Community
+              </a>
+
+              
+
               {/* Ecosystem Mobile */}
-              <button
+              {/* <button
                 onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
                 className="text-white text-base font-medium py-3 border-b border-purple-500/10 hover:text-purple-400 transition-colors flex items-center justify-between w-full"
               >
@@ -429,6 +465,7 @@ export default function Header() {
                   className={`transition-transform duration-200 ${ecosystemDropdownOpen ? 'rotate-180' : ''}`} 
                 />
               </button>
+               */}
               <AnimatePresence>
                 {ecosystemDropdownOpen && (
                   <motion.div
