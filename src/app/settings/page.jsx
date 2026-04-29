@@ -140,7 +140,7 @@ export default function SettingsPage() {
                 className="rounded-xl border border-white/10 bg-gradient-to-br from-[#171717] to-[#0a0a14] p-6 sm:p-8"
               >
                 {activeTab === 'profile' && (
-                  <ProfileTab user={user} updateProfile={updateProfile} fetchProfile={fetchProfile} />
+                  <ProfileTab user={user} updateProfile={updateProfile} />
                 )}
 
                 {activeTab === 'notifications' && (
@@ -211,7 +211,7 @@ export default function SettingsPage() {
   )
 }
 
-function ProfileTab({ user, updateProfile, fetchProfile }) {
+function ProfileTab({ user, updateProfile }) {
   const [fullName, setFullName] = useState(user.fullName || '')
   const [phone, setPhone] = useState(user.phone || '')
   const [saving, setSaving] = useState(false)
@@ -235,7 +235,10 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
     setMessage('')
     try {
       console.log('Settings ProfileTab - saving:', { fullName, phone })
-      await updateProfile({ fullName, phone: phone || undefined })
+      const formData = new FormData()
+      formData.append('full_name', fullName)
+      if (phone) formData.append('phone', phone)
+      await updateProfile(user.id, formData)
       console.log('Settings ProfileTab - saved successfully')
       setMessage('Profile updated successfully!')
       setTimeout(() => setMessage(''), 3000)
@@ -250,16 +253,19 @@ function ProfileTab({ user, updateProfile, fetchProfile }) {
   const handleRefresh = async () => {
     setRefreshing(true)
     try {
-      const fresh = await fetchProfile()
-      console.log('Settings ProfileTab - refreshed:', fresh)
-      if (fresh) {
-        setFullName(fresh.fullName || '')
-        setPhone(fresh.phone || '')
+      // Refresh user data from storage
+      const stored = localStorage.getItem('sns_user') || sessionStorage.getItem('sns_user')
+      if (stored) {
+        const freshUser = JSON.parse(stored)
+        setFullName(freshUser.fullName || '')
+        setPhone(freshUser.phone || '')
+        console.log('Settings ProfileTab - refreshed from storage')
         setMessage('Profile refreshed')
         setTimeout(() => setMessage(''), 3000)
       }
     } catch (err) {
       console.error('Settings ProfileTab - refresh error:', err)
+      setLocalError('Failed to refresh profile')
     } finally {
       setRefreshing(false)
     }
